@@ -1,7 +1,7 @@
 <?php 
 //Iniciando conexão 
 $host = "127.0.0.1";
-$database = "";
+$database = "Psicologia";
 $user = "root";
 $password = "";
 $charset = "UTF8";
