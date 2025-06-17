@@ -3,23 +3,38 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Inicial</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+    .fundofixo {
+      background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+    }
+
+    main.container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
 
-<body>
-    <main class="container">
-        <?php include "carousel.php"; ?>
-    </main>
-    <script>
-        $(document).ready(function() {
-            $('#banners').carousel(); // isso ativa o carrossel
-        });
-    </script>
+<body class="fundofixo">
+  <?php include "menu_publico.php" ?>
+  <main class="container">
+    <h1>Bem-vindo à Mente Renovada</h1>
+    <p>Esta é a página inicial do sistema.</p>
+  </main>
 </body>
 
 </html>
