@@ -1,23 +1,3 @@
-<!-- menu_publico.php -->
-<nav class="navbar navbar-expand-lg">
-  <a href="../index.php" class="navbar-brand ms-3">
-    <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logotipo" />
-  </a>
-
-  <div class="container-fluid d-flex justify-content-between align-items-center px-4">
-    <div class="collapse navbar-collapse mx-auto justify-content-center" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item me-3"><a class="nav-link active" href="#">Início</a></li>
-        <li class="nav-item me-3"><a class="nav-link" href="#">Sessões</a></li>
-        <li class="nav-item me-3"><a class="nav-link" href="#">Pacientes</a></li>
-      </ul>
-      <a href="perfil.php" class="nav-link">
-        <i class="bi bi-person-circle perfil-icon"></i>
-      </a>
-    </div>
-  </div>
-</nav>
-
 <style>
   html, body {
     margin: 0;
@@ -87,25 +67,47 @@
     line-height: 1;
     color: #333 !important; /* Cor escura para contraste */
     transition: color 0.3s;
-    text-decoration: none;
+ text-decoration: none !important;
   }
 
-  .nav-link.active,
   .nav-link:hover {
     color: #DBA632 !important;
   }
 
   .perfil-icon {
-    font-size: 2.6rem;
+    font-size: 15px;
     color: #DBA632;
     transition: color 0.3s;
-    margin-bottom: 20px;
   }
 
   .perfil-icon:hover {
     color: #b7861e;
   }
+
+  .login-text{
+     text-decoration: none !important;
+  }
 </style>
+
+<!-- menu_publico.php -->
+<nav class="navbar navbar-expand-lg">
+  <a href="index.php" class="navbar-brand ms-3">
+    <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logotipo" />
+  </a>
+
+  <div class="container-fluid d-flex justify-content-between align-items-center px-4">
+    <div class="collapse navbar-collapse mx-auto justify-content-center" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item me-3"><a class="nav-link" href="index.php">Início</a></li>
+        <li class="nav-item me-3"><a class="nav-link" href="sessao.php">Sessões</a></li>
+        <li class="nav-item me-3"><a class="nav-link" href="paciente.php">Pacientes</a></li>
+      </ul>
+      <a href="login.php" class="nav-link">
+        <i class="bi bi-person-fill perfil-icon" href="">  <span class="login-text">Log In</span></i>
+      </a>
+    </div>
+  </div>
+</nav>
 
 <!-- Script para mudar opacidade ao rolar -->
 <script>
