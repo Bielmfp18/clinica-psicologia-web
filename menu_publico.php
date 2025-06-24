@@ -1,11 +1,13 @@
 <style>
-  html, body {
+  html,
+  body {
     margin: 0;
     padding: 0;
   }
 
   body {
-    padding-top: 90px; /* Compensa altura do menu fixo */
+    padding-top: 90px;
+    /* Compensa altura do menu fixo */
   }
 
   .navbar {
@@ -17,14 +19,17 @@
     padding: 0.5rem 1rem;
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.8); /* Fundo branco semitransparente */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    background-color: rgba(255, 255, 255, 0.8);
+    /* Fundo branco semitransparente */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil */
     z-index: 1000;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   .navbar.scrolled {
-    background-color: rgba(255, 255, 255, 0.95); /* Mais opaco ao rolar */
+    background-color: rgba(255, 255, 255, 0.95);
+    /* Mais opaco ao rolar */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   }
 
@@ -65,27 +70,35 @@
     font-weight: bold;
     padding: 0.5rem 0;
     line-height: 1;
-    color: #333 !important; /* Cor escura para contraste */
+    color: #333 !important;
+    /* Cor escura para contraste */
     transition: color 0.3s;
- text-decoration: none !important;
+    text-decoration: none !important;
   }
 
   .nav-link:hover {
     color: #DBA632 !important;
   }
 
-  .perfil-icon {
+  .login-text {
     font-size: 15px;
-    color: #DBA632;
-    transition: color 0.3s;
+    background-color: #DBA632;
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border-radius: 160px;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition:
+      color 0.3s ease-in-out,
+      transform 0.3s ease-in-out;
   }
 
-  .perfil-icon:hover {
+  .login-text:hover {
     color: #b7861e;
-  }
-
-  .login-text{
-     text-decoration: none !important;
+    transform: scale(1.1);
   }
 </style>
 
@@ -101,17 +114,23 @@
         <li class="nav-item me-3"><a class="nav-link" href="index.php">Início</a></li>
         <li class="nav-item me-3"><a class="nav-link" href="sessao.php">Sessões</a></li>
         <li class="nav-item me-3"><a class="nav-link" href="paciente.php">Pacientes</a></li>
+
+        <a href="cadastro.php" class="nav-link">
+          <span style="margin-right:30px; margin-left:18rem;">Registre-se</span>
+        </a>
+        <a href="login.php" class="nav-link">
+          <span class="login-text">
+            <i class="bi bi-person-fill perfil-icon"></i> Entrar
+          </span>
+        </a>
       </ul>
-      <a href="login.php" class="nav-link">
-        <i class="bi bi-person-fill perfil-icon" href="">  <span class="login-text">Log In</span></i>
-      </a>
     </div>
   </div>
 </nav>
 
 <!-- Script para mudar opacidade ao rolar -->
 <script>
-  window.addEventListener('scroll', function () {
+  window.addEventListener('scroll', function() {
     const nav = document.querySelector('.navbar');
     nav.classList.toggle('scrolled', window.scrollY > 50);
   });
