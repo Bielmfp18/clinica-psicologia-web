@@ -1,4 +1,6 @@
 <?php
+include "conn/conexao.php"; // Inclui o arquivo de conexão com o banco de dados
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $nome = $_POST['nome']; // Captura o nome do psicólogo
     $email = (filter_var($_POST['email'])); // Usa filter_var para validar o email
@@ -6,10 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $CRP =  password_hash(trim($_POST['CRP']), PASSWORD_DEFAULT);
     $ativo = 1; // Define o status ativo do psicólogo
 
-
     try {
         // Prepara a consulta SQL para inserir os dados de cadastro do psicólogo
-        $sql = "CALL ps_psicologo_insert(:psnome, :psemail, :pssenha, psCRP, psativo)";
+        $sql = "CALL ps_psicologo_insert(:psnome, :psemail, :pssenha, :psCRP, :psativo)";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam("psnome", $nome);
         $stmt->bindParam("psemail", $email);
@@ -29,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     window.location.href='../ClinicaPsicologia-WEB/cadastro.php';
                   </script>";
         }
-        //Registra o erro e o mostra ao usuário.
     } catch (PDOException $e) {
         echo "Erro ao realizar o cadastro: " . $e->getMessage();
     }
@@ -43,115 +43,119 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Link arquivos Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
-   <!-- Link arquivo JS personalizado -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>Cadastro</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            font-family: 'HammersmithOne-Regular', sans-serif;
+        }
+
+        main.container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .breadcrumb {
+            max-width: 800px;
+            width: 100%;
+            min-height: 400px;
+            border-radius: 8px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 
-<br><br>
-
-<body>
+<body class="fundofixo">
     <main class="container">
-        <div class="row">
-            <div class="col-12 col-sm-6 offset-sm-3 col-md-4 offset-md-4">
-                <h2 class="text-info mb-4">
-                    <a href="index.php" style="text-decoration: none;">
-                        <button class="btn btn-info" type="button">
-                            <!-- Atualizado para bootstrap bi bi- -->
-                            <span class="bi bi-chevron-left" aria-hidden="true"></span>
-                        </button>
-                    <!-- Título da página -->
-                    </a>
-                    Cadastrar Usuários
-                </h2>
-                <div class="card">
-                    <div class="card-body boder-0 shadow">
-                        <form action="cadastro.php" method="POST" name="form_insere_alunos" id="form_insere_alunos">
-                            <!-- Campo Nível ID -->
-                            <label for="nivel_id">Nível do Usuário</label>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                            
-                                    <span class="" aria-hidden="true"></span>
-                                </span>
-                               
-                                <select name="nivel_id" id="nivel_id" class="form-control" required>
-                                    <option value="1">Administrador</option>
-                                    <option value="2">Gerente</option>
-                                    <option value="3">Atendente</option>
-                                    <option value="4">Personal Trainer</option>
-                                    <option value="5">Web</option>
-                                    <option value="6">Aluno</option>
-                                </select>
-                            </div>
+        <div class="breadcrumb">
+            <section>
+                <article>
+                    <div class="row">
+                        <div class="thumbnail">
                             <br>
-                            <!-- Fim do campo Nível ID -->
+                            <!-- Card com imagem de fundo -->
+                            <div class="card border-0 shadow" style="width: 800px; height: 600px; background: url('image/Renovada.png') center/cover no-repeat;">
+                                <div class="card-body d-flex flex-column align-items-center justify-content-center">
 
-                            <!-- Campo Nome do Aluno  -->
-                            <div class="mb-3">
-                                <label for="nome" class="form-label">Nome do Usuário:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <!-- Atualizado para bootstrap bi bi- -->
-                                        <span class="bi bi-person text-info" aria-hidden="true"></span>
-                                    </span>
-                                    <input type="text" name="nome" id="nome" autofocus maxlength="100" placeholder="Digite o nome do aluno." class="form-control" required autocomplete="off">
+                                    <div class="titulos">
+                                        <!-- Formulário para cadastrar novo psicólogo -->
+                                        <form action="cadastro.php" method="POST" enctype="multipart/form-data">
+
+                                            <!-- Nome -->
+                                            <label for="nome" style="color: #DBA632;">Nome:</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><i class="fa-solid fa-user text-dark"></i></span>
+                                                <input type="text" name="nome" id="nome" class="form-control" required placeholder="Digite seu nome.">
+                                            </div>
+
+                                            <!-- Email -->
+                                            <label for="email" style="color: #DBA632;">Email:</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><i class="fa-solid fa-envelope text-dark"></i></span>
+                                                <input type="email" name="email" id="email" class="form-control" required placeholder="Digite seu email.">
+                                            </div>
+
+                                            <!-- Senha -->
+                                            <label for="senha" style="color: #DBA632;">Senha:</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><i class="fa-solid fa-lock text-dark"></i></span>
+                                                <input type="password" name="senha" id="senha" class="form-control" required placeholder="Digite sua senha.">
+                                            </div>
+
+                                            <!-- CRP -->
+                                            <label for="CRP" style="color: #DBA632;">CRP:</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text"><i class="fa-solid fa-id-card text-dark"></i></span>
+                                                <input type="text" name="CRP" id="CRP" class="form-control" maxlength="9" pattern="\d{2}/\d{1,6}" required placeholder="Digite seu CRP.">
+                                            </div>
+
+                                            <!-- InputMask para CRP -->
+                                            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+                                            <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/jquery.inputmask.min.js"></script>
+                                            <script>
+                                                $(document).ready(function() {
+                                                    $("#CRP").inputmask("99/999999"); // Máscara CRP
+                                                });
+                                            </script>
+
+                                            <!-- Botões -->
+                                            <div style="margin-bottom: 50px;">
+                                                <a href="index.php" style="background-color: rgb(255, 0, 0); color: white;" class="btn btn-dark">Cancelar</a>
+                                                <input type="submit" value="Cadastrar" style="background-color: #DBA632; color: white;" class="btn btn-dark">
+                                            </div>
+
+                                        </form>
+                                    </div>
                                 </div>
+                                <br>
+                                <p class="text-center">
+                                    <small>
+                                        Já possui uma conta? <a href="login.php" style="color: #DBA632;">Faça login</a>
+                                    </small>
+                                </p>
                             </div>
-                            <!-- Fim do campo Nome do Aluno  -->
-
-                            <!-- Campo Email -->
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <!-- Atualizado para bootstrap bi bi- -->
-                                        <span class="bi bi-envelope text-info" aria-hidden="true"></span>
-                                    </span>
-                                    <input type="email" name="email" id="email" placeholder="Digite o email." class="form-control" required autocomplete="on">
-                                </div>
-                            </div>
-                            <!-- Fim do campo Email --> 
-
-                            <!-- Campo Telefone -->
-                            <div class="mb-3">
-                                <label for="telefone" class="form-label">Telefone:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <!-- Atualizado para bootstrap bi bi- -->
-                                        <span class="bi bi-telephone text-info" aria-hidden="true"></span>
-                                    </span>
-                                    <input type="text" name="telefone" id="telefone" maxlength="14" placeholder="Digite o Telefone" class="form-control" required autocomplete="off">
-                                </div>
-                            </div>
-                            <!-- Fim do campo de Telefone -->
-
-                            <!-- Campo Senha -->
-                            <label for="senha" style="color: #001b61;">Senha:</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">
-                                    <!-- Atualizado para bootstrap bi bi- -->
-                                    <span class="bi bi-lock text-info" aria-hidden="true"></span>
-                                </span>
-                                <input type="password" name="senha" id="senha" class="form-control" required autocomplete="off" placeholder="Digite a senha.">
-                            </div>
-
-                            <!-- Campo Ativo/Status preenchido com valor "1" -->
-                            <input type="hidden" name="ativo" id="ativo" value="1">
-                            
-                            <!-- Botão Cadastrar -->
-                            <div class="mb-3">
-                                <input type="submit" value="Cadastrar" name="enviar" id="enviar" class="btn btn-info text-light w-100">
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </article>
+            </section>
         </div>
     </main>
 </body>
+
+<!-- JS Bootstrap -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
 
 </html>

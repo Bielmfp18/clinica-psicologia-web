@@ -8,7 +8,7 @@ session_destroy(); // Destrói a sessão
 //Exibe a mensagem de desconexão após o logout e redireciona a página de login.
 echo "<script>
             alert('Você se desconectou da sua conta!');
-            window.location.href='../ClinicaPsicologia-WEB/login.php';
+            window.location.href='index.php';
       </script>";
 exit();
 ?>
