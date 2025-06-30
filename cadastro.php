@@ -22,12 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $stmt->closeCursor();
             echo "<script>
                     alert('Cadastrado realizado com sucesso!');
-                    window.location.href='../ClinicaPsicologia-WEB/perfil_ps.php';
+                    window.location.href='index.php?login=abrir';
                   </script>";
         } else {
             echo "<script>
                     alert('Erro ao tentar realizar o cadastro.');
-                    window.location.href='../ClinicaPsicologia-WEB/cadastro.php';
+                    window.location.href='cadastro.php';
                   </script>";
         }
     } catch (PDOException $e) {

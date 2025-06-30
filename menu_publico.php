@@ -1,55 +1,80 @@
 <!-- menu público -->
 
 <?php
+
 ///////////////////////////////// LOGIN DO PSICÓLOGO /////////////////////////////////////////
 
 // Inicia a sessão e inclui o arquivo de conexão com o banco de dados
 include "conn/conexao.php";
-///Para o login receber o cookie de acesso e não ficar revisitando a página de login.
-session_name('Mente_Renovada');
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+  session_name('Mente_Renovada');
+  session_start();
+}
 
 // Verifica se o formulário foi enviado
 
 if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
 
-    // Variáveis que recebem o valor do formulário
-    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL); // Usa filter_var para validar o email
-    $senha = (trim($_POST['senha']));
-    $CRP = (trim($_POST['CRP']));
+  // Variáveis que recebem o valor do formulário
+  $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL); // Usa filter_var para validar o email
+  $senha = (trim($_POST['senha']));
+  $CRP = (trim($_POST['CRP']));
 
-    // Prepara a consulta SQL para verificar o usuário de entrada do psicólogo
-    $sql = "SELECT * FROM psicologo WHERE email = :email LIMIT 1"; // O LIMIT 1 garante que apenas um registro seja retornado
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam("email", $email);
-    $stmt->execute();
+  // Prepara a consulta SQL para verificar o usuário de entrada do psicólogo
+  $sql = "SELECT * FROM psicologo WHERE email = :email LIMIT 1"; // O LIMIT 1 garante que apenas um registro seja retornado
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam("email", $email);
+  $stmt->execute();
 
-    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+  $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($resultado && password_verify($senha, $resultado['senha']) && password_verify($CRP, $resultado['CRP'])) {
-        // Login autorizado
-        $_SESSION['login_admin'] = $email;
-        $_SESSION['nome_de_sessao'] = session_name();
+  if ($resultado && password_verify($senha, $resultado['senha']) && password_verify($CRP, $resultado['CRP'])) {
+    // Login autorizado
+    $_SESSION['login_admin'] = $email;
+    $_SESSION['nome_de_sessao'] = session_name();
 
-        echo "<script>
+    echo "<script>
             alert('Seja bem-vindo $email!');
             window.location.href = 'index.php';
         </script>";
-    } else {
-        // Dados inválidos
-        echo "<script>
+  } else {
+    // Dados inválidos
+    echo "<script>
             alert('Email, senha ou CRP inválidos. Por favor, tente novamente');
             window.location.href = 'index.php';
         </script>";
-    }
+  }
 
-    $conn = null; // Fecha a conexão com o banco
+  $conn = null; // Fecha a conexão com o banco
 }
-?>
 
+//////////////////////////////// IMAGEM DE PERFIL /////////////////////////////////////////
+
+// Se o psicólogo está logado, busca a foto de perfil (mesma lógica de perfil_ps.php)
+if (isset($_SESSION['login_admin'])) {
+    $email = $_SESSION['login_admin'];
+
+    $stmt = $conn->prepare("
+      SELECT foto_perfil
+      FROM psicologo
+      WHERE email = :email
+      LIMIT 1
+    ");
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $diretorio = 'image/';        // mesma pasta usada em perfil_ps.php
+    $arquivo   = $row['foto_perfil'] ?? '';
+    $fotoPerfilPath = (!empty($arquivo) && file_exists($diretorio . $arquivo))
+                      ? $diretorio . $arquivo
+                      : $diretorio . 'default.png';
+}
+
+?>
 <style>
-  html,
-  body {
+  html, body {
     margin: 0;
     padding: 0;
   }
@@ -64,51 +89,77 @@ if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
     left: 0;
     width: 100%;
     height: 90px;
-    padding: 0.5rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 0 2rem;
+    z-index: 1000;
+  }
+
+  .navbar-right {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    justify-content: flex-end;
+    padding-left: 2rem; /* espaçamento à esquerda do ícone */
   }
+  .navbar-left,
 
-  .navbar.scrolled {
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  }
-
-  .navbar-brand img {
-    height: 80px;
-    width: auto;
+/* Logo animação */
+  .navbar-left a img {
+    height: 70px;
     object-fit: contain;
-    margin-right: 20px;
     transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
   }
 
-  .navbar-brand img:hover {
+  .navbar-left a img:hover {
     transform: scale(1.1);
     filter: drop-shadow(0 0 10px #DBA632);
   }
 
-  .navbar-nav {
+  /* Animação da imagem de Perfil */
+.perfil-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.perfil-img:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
+}
+
+
+  .navbar-center {
     display: flex;
-    gap: 2rem;
-    align-items: center;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    justify-content: center;
   }
 
-  .nav-link {
+  .navbar-center ul {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .navbar-center .nav-link {
     font-weight: bold;
     color: #333 !important;
-    text-decoration: none !important;
+    text-decoration: none;
     transition: color 0.3s;
   }
 
-  .nav-link:hover {
+  .navbar-center .nav-link:hover {
     color: #DBA632 !important;
+  }
+
+  .nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .login-text {
@@ -128,220 +179,68 @@ if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
     transform: scale(1.05);
   }
 
-  .nav-text{
-    font-size: 15px;
-    background-color:white;
-    color:black;
-    padding: 0.6rem 1.2rem;
-    border-radius: 160px;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
-    text-decoration: none !important;
-    margin-left: 10px;
+  .navbar-right img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
   }
 
-  .nav-text:hover{
-    background-color: white;
-     color: red;
-    transform: scale(1.05);
-  }
-
-  /* NOVO BLOCO - para alinhar ícones e campos em qualquer tamanho de tela */
-  .input-group {
-    align-items: center;
-  }
-
-  .input-group .input-group-text {
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-    border-right: 0;
-  }
-
-  .input-group .form-control {
-    height: 45px;
-    font-size: 0.95rem;
-  }
-
-  /* MOBILE */
-  @media (max-width: 575.98px) {
-    .modal-dialog {
-      margin: 1rem auto;
-    }
-
-    .modal-content {
-      min-height: auto !important;
-    }
-
-    .modal-body {
-      padding: 1.5rem 1rem !important;
-    }
-
-    .modal-body .btn {
-      width: 100%;
-      font-size: 1rem;
-    }
-
-    .modal-body .d-flex.justify-content-between {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.75rem;
-    }
-
-    /* Espaçamento entre botões */
-    .modal-body .btn {
-      min-width: 120px;
-      padding: 0.35rem 0.8rem;
-      font-size: 0.9rem;
-    }
-
-    /* Aproximar botões cancelar e cadastrar/entrar */
-    .modal-body .d-flex.justify-content-between {
-      gap: 0.75rem;
-    }
-  }
-
-  /* TABLET e MOBILE menu */
-  @media (max-width: 991.98px) {
-    .navbar-collapse {
-      background-color: #fff;
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .navbar {
+      grid-template-columns: 1fr auto 1fr;
+      flex-wrap: wrap;
+      height: auto;
       padding: 1rem;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .navbar-nav {
+    .navbar-center ul {
       flex-direction: column;
       gap: 1rem;
     }
 
-    .navbar-nav .nav-link {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-    }
-
-    .login-text {
-      margin-top: 0.5rem;
-      justify-content: center;
-    }
-
-    .navbar-toggler {
-      margin-left: auto;
-    }
-
     .nav-buttons {
       flex-direction: column;
-      justify-content: center;
-      width: 100%;
-      margin-top: 1rem;
     }
-
-    .nav-buttons .nav-link {
-      padding: 0.5rem 0;
-      width: 100%;
-      text-align: center;
-    }
-
-    .nav-buttons .login-text {
-      justify-content: center;
-      width: 100%;
-    }
-  }
-
-  .modal-body form {
-    margin: 0 auto;
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .modal-body label {
-    text-align: left;
-    width: 100%;
-    margin-bottom: 0.2rem;
-    margin-top: 0.8rem;
-  }
-
-  .input-group {
-    width: 100%;
   }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white">
-  <div class="container-fluid d-flex justify-content-between align-items-center px-4">
-
-    <!-- Logo (esquerda) -->
-    <a href="index.php" class="navbar-brand">
-      <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logotipo" />
+<nav class="navbar">
+  <!-- LOGO -->
+  <div class="navbar-left">
+    <a href="index.php">
+      <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo" />
     </a>
+  </div>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <!-- MENU CENTRAL -->
+  <div class="navbar-center">
+    <ul>
+      <li><a class="nav-link" href="index.php">Início</a></li>
+      <li><a class="nav-link" href="sessao.php">Sessões</a></li>
+      <li><a class="nav-link" href="paciente.php">Pacientes</a></li>
+    </ul>
+  </div>
 
-
-    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
-      <!-- Links principais (centro) -->
-      <div class="d-flex flex-grow-1 justify-content-center">
-        <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
-          <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
-          <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
-        </ul>
+  <!-- LOGIN ou FOTO -->
+  <div class="navbar-right">
+    <?php if (!isset($_SESSION['login_admin'])): ?>
+      <div class="nav-buttons">
+        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalRegistro">Registre-se</a>
+        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
+          <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
+        </a>
       </div>
-
-      <!-- Os botões aparecem quando não há um login realizado -->
-      <?php if (!isset($_SESSION['login_admin'])) {
-        // Exibe o login armazenado (único) na sessão 
-      ?>
-        <!-- Botões (direita) -->
-        <div class="nav-buttons d-flex align-items-center gap-3 flex-shrink-0">
-          <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalRegistro">Registre-se</a>
-          <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
-            <span class="login-text">
-              <i class="bi bi-person-fill perfil-icon"></i> Entrar
-            </span>
-          </a>
-        </div>
-      <?php } ?>
-
-      <li class="nav-buttons d-flex align-items-center gap-3 flex-shrink-0">
-
-      <!-- Email do psicólogo no navbar -->
-        <?php //ocorre se o usuario estiver logado
-        if (isset($_SESSION['login_admin'])) { ?>
-          <a href="index.php">
-            <button type="button" class="btn text-light" style="cursor: default; background-color: #DBA632; border-radius: 160px; padding: 0.6rem 1.2rem;">
-              <?php echo ($_SESSION['login_admin']); ?>!
-            </button>
-          </a>
-        <?php } ?>
-      </li>
-      <!-- Botão logout -->
-        <!-- Caso a super global SESSION receber o login_admin do usuário ele exibirá o logout para a tela do usuário -->
-            <?php if (isset($_SESSION['login_admin'])): ?>
-                <a class="nav-text bi bi-box-arrow-right" href="logout.php">
-                  Logout
-                </a>
-            <?php endif; ?>
-    </div>
+    <?php else: ?>
+      <a href="perfil_ps.php" title="Meu Perfil">
+        <img src="<?php echo htmlspecialchars($fotoPerfilPath); ?>" alt="Foto de Perfil" class = "perfil-img" />
+      </a>
+    <?php endif; ?>
+  </div>
 </nav>
-</div>
-<!-- Script: escurecer navbar ao rolar -->
-<script>
-  window.addEventListener('scroll', function() {
-    const nav = document.querySelector('.navbar');
-    nav.classList.toggle('scrolled', window.scrollY > 50);
-  });
-</script>
+
+
 
 <!-- Modal de Login -->
 <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="modalLoginLabel" aria-hidden="true">
@@ -471,4 +370,15 @@ if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
     const modal = new bootstrap.Modal(document.getElementById('modalLogin'));
     modal.show();
   }
+</script>
+
+<!-- Função JS para redirecionar o usuário da página de cadastro para o modal de login  -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === 'abrir') {
+      const loginModal = new bootstrap.Modal(document.getElementById('modalLogin'));
+      loginModal.show();
+    }
+  });
 </script>

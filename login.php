@@ -1,47 +1,50 @@
 <?php
 // Inicia a sessão e inclui o arquivo de conexão com o banco de dados
 include "conn/conexao.php";
+
 ///Para o login receber o cookie de acesso e não ficar revisitando a página de login.
 session_name('Mente_Renovada');
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Verifica se o formulário foi enviado
-
 if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
 
     // Variáveis que recebem o valor do formulário
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL); // Usa filter_var para validar o email
-    $senha = (trim($_POST['senha']));
-    $CRP = (trim($_POST['CRP']));
+    $senha = trim($_POST['senha']);
+    $CRP = trim($_POST['CRP']);
 
     // Prepara a consulta SQL para verificar o usuário de entrada do psicólogo
     $sql = "SELECT * FROM psicologo WHERE email = :email LIMIT 1"; // O LIMIT 1 garante que apenas um registro seja retornado
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam("email", $email);
+    $stmt->bindParam(":email", $email);
     $stmt->execute();
 
     $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($resultado && password_verify($senha, $resultado['senha']) && password_verify($CRP, $resultado['CRP'])) {
         // Login autorizado
-        $_SESSION['login_admin'] = $email;
+        $_SESSION['login_admin'] = $resultado['email']; // agora é usado no perfil
         $_SESSION['nome_de_sessao'] = session_name();
 
         echo "<script>
             alert('Seja bem-vindo $email!');
-            window.location.href = '../ClinicaPsicologia-WEB/index.php';
+            window.location.href = 'index.php';
         </script>";
     } else {
         // Dados inválidos
         echo "<script>
             alert('Email, senha ou CRP inválidos. Por favor, tente novamente');
-            window.location.href = '../ClinicaPsicologia-WEB/login.php';
+            window.location.href = 'index.php?login=abrir';
         </script>";
     }
 
     $conn = null; // Fecha a conexão com o banco
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -164,12 +167,12 @@ if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
                                     </small>
                                 </p>
                             </div>
-                            </div>
                         </div>
-                    </article>
-                </section>
-            </main>
-        </body>
+                    </div>
+                </article>
+            </section>
+    </main>
+</body>
 <!-- Link arquivos Bootstrap js -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
