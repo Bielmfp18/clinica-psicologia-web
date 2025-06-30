@@ -53,28 +53,29 @@ if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
 
 // Se o psicólogo está logado, busca a foto de perfil (mesma lógica de perfil_ps.php)
 if (isset($_SESSION['login_admin'])) {
-    $email = $_SESSION['login_admin'];
+  $email = $_SESSION['login_admin'];
 
-    $stmt = $conn->prepare("
+  $stmt = $conn->prepare("
       SELECT foto_perfil
       FROM psicologo
       WHERE email = :email
       LIMIT 1
     ");
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  $stmt->bindParam(':email', $email);
+  $stmt->execute();
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $diretorio = 'image/';        // mesma pasta usada em perfil_ps.php
-    $arquivo   = $row['foto_perfil'] ?? '';
-    $fotoPerfilPath = (!empty($arquivo) && file_exists($diretorio . $arquivo))
-                      ? $diretorio . $arquivo
-                      : $diretorio . 'default.png';
+  $diretorio = 'image/';        // mesma pasta usada em perfil_ps.php
+  $arquivo   = $row['foto_perfil'] ?? '';
+  $fotoPerfilPath = (!empty($arquivo) && file_exists($diretorio . $arquivo))
+    ? $diretorio . $arquivo
+    : $diretorio . 'default.png';
 }
 
 ?>
 <style>
-  html, body {
+  html,
+  body {
     margin: 0;
     padding: 0;
   }
@@ -102,13 +103,15 @@ if (isset($_SESSION['login_admin'])) {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding-left: 2rem; /* espaçamento à esquerda do ícone */
+    padding-left: 2rem;
+    /* espaçamento à esquerda do ícone */
   }
+
   .navbar-left,
 
-/* Logo animação */
+  /* Logo animação */
   .navbar-left a img {
-    height: 70px;
+    height: 80px;
     object-fit: contain;
     transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
   }
@@ -119,17 +122,17 @@ if (isset($_SESSION['login_admin'])) {
   }
 
   /* Animação da imagem de Perfil */
-.perfil-img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+  .perfil-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
 
-.perfil-img:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
-}
+  .perfil-img:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
+  }
 
 
   .navbar-center {
@@ -162,27 +165,54 @@ if (isset($_SESSION['login_admin'])) {
     gap: 1rem;
   }
 
+  /* Animação do botão de login */
   .login-text {
     font-size: 15px;
-    background-color: #DBA632;
-    color: white;
+    background-color: white;
+    color: #DBA632;
     padding: 0.6rem 1.2rem;
     border-radius: 160px;
+    border: 2px solid #DBA632;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    font-weight: bold;
   }
 
   .login-text:hover {
-    color: #b7861e;
+    background-color: #DBA632;
+    color: white;
     transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
+  }
+
+  /* Animação do botão registre-se */
+  .registrar-text {
+    font-size: 15px;
+    background-color:  #DBA632;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 160px;
+    border: 2px solid #DBA632;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.3s ease-in-out;
+    font-weight: bold;
+  }
+
+  .registrar-text:hover {
+    background-color: white;
+    color: #DBA632;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
   }
 
   .navbar-right img {
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     object-fit: cover;
   }
 
@@ -204,6 +234,60 @@ if (isset($_SESSION['login_admin'])) {
       flex-direction: column;
     }
   }
+
+  /* Centraliza o conteúdo do modal */
+.modal-content {
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(5px);
+}
+
+/* Imagem da logo */
+.modal-body img {
+  max-height: 80px;
+  margin-bottom: 1rem;
+}
+
+/* Estiliza os campos de input */
+.modal-body .form-control {
+  border-radius: 30px;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* Estiliza os ícones */
+.input-group-text {
+  border-radius: 30px 0 0 30px;
+  background-color: #DBA632;
+  color: white;
+  border: none;
+}
+
+/* Botão de entrar */
+.modal-body button.btn {
+  border-radius: 30px;
+  font-weight: bold;
+  padding: 0.6rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.modal-body button.btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+/* Corrige espaçamento entre campos */
+.modal-body .input-group {
+  margin-bottom: 1.2rem;
+}
+
+/* Link de cadastro */
+.modal-body p a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
 </style>
 
 <nav class="navbar">
@@ -227,19 +311,20 @@ if (isset($_SESSION['login_admin'])) {
   <div class="navbar-right">
     <?php if (!isset($_SESSION['login_admin'])): ?>
       <div class="nav-buttons">
-        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalRegistro">Registre-se</a>
+        <a class="nav-link registrar-btn" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+          <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
+        </a>
         <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
           <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
         </a>
       </div>
     <?php else: ?>
       <a href="perfil_ps.php" title="Meu Perfil">
-        <img src="<?php echo htmlspecialchars($fotoPerfilPath); ?>" alt="Foto de Perfil" class = "perfil-img" />
+        <img src="<?php echo htmlspecialchars($fotoPerfilPath); ?>" alt="Foto de Perfil" class="perfil-img" />
       </a>
     <?php endif; ?>
   </div>
 </nav>
-
 
 
 <!-- Modal de Login -->
@@ -305,7 +390,7 @@ if (isset($_SESSION['login_admin'])) {
 <!-- Modal de Registro -->
 <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0" style="background: url('image/tela_cadastro.png') center/cover no-repeat;">
+    <div class="modal-content border-0" style="background: url('image/Cadastro.png') center/cover no-repeat;">
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Registro -->

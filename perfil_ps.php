@@ -66,7 +66,14 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                 <h3><?= htmlspecialchars($usuario['nome']) ?></h3>
                 <p>Email: <?= htmlspecialchars($usuario['email']) ?></p>
 
-                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">Editar Perfil</button>
+                <button class="btn mt-3" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" style="
+                        background-color: #DBA632;  
+                        color: white; 
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                        transition: all 0.3s ease;
+                        " onmouseover="this.style.filter='brightness(90%)'"
+                        onmouseout="this.style.filter='brightness(100%)'">Editar Perfil</button>
+
                 <a href="logout.php" class="btn btn-outline-danger mt-3">Sair da Conta</a>
             </div>
         </div>
@@ -101,7 +108,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn" style="
                         background-color: #DBA632;  
                         color: white; 
