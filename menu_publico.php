@@ -81,50 +81,46 @@ if (isset($_SESSION['login_admin'])) {
   }
 
   body {
-    padding-top: 90px;
+    padding-top: 120px;
   }
+
 
   .navbar {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
-    height: 90px;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
     background-color: rgba(255, 255, 255, 0.95);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    padding: 0 2rem;
     z-index: 1000;
+    padding: 0.5rem 1rem;
   }
 
-  .navbar-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-left: 2rem;
-    /* espaçamento à esquerda do ícone */
-  }
 
-  .navbar-left,
-
-  /* Logo animação */
-  .navbar-left a img {
-    height: 80px;
+  /* LOGO DA MENTE RENOVADA */
+  .navbar-brand img {
+    height: 90px;
     object-fit: contain;
     transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
   }
 
-  .navbar-left a img:hover {
+  .navbar-brand img:hover {
     transform: scale(1.1);
     filter: drop-shadow(0 0 10px #DBA632);
   }
 
-  /* Animação da imagem de Perfil */
+  .nav-link {
+    font-weight: bold;
+    color: #333 !important;
+    transition: color 0.3s;
+  }
+
+  .nav-link:hover {
+    color: #DBA632 !important;
+  }
+
   .perfil-img {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
@@ -134,72 +130,22 @@ if (isset($_SESSION['login_admin'])) {
     box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
   }
 
-
-  .navbar-center {
-    display: flex;
-    justify-content: center;
-  }
-
-  .navbar-center ul {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .navbar-center .nav-link {
-    font-weight: bold;
-    color: #333 !important;
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-
-  .navbar-center .nav-link:hover {
-    color: #DBA632 !important;
-  }
-
-  .nav-buttons {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  /* Animação do botão de login */
+  .registrar-text,
   .login-text {
     font-size: 15px;
-    background-color: white;
-    color: #DBA632;
     padding: 0.6rem 1.2rem;
     border-radius: 160px;
     border: 2px solid #DBA632;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    transition: all 0.3s ease-in-out;
     font-weight: bold;
+    transition: all 0.3s ease-in-out;
   }
 
-  .login-text:hover {
+  .registrar-text {
     background-color: #DBA632;
     color: white;
-    transform: scale(1.05);
-    box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
-  }
-
-  /* Animação do botão registre-se */
-  .registrar-text {
-    font-size: 15px;
-    background-color:  #DBA632;
-    color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 160px;
-    border: 2px solid #DBA632;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: all 0.3s ease-in-out;
-    font-weight: bold;
   }
 
   .registrar-text:hover {
@@ -209,132 +155,120 @@ if (isset($_SESSION['login_admin'])) {
     box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
   }
 
-  .navbar-right img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
+  .login-text {
+    background-color: white;
+    color: #DBA632;
   }
 
-  /* Responsivo */
-  @media (max-width: 768px) {
-    .navbar {
-      grid-template-columns: 1fr auto 1fr;
-      flex-wrap: wrap;
-      height: auto;
-      padding: 1rem;
+  .login-text:hover {
+    background-color: #DBA632;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
+  }
+
+  /* RESPONSIVIDADE */
+  @media (max-width: 991.98px) {
+    .navbar-collapse {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: white;
+      padding: 2rem 1rem;
+      border-radius: 12px;
+      margin-top: 1rem;
     }
 
-    .navbar-center ul {
-      flex-direction: column;
+    .navbar-brand img {
+      height: 40px;
+      margin-left: 1rem;
+    }
+
+    .navbar-nav {
+      flex-direction: column !important;
+      align-items: center;
       gap: 1rem;
     }
 
     .nav-buttons {
-      flex-direction: column;
+      flex-direction: column !important;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+      width: 100%;
+      align-items: center;
+    }
+
+    .registrar-text,
+    .login-text {
+      width: 100%;
+      justify-content: center;
+      font-size: 14px;
+      padding: 0.6rem 1rem;
+    }
+
+    .navbar-toggler {
+      margin-right: 1rem;
+    }
+
+    .nav-link {
+      font-size: 16px;
     }
   }
-
-  /* Centraliza o conteúdo do modal */
-.modal-content {
-  border-radius: 20px;
-  padding: 2rem;
-  backdrop-filter: blur(5px);
-}
-
-/* Imagem da logo */
-.modal-body img {
-  max-height: 80px;
-  margin-bottom: 1rem;
-}
-
-/* Estiliza os campos de input */
-.modal-body .form-control {
-  border-radius: 30px;
-  padding: 0.8rem 1.2rem;
-  font-size: 1rem;
-  background-color: rgba(255, 255, 255, 0.85);
-}
-
-/* Estiliza os ícones */
-.input-group-text {
-  border-radius: 30px 0 0 30px;
-  background-color: #DBA632;
-  color: white;
-  border: none;
-}
-
-/* Botão de entrar */
-.modal-body button.btn {
-  border-radius: 30px;
-  font-weight: bold;
-  padding: 0.6rem 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.modal-body button.btn:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
-/* Corrige espaçamento entre campos */
-.modal-body .input-group {
-  margin-bottom: 1.2rem;
-}
-
-/* Link de cadastro */
-.modal-body p a {
-  text-decoration: none;
-  font-weight: bold;
-}
-
 </style>
 
-<nav class="navbar">
-  <!-- LOGO -->
-  <div class="navbar-left">
-    <a href="index.php">
-      <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo" />
-    </a>
-  </div>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white mx-auto">
+  <div class="container-fluid">
 
-  <!-- MENU CENTRAL -->
-  <div class="navbar-center">
-    <ul>
-      <li><a class="nav-link" href="index.php">Início</a></li>
-      <li><a class="nav-link" href="sessao.php">Sessões</a></li>
-      <li><a class="nav-link" href="paciente.php">Pacientes</a></li>
-    </ul>
-  </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="d-flex align-items-center justify-content-between w-100">
 
-  <!-- LOGIN ou FOTO -->
-  <div class="navbar-right">
-    <?php if (!isset($_SESSION['login_admin'])): ?>
-      <div class="nav-buttons">
-        <a class="nav-link registrar-btn" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-          <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
-        </a>
-        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
-          <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
-        </a>
+        <!-- LOGO-->
+        <div style="width: 120px;">
+          <a class="navbar-brand" href="index.php">
+            <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo">
+          </a>
+        </div>
+
+        <!-- CONTEÚDO NAVBAR -->
+        <ul class="navbar-nav flex-row justify-content-center align-items-center flex-grow-1 gap-4">
+          <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
+          <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
+          <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
+        </ul>
+
+        <!-- FOTO DE PERFIL -->
+        <div style="width: 180px;" class="d-flex justify-content-end align-items-center gap-3">
+          <?php if (!isset($_SESSION['login_admin'])): ?>
+            <a class="nav-link registrar-btn" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+              <span class="registrar-text" style="width: 150px;"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
+            </a>
+            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
+              <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
+            </a>
+          <?php else: ?>
+            <a href="perfil_ps.php" title="Meu Perfil">
+              <img src="<?= htmlspecialchars($fotoPerfilPath); ?>" alt="Foto de Perfil" class="perfil-img" />
+            </a>
+          <?php endif; ?>
+        </div>
+
       </div>
-    <?php else: ?>
-      <a href="perfil_ps.php" title="Meu Perfil">
-        <img src="<?php echo htmlspecialchars($fotoPerfilPath); ?>" alt="Foto de Perfil" class="perfil-img" />
-      </a>
-    <?php endif; ?>
-  </div>
+    </div>
+
 </nav>
+
+
 
 
 <!-- Modal de Login -->
 <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="modalLoginLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0" style="background: url('image/tela_login.png') center/cover no-repeat;">
+    <div class="modal-content border-0" style="background: url('image/tela_login4.png') center/cover no-repeat;">
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Login -->
-        <form action="menu_publico.php" method="POST" enctype="multipart/form-data" style="width: 100%; max-width: 400px;">
+        <form action="menu_publico.php" method="POST" enctype="multipart/form-data" style="width: 100%; max-width: 400px; margin-top: 70px;">
 
           <!-- Email -->
           <label for="email" class="form-label" style="color: #DBA632;">Email:</label>
@@ -390,11 +324,11 @@ if (isset($_SESSION['login_admin'])) {
 <!-- Modal de Registro -->
 <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0" style="background: url('image/Cadastro.png') center/cover no-repeat;">
+    <div class="modal-content border-0" style="background: url('image/Cadastro4.png') center/cover no-repeat;">
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Registro -->
-        <form action="cadastro.php" method="POST" enctype="multipart/form-data" style="width: 100%; max-width: 400px;">
+        <form action="cadastro.php" method="POST" enctype="multipart/form-data" style="width: 100%; max-width: 400px; margin-top: 60px;">
 
           <!-- Nome -->
           <label for="nome" class="form-label" style="color: #DBA632;">Nome:</label>
