@@ -74,6 +74,7 @@ if (isset($_SESSION['login_admin'])) {
 
 ?>
 <style>
+/* HTML */
   html,
   body {
     margin: 0;
@@ -84,7 +85,7 @@ if (isset($_SESSION['login_admin'])) {
     padding-top: 120px;
   }
 
-
+/* NAVBAR GERAL */
   .navbar {
     position: fixed;
     top: 0;
@@ -108,6 +109,7 @@ if (isset($_SESSION['login_admin'])) {
     filter: drop-shadow(0 0 10px #DBA632);
   }
 
+  /* LINKS DA NAVBAR */
   .nav-link {
     font-weight: bold;
     color: #333 !important;
@@ -118,6 +120,7 @@ if (isset($_SESSION['login_admin'])) {
     color: #DBA632 !important;
   }
 
+  /* IMAGEM DO PERFIL */
   .perfil-img {
     width: 50px;
     height: 50px;
@@ -130,6 +133,7 @@ if (isset($_SESSION['login_admin'])) {
     box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
   }
 
+  /* REGISTRAR-SE */
   .registrar-text,
   .login-text {
     font-size: 15px;
@@ -155,6 +159,7 @@ if (isset($_SESSION['login_admin'])) {
     box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
   }
 
+  /* LOGIN */
   .login-text {
     background-color: white;
     color: #DBA632;
