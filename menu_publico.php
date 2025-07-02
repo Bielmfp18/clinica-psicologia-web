@@ -216,32 +216,37 @@ if (isset($_SESSION['login_admin'])) {
   }
 </style>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white mx-auto">
+<!-- NAVBAR FUNCIONAL -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
   <div class="container-fluid">
 
+    <!-- LOGO -->
+    <a class="navbar-brand" href="index.php" style="width: 120px;">
+      <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo" style="height: 90px; object-fit: contain;">
+    </a>
+
+    <!-- TOGGLER -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- CONTEÚDO DA NAVBAR -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div class="d-flex align-items-center justify-content-between w-100">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center w-100 gap-3">
 
-        <!-- LOGO-->
-        <div style="width: 120px;">
-          <a class="navbar-brand" href="index.php">
-            <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo">
-          </a>
-        </div>
-
-        <!-- CONTEÚDO NAVBAR -->
-        <ul class="navbar-nav flex-row justify-content-center align-items-center flex-grow-1 gap-4">
+        <!-- LINKS -->
+        <ul class="navbar-nav flex-lg-row flex-column align-items-center justify-content-center flex-grow-1 gap-3">
           <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
           <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
           <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
         </ul>
 
-        <!-- FOTO DE PERFIL -->
-        <div style="width: 180px;" class="d-flex justify-content-end align-items-center gap-3">
+        <!-- PERFIL OU BOTÕES -->
+        <div class="d-flex align-items-center justify-content-center gap-2">
           <?php if (!isset($_SESSION['login_admin'])): ?>
             <a class="nav-link registrar-btn" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-              <span class="registrar-text" style="width: 150px;"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
+              <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
             </a>
             <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
               <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
@@ -256,7 +261,9 @@ if (isset($_SESSION['login_admin'])) {
       </div>
     </div>
 
+  </div>
 </nav>
+
 
 
 
@@ -268,7 +275,7 @@ if (isset($_SESSION['login_admin'])) {
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Login -->
-        <form action="menu_publico.php" method="POST" enctype="multipart/form-data" style="width: 100%; max-width: 400px; margin-top: 70px;">
+        <form action="menu_publico.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 70px;">
 
           <!-- Email -->
           <label for="email" class="form-label" style="color: #DBA632;">Email:</label>
@@ -328,7 +335,7 @@ if (isset($_SESSION['login_admin'])) {
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Registro -->
-        <form action="cadastro.php" method="POST" enctype="multipart/form-data" style="width: 100%; max-width: 400px; margin-top: 60px;">
+        <form action="cadastro.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 60px;">
 
           <!-- Nome -->
           <label for="nome" class="form-label" style="color: #DBA632;">Nome:</label>

@@ -1,5 +1,4 @@
 
-
 <!-- index.php -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -20,22 +19,7 @@
   <!-- jQuery  -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <style>
-    .fundofixo {
-      background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
-      background-size: cover;
-      background-attachment: fixed;
-      background-position: center;
-    }
-
-    main.container {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 30px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-  </style>
+ <?php include 'css/fundo-fixo.css'?>
 </head>
 
 <body class="fundofixo">
