@@ -8,9 +8,13 @@ error_reporting(E_ALL);
 session_name('Mente_Renovada');
 session_start();
 
-// Verifica se tem psicólogo logado
+// Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    die("Faça login antes de cadastrar pacientes.");
+    die("<script> 
+        alert('Faça login antes de cadastrar pacientes.');
+        window.location.href = 'index.php';
+        </script>");
+    exit;
 }
 
 include 'conn/conexao.php'; // Conexão com o banco de dados
@@ -36,12 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Dados do paciente
-    $nome             = $_POST['nome'];
-    $email            = $_POST['email'];
-    $telefone         = $_POST['telefone'];
-    $data_nasc        = $_POST['data_nasc'];
-    $observacoes      = $_POST['observacoes'] ?? '';
-    $status           = 1; // Ativo por padrão
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'];
+    $data_nasc = $_POST['data_nasc'];
+    $observacoes = $_POST['observacoes'] ?? '';
+    $status = 1; // Ativo por padrão
 
     try {
         // Chama procedure para inserir paciente
@@ -56,12 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 )";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':pspsicologo_id', $psicologo_id);
-        $stmt->bindParam(':psnome',          $nome);
-        $stmt->bindParam(':psemail',         $email);
-        $stmt->bindParam(':pstelefone',      $telefone);
-        $stmt->bindParam(':psdata_nasc',     $data_nasc);
-        $stmt->bindParam(':psobservacoes',   $observacoes);
-        $stmt->bindParam(':psativo',         $status);
+        $stmt->bindParam(':psnome', $nome);
+        $stmt->bindParam(':psemail', $email);
+        $stmt->bindParam(':pstelefone', $telefone);
+        $stmt->bindParam(':psdata_nasc', $data_nasc);
+        $stmt->bindParam(':psobservacoes', $observacoes);
+        $stmt->bindParam(':psativo', $status);
 
         if ($stmt->execute()) {
             echo "<script>

@@ -5,11 +5,14 @@
 session_name('Mente_Renovada');
 session_start();
 
-// Verifica se tem psicólogo logado
+// Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-  die("Faça login antes de acessar pacientes.");
+    die("<script> 
+        alert('Faça login antes de acessar os pacientes.');
+        window.location.href = 'index.php';
+        </script>");
+    exit;
 }
-
 //Arquivo de conexão com o banco de dados
 include 'conn/conexao.php';
 
