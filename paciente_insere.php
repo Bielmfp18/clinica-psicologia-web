@@ -58,6 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   :psobservacoes,
                   :psativo
                 )";
+
+        // Prepara a consulta
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':pspsicologo_id', $psicologo_id);
         $stmt->bindParam(':psnome', $nome);

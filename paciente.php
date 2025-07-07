@@ -113,6 +113,7 @@ $numrow = $lista->rowCount();
         <tr>
           <th class="hidden">ID</th>
           <th class="text-center">NOME</th>
+              <th class="text-center">EMAIL</th>
           <th class="text-center">TELEFONE</th>
           <th class="text-center">DATAS</th>
           <th class="text-center">OBSERVAÇÕES</th>
@@ -129,6 +130,9 @@ $numrow = $lista->rowCount();
 
               <!-- Nome -->
               <td class="text-center"><?php echo $row['nome'] ?? "Sem nome"; ?></td>
+
+              <!-- Email -->
+              <td class="text-center"><?php echo $row['email'] ?? "Sem email"; ?></td>
 
               <!-- Telefone -->
               <td class="text-center"><?php echo $row['telefone'] ?? "Sem telefone"; ?></td>
@@ -190,21 +194,25 @@ $numrow = $lista->rowCount();
     </table>
   </div>
 
-  <!-- Modal de Observações -->
-  <div class="modal fade" id="obsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Observações de <span id="obsNome"></span></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body" id="obsTexto"></div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-danger btn-anim" data-bs-dismiss="modal">Fechar</button>
-        </div>
+<!-- Modal de Observações -->
+<div class="modal fade" id="obsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Cabeçalho em fundo amarelo, texto escuro -->
+      <div class="modal-header bg-info text-dark">
+        <h5 class="modal-title">Observações de <span id="obsNome"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <!-- Corpo em fundo claro -->
+      <div class="modal-body bg-light" id="obsTexto"></div>
+      <!-- Rodapé com botão vermelho de fechar -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-info btn-anim" data-bs-dismiss="modal">Fechar</button>
       </div>
     </div>
   </div>
+</div>
+
 
   <!-- Modal de Desativar (Bootstrap 5) -->
   <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true">
