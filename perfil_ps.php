@@ -1,3 +1,5 @@
+<!-- PERFIL_PS -->
+
 <?php
 // Ativa exibição de erros para facilitar depuração
 ini_set('display_errors', 1);

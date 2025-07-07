@@ -1,52 +1,56 @@
 <!-- menu público -->
 
 <?php
-
 ///////////////////////////////// LOGIN DO PSICÓLOGO /////////////////////////////////////////
 
 // Inicia a sessão e inclui o arquivo de conexão com o banco de dados
 include "conn/conexao.php";
 
 if (session_status() === PHP_SESSION_NONE) {
-  session_name('Mente_Renovada');
-  session_start();
+    session_name('Mente_Renovada');
+    session_start();
 }
 
 // Verifica se o formulário foi enviado
-
 if (isset($_POST['email']) || isset($_POST['senha']) || isset($_POST['CRP'])) {
 
-  // Variáveis que recebem o valor do formulário
-  $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL); // Usa filter_var para validar o email
-  $senha = (trim($_POST['senha']));
-  $CRP = (trim($_POST['CRP']));
+    // Variáveis que recebem o valor do formulário
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL); // Usa filter_var para validar o email
+    $senha = trim($_POST['senha']);
+    $CRP   = trim($_POST['CRP']);
 
-  // Prepara a consulta SQL para verificar o usuário de entrada do psicólogo
-  $sql = "SELECT * FROM psicologo WHERE email = :email LIMIT 1"; // O LIMIT 1 garante que apenas um registro seja retornado
-  $stmt = $conn->prepare($sql);
-  $stmt->bindParam("email", $email);
-  $stmt->execute();
+    // Prepara a consulta SQL para verificar o usuário de entrada do psicólogo
+    $sql = "SELECT * FROM psicologo WHERE email = :email LIMIT 1"; // O LIMIT 1 garante que apenas um registro seja retornado
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(":email", $email);
+    $stmt->execute();
 
-  $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if ($resultado && password_verify($senha, $resultado['senha']) && password_verify($CRP, $resultado['CRP'])) {
-    // Login autorizado
-    $_SESSION['login_admin'] = $email;
-    $_SESSION['nome_de_sessao'] = session_name();
+    if ($resultado 
+        && password_verify($senha, $resultado['senha']) 
+        && password_verify($CRP,   $resultado['CRP'])
+    ) {
+        // Login autorizado
+        $_SESSION['login_admin']   = $email;
+        $_SESSION['nome_de_sessao']= session_name();
+        $_SESSION['psicologo_id']  = (int)$resultado['id'];    // ← grava o ID do psicólogo
 
-    echo "<script>
-            alert('Seja bem-vindo $email!');
-            window.location.href = 'index.php';
-        </script>";
-  } else {
-    // Dados inválidos
-    echo "<script>
-            alert('Email, senha ou CRP inválidos. Por favor, tente novamente');
-            window.location.href = 'index.php';
-        </script>";
-  }
+        echo "<script>
+                alert('Seja bem‑vindo $email!');
+                window.location.href = 'index.php';
+              </script>";
+        exit;
+    } else {
+        // Dados inválidos
+        echo "<script>
+                alert('Email, senha ou CRP inválidos. Por favor, tente novamente');
+                window.location.href = 'index.php';
+              </script>";
+        exit;
+    }
 
-  $conn = null; // Fecha a conexão com o banco
+    $conn = null; // Fecha a conexão com o banco
 }
 
 //////////////////////////////// IMAGEM DE PERFIL /////////////////////////////////////////
@@ -74,7 +78,7 @@ if (isset($_SESSION['login_admin'])) {
 
 ?>
 <style>
-/* HTML */
+  /* HTML */
   html,
   body {
     margin: 0;
@@ -85,7 +89,7 @@ if (isset($_SESSION['login_admin'])) {
     padding-top: 120px;
   }
 
-/* NAVBAR GERAL */
+  /* NAVBAR GERAL */
   .navbar {
     position: fixed;
     top: 0;
@@ -95,7 +99,6 @@ if (isset($_SESSION['login_admin'])) {
     z-index: 1000;
     padding: 0.5rem 1rem;
   }
-
 
   /* LOGO DA MENTE RENOVADA */
   .navbar-brand img {
@@ -126,6 +129,7 @@ if (isset($_SESSION['login_admin'])) {
     height: 50px;
     border-radius: 50%;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+
   }
 
   .perfil-img:hover {
@@ -185,14 +189,15 @@ if (isset($_SESSION['login_admin'])) {
     }
 
     .navbar-brand img {
-      height: 40px;
-      margin-left: 1rem;
+      height: 90px;
+      /* mantém mesmo tamanho */
     }
 
     .navbar-nav {
       flex-direction: column !important;
       align-items: center;
       gap: 1rem;
+      margin: 1rem 0;
     }
 
     .nav-buttons {
@@ -223,51 +228,56 @@ if (isset($_SESSION['login_admin'])) {
 
 <!-- NAVBAR FUNCIONAL -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
-  <div class="container-fluid">
+  <div class="container-fluid d-flex align-items-center">
 
     <!-- LOGO -->
-    <a class="navbar-brand" href="index.php" style="width: 120px;">
-      <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo" style="height: 90px; object-fit: contain;">
+    <a class="navbar-brand" href="index.php">
+      <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo">
     </a>
 
     <!-- TOGGLER -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler ms-auto" type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <!-- CONTEÚDO DA NAVBAR -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center w-100 gap-3">
+    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
 
-        <!-- LINKS -->
-        <ul class="navbar-nav flex-lg-row flex-column align-items-center justify-content-center flex-grow-1 gap-3">
-          <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
-          <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
-          <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
-        </ul>
+      <!-- LINKS CENTRALIZADOS -->
+      <ul class="navbar-nav flex-lg-row flex-column align-items-center
+                 mb-2 mb-lg-0 gap-3 mx-auto">
+        <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
+        <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
+        <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
+      </ul>
 
-        <!-- PERFIL OU BOTÕES -->
-        <div class="d-flex align-items-center justify-content-center gap-2">
-          <?php if (!isset($_SESSION['login_admin'])): ?>
-            <a class="nav-link registrar-btn" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-              <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
-            </a>
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
-              <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
-            </a>
-          <?php else: ?>
-            <a href="perfil_ps.php" title="Meu Perfil">
-              <img src="<?= htmlspecialchars($fotoPerfilPath); ?>" alt="Foto de Perfil" class="perfil-img" />
-            </a>
-          <?php endif; ?>
-        </div>
-
+      <!-- PERFIL OU BOTÕES -->
+      <div class="d-flex align-items-center justify-content-end nav-buttons" style="min-width: 250px;">
+        <?php if (!isset($_SESSION['login_admin'])): ?>
+          <a class="nav-link registrar-btn me-2" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+            <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
+          </a>
+          <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
+            <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
+          </a>
+        <?php else: ?>
+          <a href="perfil_ps.php" title="Meu Perfil">
+            <img src="<?= htmlspecialchars($fotoPerfilPath); ?>" alt="Foto de Perfil" class="perfil-img" />
+          </a>
+        <?php endif; ?>
       </div>
-    </div>
 
+
+
+    </div>
   </div>
 </nav>
+
 
 
 
