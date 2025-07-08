@@ -53,9 +53,27 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 </head>
+
+<!-- Estilos personalizados -->
+<style>
+    .btn-anim {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-anim:hover {
+        transform: scale(1.07);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        /* Sombra maior no hover */
+    }
+
+    .btn-anim:active {
+        transform: scale(0.97);
+        /* Efeito de clique */
+    }
+</style>
 
 <?php include 'menu_publico.php'; ?>
 
@@ -74,7 +92,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
                         transition: all 0.3s ease;
                         " onmouseover="this.style.filter='brightness(90%)'"
-                        onmouseout="this.style.filter='brightness(100%)'">Editar Perfil</button>
+                    onmouseout="this.style.filter='brightness(100%)'">Editar Perfil</button>
 
                 <a href="logout.php" class="btn btn-outline-danger mt-3">Sair da Conta</a>
             </div>
@@ -86,38 +104,47 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="POST" action="editar_perfil.php" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">Editar Perfil</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    <div class="modal-header text-white justify-content-center" style="background-color: #DBA632;">
+                        <h5 class="modal-title" id="modalLabel">EDITAR PERFIL</h5>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id']) ?>">
                         <div class="mb-3">
                             <label class="form-label">Nome</label>
-                            <input type="text" class="form-control" name="nome" value="<?= htmlspecialchars($usuario['nome']) ?>" required>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #DBA632"><i class="bi bi-person-fill text-white"></i></span>
+                                <input type="text" class="form-control" name="nome" value="<?= htmlspecialchars($usuario['nome']) ?>" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #DBA632"><i class="bi bi-envelope-fill text-white"></i></span>
+                                <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Senha</label>
-                            <input type="password" class="form-control" name="senha" placeholder="Digite sua nova senha">
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #DBA632"><i class="bi bi-lock-fill text-white"></i></span>
+                                <input type="password" class="form-control" name="senha" placeholder="Digite sua nova senha">
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Foto de Perfil</label>
-                            <input type="file" class="form-control" name="foto_perfil" accept="image/*">
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: #DBA632"><i class="bi bi-camera-fill text-white"></i></span>
+                                <input type="file" class="form-control" name="foto_perfil" accept="image/*">
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn" style="
-                        background-color: #DBA632;  
-                        color: white; 
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-                        transition: all 0.3s ease;
-                        " onmouseover="this.style.filter='brightness(90%)'"
-                        onmouseout="this.style.filter='brightness(100%)'">
+                    <div class="modal-footer bg">
+                        <button type="button" class="btn btn-danger btn-anim" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+
+                        <button type="submit" class="btn btn-anim"
+                            style="background-color: #DBA632; color: white;">
                             Salvar
                         </button>
                     </div>
@@ -130,4 +157,3 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
 </body>
 
 </html>
-

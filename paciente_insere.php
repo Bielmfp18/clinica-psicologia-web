@@ -211,6 +211,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </main>
+
+    <script>
+        // Faz o textarea ajustar a altura ao conteúdo dem observações do paciente.
+        document.addEventListener('DOMContentLoaded', function() {
+            const ta = document.getElementById('observacoes');
+            function ajustaAltura() {
+                ta.style.height = 'auto';
+                ta.style.height = ta.scrollHeight + 'px';
+            }
+            ajustaAltura();
+            ta.addEventListener('input', ajustaAltura);
+        });
+    </script>
 </body>
 
 </html>

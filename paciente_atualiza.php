@@ -23,9 +23,6 @@ if (!isset($_SESSION['psicologo_id'])) {
 // Arquivo de conexão com o banco de dados
 include 'conn/conexao.php';
 
-// Recupera o ID do psicólogo da sessão
-$id_psicologo = (int) $_SESSION['psicologo_id'];
-
 // Verifica se o ID do paciente foi informado via GET
 if (!isset($_GET['id'])) {
     echo "ID do paciente não informado.";
@@ -58,18 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $telefone = $_POST['telefone'];
     $data_nasc = $_POST['data_nasc'];
     $observacoes = $_POST['observacoes'] ?? '';
-    // Reativa o paciente ao atualizar
-    $ativo = isset($_POST['ativo']) ? (int) $_POST['ativo'] : 1;
 
     try {
-        // Verifica o valor atual do campo ativo antes da atualização
-        $sql_check = "SELECT ativo FROM paciente WHERE id = :id";
-        $stmt_check = $conn->prepare($sql_check);
-        $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt_check->execute();
-        $paciente_antigo = $stmt_check->fetch(PDO::FETCH_ASSOC);
-        $era_inativo = ($paciente_antigo && $paciente_antigo['ativo'] == 0);
-
         // Chama a procedure para atualizar o paciente
         $sql = "CALL ps_paciente_update(
                     :psid,
@@ -86,31 +73,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
         $stmt->bindParam(':psnome', $nome, PDO::PARAM_STR);
         $stmt->bindParam(':psemail', $email, PDO::PARAM_STR);
-        $stmt->bindParam(':pstelefone',$telefone, PDO::PARAM_STR);
+        $stmt->bindParam(':pstelefone', $telefone, PDO::PARAM_STR);
         $stmt->bindParam(':psdata_nasc', $data_nasc, PDO::PARAM_STR);
         $stmt->bindParam(':psobservacoes', $observacoes, PDO::PARAM_STR);
-        $stmt->bindParam(':psativo', $ativo, PDO::PARAM_INT);
+        // mantém o mesmo status sem reativação automática
+        $stmt->bindParam(':psativo', $paciente['ativo'], PDO::PARAM_INT);
 
         if ($stmt->execute()) {
-            if ($era_inativo && $ativo == 1) {
-                echo "<script>
-                        alert('Paciente atualizado e reativado com sucesso!');
-                        window.location.href = 'paciente.php';
-                      </script>";
-            } else {
-                echo "<script>
+            echo "<script>
                         alert('Paciente atualizado com sucesso!');
                         window.location.href = 'paciente.php';
                       </script>";
-            }
             exit;
         } else {
             echo "<script>alert('Erro ao atualizar o paciente.');</script>";
         }
     } catch (PDOException $e) {
         echo "<script>
-                alert('Erro ao atualizar o paciente: " 
-                      . addslashes($e->getMessage()) . "');
+                alert('Erro ao atualizar o paciente: " . addslashes($e->getMessage()) . "');
               </script>";
     }
 }
@@ -183,8 +163,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <form method="POST" id="form_insere_paciente">
                     <!-- Campo oculto para enviar o ID do paciente -->
                     <input type="hidden" name="id" value="<?php echo $paciente['id']; ?>">
-                    <!-- Campo oculto para reativar status -->
-                    <input type="hidden" name="ativo" value="1">
 
                     <!-- Nome -->
                     <div class="mb-4">
@@ -248,9 +226,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <textarea name="observacoes" 
                                       id="observacoes" 
                                       class="form-control" 
-                                      placeholder="Observações sobre o paciente"><?php 
-                                echo htmlspecialchars($paciente['observacoes']); 
-                            ?></textarea>
+                                      placeholder="Observações sobre o paciente"><?php echo htmlspecialchars($paciente['observacoes']); ?></textarea>
                         </div>
                     </div>
 

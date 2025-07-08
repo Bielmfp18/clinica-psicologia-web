@@ -7,11 +7,11 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    die("<script> 
+  die("<script> 
         alert('Faça login antes de acessar os pacientes.');
         window.location.href = 'index.php';
         </script>");
-    exit;
+  exit;
 }
 //Arquivo de conexão com o banco de dados
 include 'conn/conexao.php';
@@ -35,13 +35,10 @@ $lista->execute($params);
 
 // Número de linhas retornadas
 $numrow = $lista->rowCount();
-
-// Retorna apenas a primeira linha (associativa)
-// Essa linha pode ser removida se não for usada fora do loop
-//$row = $lista->fetch(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,13 +53,13 @@ $numrow = $lista->rowCount();
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Caminho para a pasta CSS -->
   <?php include 'css/fundo-fixo.css' ?>
+
+  <!-- Estilos personalizados -->
   <style>
     /* Esconde os itens de classe "hidden"*/
     .hidden { 
-
       display: none;
-
-     }
+    }
 
     /* Animação de crescimento */
     .btn-anim {
@@ -70,10 +67,12 @@ $numrow = $lista->rowCount();
     }
     .btn-anim:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
   </style>
+
 </head>
+
 <body class="fundofixo">
 
   <!-- MENU NAVBAR -->
@@ -113,7 +112,7 @@ $numrow = $lista->rowCount();
         <tr>
           <th class="hidden">ID</th>
           <th class="text-center">NOME</th>
-              <th class="text-center">EMAIL</th>
+          <th class="text-center">EMAIL</th>
           <th class="text-center">TELEFONE</th>
           <th class="text-center">DATAS</th>
           <th class="text-center">OBSERVAÇÕES</th>
@@ -135,18 +134,18 @@ $numrow = $lista->rowCount();
               <td class="text-center"><?php echo $row['email'] ?? "Sem email"; ?></td>
 
               <!-- Telefone -->
-              <td class="text-center"><?php echo $row['telefone'] ?? "Sem telefone"; ?></td>
+              <td class="text-center">(55) <?php echo $row['telefone'] ?? "Sem telefone"; ?></td>
 
               <!-- Datas (Nascimento / Cadastro) -->
               <td class="text-center">
-                <?php 
-                  $data_nasc = isset($row['data_nasc'])
-                    ? date('d/m/Y', strtotime($row['data_nasc']))
-                    : "—";
-                  $data_cad = isset($row['data_criacao'])
-                    ? date('d/m/Y', strtotime($row['data_criacao']))
-                    : "—";
-                  echo "Nascimento: {$data_nasc}<br>Cadastro: {$data_cad}";
+                <?php
+                $data_nasc = isset($row['data_nasc'])
+                  ? date('d/m/Y', strtotime($row['data_nasc']))
+                  : "—";
+                $data_cad = isset($row['data_criacao'])
+                  ? date('d/m/Y', strtotime($row['data_criacao']))
+                  : "—";
+                echo "Nascimento: {$data_nasc}<br>Cadastro: {$data_cad}";
                 ?>
               </td>
 
@@ -174,19 +173,31 @@ $numrow = $lista->rowCount();
                 </a>
               </td>
 
-              <!-- Botão DESATIVAR -->
+              <!-- Botão DESATIVAR / ATIVAR -->
               <td class="btn-block-vertical">
-                <button data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
-                        data-id="<?php echo $row['id']; ?>"
-                        class="delete btn btn-danger btn-anim">
-                  <i class="bi bi-x-lg"></i> DESATIVAR
-                </button>
+                <?php if ($row['ativo'] == 1): ?>
+                  <!-- Paciente ATIVO → mostra o botão “Desativar” -->
+                  <button
+                    data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
+                    data-id="<?php echo $row['id']; ?>"
+                    class="delete btn btn-danger btn-anim">
+                    <i class="bi bi-x-lg"></i> DESATIVAR
+                  </button>
+                <?php else: ?>
+                  <!-- Paciente INATIVO → mostra o botão “Ativar” -->
+                  <button
+                    data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
+                    data-id="<?php echo $row['id']; ?>"
+                    class="activate btn btn-success btn-anim">
+                    <i class="bi bi-check-lg"></i> ATIVAR
+                  </button>
+                <?php endif; ?>
               </td>
             </tr>
           <?php endwhile; ?>
         <?php else: ?>
           <tr>
-            <td colspan="7" class="text-center">Nenhum paciente encontrado.</td>
+            <td colspan="8" class="text-center">Nenhum paciente encontrado.</td>
           </tr>
         <?php endif; ?>
         <!-- FIM DOS DADOS DO PACIENTE -->
@@ -194,40 +205,43 @@ $numrow = $lista->rowCount();
     </table>
   </div>
 
-<!-- Modal de Observações -->
-<div class="modal fade" id="obsModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <!-- Cabeçalho em fundo amarelo, texto escuro -->
-      <div class="modal-header bg-info text-dark">
-        <h5 class="modal-title">Observações de <span id="obsNome"></span></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <!-- Corpo em fundo claro -->
-      <div class="modal-body bg-light" id="obsTexto"></div>
-      <!-- Rodapé com botão vermelho de fechar -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-info btn-anim" data-bs-dismiss="modal">Fechar</button>
+  <!-- Modal de Observações -->
+  <div class="modal fade" id="obsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Cabeçalho em fundo amarelo, texto escuro -->
+        <div class="modal-header bg-info text-dark">
+          <h5 class="modal-title">Observações de <span id="obsNome"></span></h5>
+        </div>
+        <!-- Corpo em fundo claro -->
+        <div class="modal-body bg-light" id="obsTexto"></div>
+        <!-- Rodapé com botão vermelho de fechar -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-info btn-anim" data-bs-dismiss="modal">
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-
-  <!-- Modal de Desativar (Bootstrap 5) -->
+  <!-- Modal de Desativar/Ativar (Bootstrap 5) -->
   <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title text-danger">ATENÇÃO!</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-header justify-content-center position-relative">
+          <h5 class="modal-title w-100 text-center text-danger">ATENÇÃO!</h5>
         </div>
-        <div class="modal-body">
-          Deseja mesmo DESATIVAR <strong><span class="nome"></span></strong>?
+        <div class="modal-body text-center">
+          Deseja mesmo
+          <span class="action-text fw-bold"></span>
+          <strong><span class="nome"></span></strong>?
         </div>
-        <div class="modal-footer">
-          <a href="#" class="btn btn-danger delete-yes btn-anim">Confirmar</a>
-          <button type="button" class="btn btn-outline-success btn-anim" data-bs-dismiss="modal">Cancelar</button>
+        <div class="modal-footer justify-content-center gap-2">
+          <a href="#" class="btn delete-yes btn-anim"></a>
+          <button type="button" class="btn modal-cancel btn-anim" data-bs-dismiss="modal">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
@@ -246,13 +260,66 @@ $numrow = $lista->rowCount();
     // Modal de desativar
     $('.delete').on('click', function() {
       var nome = $(this).data('nome');
-      var id   = $(this).data('id');
-      $('span.nome').text(nome);
-      $('a.delete-yes').attr('href', 'paciente_desativa.php?id=' + id);
-      var myModal = new bootstrap.Modal(document.getElementById('myModal'));
-      myModal.show();
+      var id = $(this).data('id');
+
+      // Preenche o span com o nome do paciente
+      $('.nome').text(nome);
+
+      // Insere a palavra "DESATIVAR" na cor vermelha
+      $('.action-text')
+        .text('DESATIVAR')
+        .removeClass('text-success')
+        .addClass('text-danger')
+        .addClass('fw-bold');
+
+      // Insere o link para desativar o paciente
+      $('a.delete-yes')
+        .removeClass('btn-success')
+        .addClass('btn-danger')
+        .text('Confirmar Desativação')
+        .attr('href', 'paciente_desativa.php?id=' + id);
+
+      // Botão cancelar verde
+      $('button.modal-cancel')
+        .removeClass('btn-outline-danger')
+        .addClass('btn-outline-success')
+        .text('Cancelar');
+
+      new bootstrap.Modal(document.getElementById('myModal')).show();
+    });
+
+    // Modal de ativar 
+    $('.activate').on('click', function() {
+      var nome = $(this).data('nome');
+      var id = $(this).data('id');
+
+      // Preenche o span com o nome do paciente
+      $('.nome').text(nome);
+
+      // Insere a palavra "ATIVAR" na cor verde
+      $('.action-text')
+        .text('ATIVAR')
+        .removeClass('text-danger')
+        .addClass('text-success')
+        .addClass('fw-bold');
+
+      // Insere o link para ativar o paciente
+      $('a.delete-yes')
+        .removeClass('btn-danger')
+        .addClass('btn-success')
+        .text('Confirmar Ativação')
+        .attr('href', 'paciente_ativa.php?id=' + id);
+
+      // Botão cancelar vermelho
+      $('button.modal-cancel')
+        .removeClass('btn-outline-success')
+        .addClass('btn-outline-danger')
+        .text('Cancelar');
+
+      new bootstrap.Modal(document.getElementById('myModal')).show();
     });
   </script>
 
 </body>
+
 </html>
