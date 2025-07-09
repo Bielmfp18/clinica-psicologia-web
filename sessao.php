@@ -121,7 +121,7 @@ $numrow = $lista->rowCount();
         </select>
         <button type="submit" class="btn text-light btn-anim" style="background-color:#DBA632;">FILTRAR</button>
       </form>
-      <div class="col-12 col-md-6 text-md-end">
+
         <a href="sessao_insere.php" class="btn btn-primary btn-anim">NOVA SESSÃO <i class="bi bi-plus"></i></a>
       </div>
     </div>

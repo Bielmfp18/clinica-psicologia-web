@@ -22,6 +22,11 @@ if (!isset($_SESSION['psicologo_id'])) {
 
 // Arquivo de conexão com o banco de dados
 include 'conn/conexao.php';
+// Inclui a função de histórico (chama sua procedure ps_historico_insert)
+include 'funcao_historico.php';
+
+// Recupera o ID do psicólogo logado
+$psicologoId = (int) $_SESSION['psicologo_id'];
 
 // Verifica se o ID do paciente foi informado via GET
 if (!isset($_GET['id'])) {
@@ -31,8 +36,8 @@ if (!isset($_GET['id'])) {
 // Pega o id para o funcionamento correto do SELECT na tabela paciente
 $id = (int) $_GET['id'];
 
-// Busca os dados do paciente no banco de dados
 try {
+    // Busca os dados do paciente no banco de dados
     $sql = "SELECT * FROM paciente WHERE id = :id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -49,12 +54,12 @@ try {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Dados do paciente enviados pelo formulário
-    $id = (int) $_POST['id'];
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $telefone = $_POST['telefone'];
-    $data_nasc = $_POST['data_nasc'];
-    $observacoes = $_POST['observacoes'] ?? '';
+    $id           = (int) $_POST['id'];
+    $nome         = $_POST['nome'];
+    $email        = $_POST['email'];
+    $telefone     = $_POST['telefone'];
+    $data_nasc    = $_POST['data_nasc'];
+    $observacoes  = $_POST['observacoes'] ?? '';
 
     try {
         // Chama a procedure para atualizar o paciente
@@ -70,16 +75,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Prepara a consulta
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':psnome', $nome, PDO::PARAM_STR);
-        $stmt->bindParam(':psemail', $email, PDO::PARAM_STR);
-        $stmt->bindParam(':pstelefone', $telefone, PDO::PARAM_STR);
-        $stmt->bindParam(':psdata_nasc', $data_nasc, PDO::PARAM_STR);
-        $stmt->bindParam(':psobservacoes', $observacoes, PDO::PARAM_STR);
+        $stmt->bindParam(':psid',           $id,                 PDO::PARAM_INT);
+        $stmt->bindParam(':psnome',         $nome,               PDO::PARAM_STR);
+        $stmt->bindParam(':psemail',        $email,              PDO::PARAM_STR);
+        $stmt->bindParam(':pstelefone',     $telefone,           PDO::PARAM_STR);
+        $stmt->bindParam(':psdata_nasc',    $data_nasc,          PDO::PARAM_STR);
+        $stmt->bindParam(':psobservacoes',  $observacoes,        PDO::PARAM_STR);
         // mantém o mesmo status sem reativação automática
-        $stmt->bindParam(':psativo', $paciente['ativo'], PDO::PARAM_INT);
+        $stmt->bindParam(':psativo',        $paciente['ativo'],  PDO::PARAM_INT);
 
+        // Executa a atualização
         if ($stmt->execute()) {
+            // Limpa cursor para próxima operação
+            $stmt->closeCursor();
+
+            // Registra no histórico de operações
+            registrarHistorico(
+                $conn,
+                $psicologoId,
+                'Atualização', // ação de atualização
+                'Paciente', // entidade afetada
+                "Paciente atualizado: {$nome} " // descrição detalhada
+            );
+
+            // Feedback e redirecionamento
             echo "<script>
                         alert('Paciente atualizado com sucesso!');
                         window.location.href = 'paciente.php';
@@ -244,7 +263,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <!-- Botão -->
                     <div class="d-grid">
                         <button type="submit" class="btn text-white">
-                            <i class="bi bi bi-save-fill me-2 text-white"></i> Atualizar
+                            <i class="bi bi-save-fill me-2 text-white"></i> Atualizar
                         </button>
                     </div>
                 </form>

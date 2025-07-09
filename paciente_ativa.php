@@ -12,7 +12,6 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    // Se não estiver logado, interrompe e redireciona
     die("<script>
             alert('Faça login antes de ativar pacientes.');
             window.location.href = 'index.php';
@@ -21,14 +20,16 @@ if (!isset($_SESSION['psicologo_id'])) {
 
 // Arquivo de conexão com o banco de dados
 include 'conn/conexao.php';
+// Inclui função de histórico
+include 'funcao_historico.php';
 
 // Verifica se o ID do paciente foi informado via GET
 if (!isset($_GET['id'])) {
     die("ID do paciente não informado.");
 }
 
-// Pega o id e garante que seja inteiro
 $id = (int) $_GET['id'];
+$psicologoId = (int) $_SESSION['psicologo_id'];
 
 try {
     // Chama procedure para ativar o paciente
@@ -36,10 +37,25 @@ try {
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
 
-    // Executa a procedure
     if ($stmt->execute()) {
-        // Limpa o cursor para permitir próximas queries
         $stmt->closeCursor();
+
+        // Recupera o nome do paciente pelo ID
+        $stmtNome = $conn->prepare("SELECT nome FROM paciente WHERE id = :id");
+        $stmtNome->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmtNome->execute();
+        $paciente = $stmtNome->fetch(PDO::FETCH_ASSOC);
+        $nomePaciente = $paciente['nome'] ?? "ID {$id}";
+
+        // Registra no histórico com nome
+        registrarHistorico(
+            $conn,
+            $psicologoId,
+            'Ativação',
+            'Paciente',
+            "Paciente ativado: {$nomePaciente}"
+        );
+
         echo "<script>
                 alert('Paciente ativado com sucesso!');
                 window.location.href = 'paciente.php';

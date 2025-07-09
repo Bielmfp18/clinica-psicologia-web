@@ -1,3 +1,5 @@
+<!-- SESSÃO INSERE -->
+
 <?php
 // Exibe erros para depuração
 ini_set('display_errors', 1);
@@ -17,25 +19,28 @@ if (!isset($_SESSION['psicologo_id'])) {
     exit;
 }
 
-include 'conn/conexao.php'; // Conexão com o banco de dados
+// Inclui conexão com o banco e função de histórico
+include 'conn/conexao.php';
+include 'funcao_historico.php';
 
-// Recupera o ID do psicólogo da sessão
-$id_psicologo = (int) $_SESSION['psicologo_id'];
+// Recupera ID do psicólogo da sessão
+$psicologo_id = (int) $_SESSION['psicologo_id'];
 
 // Busca lista de pacientes para o select
 $sql_pacientes = $conn->prepare(
     "SELECT id, nome FROM paciente WHERE psicologo_id = :psid AND ativo = 1 ORDER BY nome"
 );
-$sql_pacientes->bindParam(':psid', $id_psicologo, PDO::PARAM_INT);
+$sql_pacientes->bindParam(':psid', $psicologo_id, PDO::PARAM_INT);
 $sql_pacientes->execute();
 $lista_pacientes = $sql_pacientes->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // Valida IDs do psicólogo e paciente
-    $psicologo_id = isset($_POST['psicologo_id']) ? (int) $_POST['psicologo_id'] : 0;
-    $paciente_id   = isset($_POST['paciente_id'])   ? (int) $_POST['paciente_id']   : 0;
-    if ($psicologo_id !== $id_psicologo) die('ID do psicólogo inválido.');
+    // Vulnerabilidade removida: não é necessário validar o psicólogo pelo POST,
+    // usamos diretamente o ID da sessão atual para maior segurança.
+
+    // Recebe ID do paciente
+    $paciente_id     = isset($_POST['paciente_id'])  ? (int) $_POST['paciente_id']  : 0;
 
     // Dados da sessão
     $data_hora         = $_POST['data_hora_sessao'];
@@ -55,14 +60,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 )";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':pspsicologo_id',   $psicologo_id);
-        $stmt->bindParam(':pspaciente_id',    $paciente_id);
-        $stmt->bindParam(':psanotacoes',      $anotacoes);
-        $stmt->bindParam(':psdata_hora',      $data_hora);
-        $stmt->bindParam(':psdata_atualizacao', $data_atualizacao);
-        $stmt->bindParam(':psstatus',         $status);
+        $stmt->bindParam(':pspsicologo_id',    $psicologo_id,      PDO::PARAM_INT);
+        $stmt->bindParam(':pspaciente_id',     $paciente_id,       PDO::PARAM_INT);
+        $stmt->bindParam(':psanotacoes',       $anotacoes,         PDO::PARAM_STR);
+        $stmt->bindParam(':psdata_hora',       $data_hora,         PDO::PARAM_STR);
+        $stmt->bindParam(':psdata_atualizacao',$data_atualizacao,  PDO::PARAM_STR);
+        $stmt->bindParam(':psstatus',          $status,            PDO::PARAM_INT);
 
         if ($stmt->execute()) {
+            $stmt->closeCursor();
+
+            // Captura nome do paciente para registrar no histórico
+            $nomePaciente = '';
+            foreach ($lista_pacientes as $p) {
+                if ($p['id'] == $paciente_id) {
+                    $nomePaciente = $p['nome'];
+                    break;
+                }
+            }
+
+            // Formata data/hora substituindo 'T' por espaço para descrição limpa
+            $descricaoDataHora = str_replace('T', ' ', $data_hora);
+
+            // Registra no histórico usando o nome do paciente e data formatada
+            registrarHistorico(
+                $conn,
+                $psicologo_id,
+                'Cadastro',
+                'Sessão',
+                "Sessão cadastrada para o paciente {$nomePaciente} em {$descricaoDataHora}"
+            );
+
             echo "<script>
                     alert('Sessão cadastrada com sucesso!');
                     window.location.href = 'sessao.php';
@@ -79,11 +107,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               </script>";
     }
 }
+
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -92,51 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body.fundofixo {
-            background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        .card {
-            background-color: rgba(255, 255, 255, 0.92);
-            border: none;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .form-label {
-            font-weight: 600;
-        }
-
-        .input-group-text {
-            background-color: #DBA632;
-            color: white;
-            border: none;
-        }
-
-        .btn,
-        .btn-voltar {
-            background-color: #DBA632;
-            color: white;
-            border: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .btn:hover,
-        .btn-voltar:hover {
-            background-color: #b38121 !important;
-            transform: scale(1.05);
-        }
-    </style>
 </head>
-
-<body class="fundofixo">
-
+<body>
     <?php include 'menu_publico.php'; ?>
-
     <main class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="col-12 col-sm-10 col-md-6 col-lg-5">
-
             <!-- Cabeçalho com botão e título -->
             <div class="position-relative mb-4">
                 <a href="sessao.php" class="btn btn-voltar position-absolute start-0 top-50 translate-middle-y">
@@ -146,12 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     Adicionar Sessão
                 </h2>
             </div>
-
             <div class="card p-4">
                 <form method="POST" id="form_insere_sessao">
-                    <!-- Campo oculto para enviar o ID do psicólogo -->
-                    <input type="hidden" name="psicologo_id" value="<?php echo $id_psicologo; ?>">
-
+                    <!-- Oculta o ID do psicólogo via sessão, sem precisar do POST -->
                     <!-- Paciente -->
                     <div class="mb-4">
                         <label for="paciente_id" class="form-label">Paciente:</label>
@@ -165,19 +150,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </select>
                         </div>
                     </div>
-
                     <!-- Data e Hora da Sessão -->
                     <div class="mb-4">
                         <label for="data_hora_sessao" class="form-label">Data e Hora:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
                             <input type="datetime-local" name="data_hora_sessao" id="data_hora_sessao"
-                                class="form-control"
-                                value="<?= date('Y-m-d\\TH:i', strtotime($sessao['data_hora_sessao'])) ?>"
-                                min="<?= date('Y-m-d\TH:i') ?>" required>
+                                class="form-control" min="<?= date('Y-m-d\TH:i') ?>" required>
                         </div>
                     </div>
-
                     <!-- Anotações -->
                     <div class="mb-4">
                         <label for="anotacoes" class="form-label">Anotações:</label>
@@ -186,7 +167,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <textarea name="anotacoes" id="anotacoes" class="form-control" placeholder="Anotações pré-sessão"></textarea>
                         </div>
                     </div>
-
                     <!-- Botão -->
                     <div class="d-grid">
                         <button type="submit" class="btn text-white">
@@ -197,32 +177,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ajusta altura do textarea automaticamente
-            const ta = document.getElementById('anotacoes');
-
-            function ajustaAltura() {
-                ta.style.height = 'auto';
-                ta.style.height = ta.scrollHeight + 'px';
-            }
-            ajustaAltura();
-            ta.addEventListener('input', ajustaAltura);
-
-            // Preenche e limita o datetime-local a partir de agora
-            const input = document.getElementById('data_hora_sessao');
-            const now = new Date();
-            const pad = num => num.toString().padStart(2, '0');
-            const hoje = now.getFullYear() + '-' +
-                pad(now.getMonth() + 1) + '-' +
-                pad(now.getDate()) + 'T' +
-                pad(now.getHours()) + ':' +
-                pad(now.getMinutes());
-            input.min = hoje; // fecha seleção passada
-            input.value = hoje; // pré-seleciona agora
-        });
-    </script>
 </body>
-
 </html>

@@ -1,3 +1,5 @@
+<!-- CADASTRAR PACIENTE -->
+
 <?php
 // Exibe erros para depuração
 ini_set('display_errors', 1);
@@ -17,7 +19,8 @@ if (!isset($_SESSION['psicologo_id'])) {
     exit;
 }
 
-include 'conn/conexao.php'; // Conexão com o banco de dados
+include 'conn/conexao.php';        // Conexão com o banco de dados
+include 'funcao_historico.php';    // Inclui a função registrarHistorico
 
 // Recupera o ID do psicólogo da sessão
 $id_psicologo = (int) $_SESSION['psicologo_id'];
@@ -30,11 +33,10 @@ $psicologo = $sql_psicologo->fetch(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // Recupera o ID do psicólogo enviado pelo formulário
+    // Recupera e valida o ID do psicólogo enviado pelo formulário
     $psicologo_id = isset($_POST['psicologo_id'])
         ? (int) $_POST['psicologo_id']
         : 0;
-
     if ($psicologo_id !== $id_psicologo) {
         die("ID do psicólogo inválido.");
     }
@@ -61,15 +63,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Prepara a consulta
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':pspsicologo_id', $psicologo_id);
-        $stmt->bindParam(':psnome', $nome);
-        $stmt->bindParam(':psemail', $email);
-        $stmt->bindParam(':pstelefone', $telefone);
-        $stmt->bindParam(':psdata_nasc', $data_nasc);
-        $stmt->bindParam(':psobservacoes', $observacoes);
-        $stmt->bindParam(':psativo', $status);
+        $stmt->bindParam(':pspsicologo_id', $psicologo_id, PDO::PARAM_INT);
+        $stmt->bindParam(':psnome', $nome, PDO::PARAM_STR);
+        $stmt->bindParam(':psemail', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':pstelefone', $telefone, PDO::PARAM_STR);
+        $stmt->bindParam(':psdata_nasc', $data_nasc, PDO::PARAM_STR);
+        $stmt->bindParam(':psobservacoes', $observacoes, PDO::PARAM_STR);
+        $stmt->bindParam(':psativo', $status, PDO::PARAM_INT);
 
+        // Executa a procedure
         if ($stmt->execute()) {
+            // Limpa cursor para próximas queries
+            $stmt->closeCursor();
+
+            // Registra no histórico de operações
+            registrarHistorico(
+                $conn,
+                $psicologo_id,
+                'Cadastro',                    // ação de criação
+                'Paciente',                  // entidade afetada
+                "Paciente cadastrado: {$nome}" // descrição detalhada
+            );
+
             echo "<script>
                     alert('Paciente adicionado com sucesso!');
                     window.location.href = 'paciente.php';
@@ -188,7 +203,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label for="data_nasc" class="form-label">Data de Nascimento:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-event-fill"></i></span>
-                            <input type="date" name="data_nasc" id="data_nasc" class="form-control" required value="2000-01-01">
+                            <input type="date" name="data_nasc" id="data_nasc"
+
+                                class="form-control" required value="2000-01-01">
                         </div>
                     </div>
 
@@ -213,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </main>
 
     <script>
-        // Faz o textarea ajustar a altura ao conteúdo dem observações do paciente.
+        // Faz o textarea ajustar a altura ao conteúdo de observações do paciente.
         document.addEventListener('DOMContentLoaded', function() {
             const ta = document.getElementById('observacoes');
             function ajustaAltura() {

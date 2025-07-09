@@ -12,21 +12,24 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    // Se não estiver logado, interrompe e redireciona
     die("<script>
             alert('Faça login antes de desativar pacientes.');
             window.location.href = 'index.php';
          </script>");
 }
 
-//Arquivo de conexão com o banco de dados
+// Conexão com o banco
 include 'conn/conexao.php';
+// Função de histórico
+include 'funcao_historico.php';
+
+// ID do psicólogo logado
+$psicologoId = (int) $_SESSION['psicologo_id'];
 
 // Verifica se o ID do paciente foi informado via GET
 if (!isset($_GET['id'])) {
     die("ID do paciente não informado.");
 }
-// Pega o id e garante que seja inteiro
 $id = (int) $_GET['id'];
 
 try {
@@ -35,10 +38,25 @@ try {
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
 
-    // Executa a procedure
     if ($stmt->execute()) {
-        // Limpa o cursor para permitir próximas queries
         $stmt->closeCursor();
+
+        // Recupera o nome do paciente antes de registrar no histórico
+        $stmtNome = $conn->prepare("SELECT nome FROM paciente WHERE id = :id");
+        $stmtNome->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmtNome->execute();
+        $paciente = $stmtNome->fetch(PDO::FETCH_ASSOC);
+        $nomePaciente = $paciente['nome'] ?? "ID {$id}";
+
+        // Registra com nome no histórico
+        registrarHistorico(
+            $conn,
+            $psicologoId,
+            'Desativação',
+            'Paciente',
+            "Paciente desativado: {$nomePaciente}"
+        );
+
         echo "<script>
                 alert('Paciente desativado com sucesso!');
                 window.location.href = 'paciente.php';
