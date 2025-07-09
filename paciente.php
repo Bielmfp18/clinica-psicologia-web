@@ -11,31 +11,62 @@ if (!isset($_SESSION['psicologo_id'])) {
         alert('Faça login antes de acessar os pacientes.');
         window.location.href = 'index.php';
         </script>");
-  exit;
 }
-//Arquivo de conexão com o banco de dados
+
+// Pega o ID do psicólogo logado
+$id_psico = (int) $_SESSION['psicologo_id'];
+
+// Arquivo de conexão com o banco de dados
 include 'conn/conexao.php';
 
-// Verifica se o usuário está ativo no banco de dados para filtro.
+// Captura o filtro de status ("" / "1" / "0")
 $ativo = isset($_GET['ativo']) ? trim($_GET['ativo']) : '';
 
-// Faz a consulta SQL para selecionar todos os pacientes ativos
-// Corrigido para funcionar corretamente no filtro
-if ($ativo === '0' || $ativo === '1') {
-  $sql = "SELECT * FROM paciente WHERE ativo = :ativo";
-  $params = [':ativo' => $ativo];
+// Monta a consulta de acordo com o filtro e o psicólogo logado
+if ($ativo === '1') {
+  // --- SOMENTE OS MEUS PACIENTES ATIVOS ---
+  $sql = "
+    SELECT *
+      FROM paciente
+     WHERE ativo = 1
+       AND psicologo_id = :me
+  ";
+  $params = [
+    ':me' => $id_psico
+  ];
+
+} elseif ($ativo === '0') {
+  // --- SOMENTE OS MEUS PACIENTES INATIVOS ---
+  $sql = "
+    SELECT *
+      FROM paciente
+     WHERE ativo = 0
+       AND psicologo_id = :me
+  ";
+  $params = [
+    ':me' => $id_psico
+  ];
+
 } else {
-  $sql = "SELECT * FROM paciente";
-  $params = [];
+  // --- SEM FILTRO: MOSTRA TODOS OS MEUS PACIENTES (ativos e inativos) ---
+  $sql = "
+    SELECT *
+      FROM paciente
+     WHERE psicologo_id = :me
+  ";
+  $params = [
+    ':me' => $id_psico
+  ];
 }
 
 // Prepara e executa a consulta
-$lista = $conn->prepare($sql);
+$lista   = $conn->prepare($sql);
 $lista->execute($params);
 
 // Número de linhas retornadas
 $numrow = $lista->rowCount();
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -80,7 +111,7 @@ $numrow = $lista->rowCount();
 
   <!-- TÍTULO E DESCRIÇÃO-->
   <main class="container my-4">
-    <h1 class="text-center text-white py-2" style="background-color:#DBA632; border-radius:10px;">Pacientes</h1>
+    <h1 class="text-center text-white py-2" style="background-color:#DBA632; border-radius:10px;">PACIENTES</h1>
     <p class="text-center fw-bold">Esta é a página de administração dos seus pacientes.</p>
   </main>
 
@@ -117,7 +148,7 @@ $numrow = $lista->rowCount();
           <th class="text-center">DATAS</th>
           <th class="text-center">OBSERVAÇÕES</th>
           <th class="text-center">EDITAR</th>
-          <th class="text-center">DESATIVAR</th>
+          <th class="text-center">AÇÃO</th>
         </tr>
       </thead>
       <tbody>
@@ -169,7 +200,7 @@ $numrow = $lista->rowCount();
               <td class="btn-block-vertical">
                 <a href="paciente_atualiza.php?id=<?php echo $row['id']; ?>"
                    class="btn btn-warning btn-anim">
-                  <i class="bi bi-pencil-square"></i> EDITAR
+                  <i class="bi bi-pencil-square"></i> 
                 </a>
               </td>
 
@@ -181,7 +212,7 @@ $numrow = $lista->rowCount();
                     data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
                     data-id="<?php echo $row['id']; ?>"
                     class="delete btn btn-danger btn-anim">
-                    <i class="bi bi-x-lg"></i> DESATIVAR
+                    <i class="bi bi-x-lg"></i> 
                   </button>
                 <?php else: ?>
                   <!-- Paciente INATIVO → mostra o botão “Ativar” -->
@@ -189,7 +220,7 @@ $numrow = $lista->rowCount();
                     data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
                     data-id="<?php echo $row['id']; ?>"
                     class="activate btn btn-success btn-anim">
-                    <i class="bi bi-check-lg"></i> ATIVAR
+                    <i class="bi bi-check-lg"></i> 
                   </button>
                 <?php endif; ?>
               </td>
@@ -209,13 +240,13 @@ $numrow = $lista->rowCount();
   <div class="modal fade" id="obsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <!-- Cabeçalho em fundo amarelo, texto escuro -->
+        <!-- Cabeçalho em fundo azul, texto escuro -->
         <div class="modal-header bg-info text-dark">
-          <h5 class="modal-title">Observações de <span id="obsNome"></span></h5>
+          <h5 class="modal-title">Observações de <strong><span id="obsNome"></span></strong></h5>
         </div>
         <!-- Corpo em fundo claro -->
         <div class="modal-body bg-light" id="obsTexto"></div>
-        <!-- Rodapé com botão vermelho de fechar -->
+        <!-- Rodapé com botão azul de fechar -->
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-info btn-anim" data-bs-dismiss="modal">
             Fechar

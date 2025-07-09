@@ -98,6 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -111,27 +112,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
             background-size: cover;
         }
+
         .card {
             background-color: rgba(255, 255, 255, 0.92);
             border: none;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
         }
-        .form-label { font-weight: 600; }
+
+        .form-label {
+            font-weight: 600;
+        }
+
         .input-group-text {
             background-color: #DBA632;
             color: white;
             border: none;
         }
-        .btn, .btn-voltar {
+
+        .btn,
+        .btn-voltar {
             background-color: #DBA632;
             color: white;
             border: none;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        .btn:hover, .btn-voltar:hover {
+
+        .btn:hover,
+        .btn-voltar:hover {
             background-color: #b38121 !important;
             transform: scale(1.05);
         }
+
         /* faz o textarea crescer conforme o texto */
         textarea#observacoes {
             resize: vertical;
@@ -155,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <i class="bi bi-arrow-left text-white"></i>
                 </a>
                 <h2 class="text-white fw-bold p-2 rounded text-center" style="background-color: #DBA632;">
-                   Atualizar Paciente
+                    Atualizar Paciente
                 </h2>
             </div>
 
@@ -169,12 +180,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="nome" class="form-label">Nome:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" 
-                                   name="nome" id="nome" 
-                                   class="form-control" 
-                                   required maxlength="100" 
-                                   placeholder="Digite o nome do paciente" 
-                                   value="<?php echo htmlspecialchars($paciente['nome']); ?>">
+                            <input type="text"
+                                name="nome" id="nome"
+                                class="form-control"
+                                required maxlength="100"
+                                placeholder="Digite o nome do paciente"
+                                value="<?php echo htmlspecialchars($paciente['nome']); ?>">
                         </div>
                     </div>
 
@@ -183,11 +194,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="email" class="form-label">Email:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                            <input type="email" 
-                                   name="email" id="email" 
-                                   class="form-control" 
-                                   required placeholder="Digite o email" 
-                                   value="<?php echo htmlspecialchars($paciente['email']); ?>">
+                            <input type="email"
+                                name="email" id="email"
+                                class="form-control"
+                                required placeholder="Digite o email"
+                                value="<?php echo htmlspecialchars($paciente['email']); ?>">
                         </div>
                     </div>
 
@@ -196,12 +207,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="telefone" class="form-label">Telefone:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                            <input type="text" 
-                                   name="telefone" id="telefone" 
-                                   class="form-control" 
-                                   required maxlength="14" 
-                                   placeholder="Digite o telefone" 
-                                   value="<?php echo htmlspecialchars($paciente['telefone']); ?>">
+                            <input type="text"
+                                name="telefone" id="telefone"
+                                class="form-control"
+                                required maxlength="14"
+                                placeholder="Digite o telefone"
+                                value="<?php echo htmlspecialchars($paciente['telefone']); ?>">
                         </div>
                     </div>
 
@@ -210,11 +221,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="data_nasc" class="form-label">Data de Nascimento:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar-event-fill"></i></span>
-                            <input type="date" 
-                                   name="data_nasc" id="data_nasc" 
-                                   class="form-control" 
-                                   required 
-                                   value="<?php echo htmlspecialchars($paciente['data_nasc']); ?>">
+                            <input type="date"
+                                name="data_nasc" id="data_nasc"
+                                class="form-control"
+                                required
+                                value="<?php echo htmlspecialchars($paciente['data_nasc']); ?>">
                         </div>
                     </div>
 
@@ -223,17 +234,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="observacoes" class="form-label">Observações:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-chat-left-text-fill"></i></span>
-                            <textarea name="observacoes" 
-                                      id="observacoes" 
-                                      class="form-control" 
-                                      placeholder="Observações sobre o paciente"><?php echo htmlspecialchars($paciente['observacoes']); ?></textarea>
+                            <textarea name="observacoes"
+                                id="observacoes"
+                                class="form-control"
+                                placeholder="Observações sobre o paciente"><?php echo htmlspecialchars($paciente['observacoes']); ?></textarea>
                         </div>
                     </div>
 
                     <!-- Botão -->
                     <div class="d-grid">
                         <button type="submit" class="btn text-white">
-                            <i class="bi bi-person-plus-fill me-2 text-white"></i> Atualizar
+                            <i class="bi bi bi-save-fill me-2 text-white"></i> Atualizar
                         </button>
                     </div>
                 </form>
@@ -245,6 +256,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Faz o textarea ajustar a altura ao conteúdo dem observações do paciente.
         document.addEventListener('DOMContentLoaded', function() {
             const ta = document.getElementById('observacoes');
+
             function ajustaAltura() {
                 ta.style.height = 'auto';
                 ta.style.height = ta.scrollHeight + 'px';
@@ -254,4 +266,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
     </script>
 </body>
+
 </html>
