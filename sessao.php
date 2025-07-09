@@ -215,7 +215,6 @@ $numrow = $lista->rowCount();
       <div class="modal-content">
         <div class="modal-header justify-content-center position-relative">
           <h5 class="modal-title w-100 text-center text-primary">CONFIRMAR</h5>
-          <button type="button" class="btn-close position-absolute end-0" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center">
           Deseja mesmo <span class="fw-bold text-primary">MARCAR COMO REALIZADA</span> esta sessão de
@@ -235,7 +234,6 @@ $numrow = $lista->rowCount();
       <div class="modal-content">
         <div class="modal-header justify-content-center position-relative">
           <h5 class="modal-title w-100 text-center text-danger">ATENÇÃO!</h5>
-          <button type="button" class="btn-close position-absolute end-0" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center">
           Deseja mesmo <span class="action-text fw-bold text-danger">CANCELAR</span> esta sessão de
@@ -243,7 +241,7 @@ $numrow = $lista->rowCount();
         </div>
         <div class="modal-footer justify-content-center gap-2">
           <a class="confirm-delete btn btn-danger btn-anim" href="#">Confirmar Cancelamento</a>
-          <button type="button" class="btn btn-outline-secondary btn-anim" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-outline-success btn-anim" data-bs-dismiss="modal">Cancelar</button>
         </div>
       </div>
     </div>
@@ -255,7 +253,6 @@ $numrow = $lista->rowCount();
       <div class="modal-content">
         <div class="modal-header justify-content-center position-relative">
           <h5 class="modal-title w-100 text-center text-success">ATENÇÃO!</h5>
-          <button type="button" class="btn-close position-absolute end-0" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center">
           Deseja mesmo <span class="action-text fw-bold text-success">ATIVAR</span> esta sessão de
@@ -275,7 +272,6 @@ $numrow = $lista->rowCount();
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Anotações de <strong><span class="modal-paciente-nome"></span></strong></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <p class="modal-anotacoes"></p>

@@ -53,10 +53,12 @@ $pacientes = $sql_pac->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Recebe dados do formulário
-    $paciente_id = (int) $_POST['paciente_id'];
-    $data_hora   = $_POST['data_hora_sessao'];
-    $anotacoes   = $_POST['anotacoes'] ?? '';
-    $status      = (int) $sessao['status_sessao'];
+    $paciente_id       = $_POST['paciente_id'];
+    $anotacoes         = $_POST['anotacoes'] ?? '';
+    $data_hora         = $_POST['data_hora_sessao'];
+    $data_atualizacao  = date('Y-m-d H:i:s');
+    // Pegamos o status via POST (hidden), assim nunca ficará vazio
+    $status            = $_POST['status_sessao'];
 
     try {
         $sql = "CALL ps_sessao_update(
@@ -65,17 +67,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     :pspaciente_id,
                     :psanotacoes,
                     :psdata_hora,
+                    :psdata_atualizacao,
                     :psstatus
                  )";
-        $upd = $conn->prepare($sql);
-        $upd->bindParam(':psid', $id, PDO::PARAM_INT);
-        $upd->bindParam(':pspsicologo_id', $id_psicologo, PDO::PARAM_INT);
-        $upd->bindParam(':pspaciente_id', $paciente_id, PDO::PARAM_INT);
-        $upd->bindParam(':psanotacoes', $anotacoes, PDO::PARAM_STR);
-        $upd->bindParam(':psdata_hora', $data_hora, PDO::PARAM_STR);
-        $upd->bindParam(':psstatus', $status, PDO::PARAM_INT);
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':pspsicologo_id', $id_psicologo, PDO::PARAM_INT);
+        $stmt->bindParam(':pspaciente_id', $paciente_id, PDO::PARAM_INT);
+        $stmt->bindParam(':psanotacoes', $anotacoes, PDO::PARAM_STR);
+        $stmt->bindParam(':psdata_hora', $data_hora, PDO::PARAM_STR);
+        $stmt->bindParam(':psdata_atualizacao', $data_atualizacao, PDO::PARAM_STR);
+        $stmt->bindParam(':psstatus', $status, PDO::PARAM_STR);
 
-        if ($upd->execute()) {
+        if ($stmt->execute()) {
             echo "<script>
                     alert('Sessão atualizada com sucesso!');
                     window.location.href = 'sessao.php';
@@ -102,15 +106,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
+  
+   <style>
         body.fundofixo {
-             background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed; background-size: cover; }
-        .card { background-color: rgba(255,255,255,0.92); border: none; box-shadow: 0 0 20px rgba(0,0,0,0.15); }
-        .form-label { font-weight:600; }
-        .input-group-text { background-color:#DBA632;color:white;border:none; }
-        .btn, .btn-voltar { background-color:#DBA632;color:white;border:none; transition:0.3s ease; }
-        .btn:hover, .btn-voltar:hover { background-color:#b38121!important; transform:scale(1.05); }
-        textarea#anotacoes { resize:vertical; overflow:hidden; min-height:100px; max-height:400px; }
+            background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.92);
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .input-group-text {
+            background-color: #DBA632;
+            color: white;
+            border: none;
+        }
+
+        .btn,
+        .btn-voltar {
+            background-color: #DBA632;
+            color: white;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn:hover,
+        .btn-voltar:hover {
+            background-color: #b38121 !important;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="fundofixo">
@@ -127,6 +158,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <form method="POST" id="form_atualiza_sessao">
         <input type="hidden" name="id" value="<?= $sessao['id'] ?>">
         <input type="hidden" name="psicologo_id" value="<?= $id_psicologo ?>">
+        <!-- Este hidden garante que o status nunca será nulo -->
+        <input type="hidden" name="status_sessao" value="<?= $sessao['status_sessao'] ?>">
 
         <div class="mb-4">
           <label for="paciente_id" class="form-label">Paciente:</label>
@@ -135,7 +168,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <select name="paciente_id" id="paciente_id" class="form-select" required>
               <option value="">Selecione...</option>
               <?php foreach($pacientes as $p): ?>
-                <option value="<?= $p['id'] ?>" <?= $p['id']==$sessao['paciente_id']?'selected':'' ?>><?= htmlspecialchars($p['nome']) ?></option>
+                <option value="<?= $p['id'] ?>" <?= $p['id']==$sessao['paciente_id']?'selected':'' ?>>
+                  <?= htmlspecialchars($p['nome']) ?>
+                </option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -145,7 +180,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label for="data_hora_sessao" class="form-label">Data e Hora:</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
-            <input type="datetime-local" name="data_hora_sessao" id="data_hora_sessao" class="form-control" value="<?= date('Y-m-d\\TH:i', strtotime($sessao['data_hora_sessao'])) ?>" required>
+            <input type="datetime-local" name="data_hora_sessao" id="data_hora_sessao"
+                   class="form-control"
+                   value="<?= date('Y-m-d\\TH:i', strtotime($sessao['data_hora_sessao'])) ?>"
+                   required>
           </div>
         </div>
 
@@ -153,12 +191,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label for="anotacoes" class="form-label">Anotações:</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-chat-left-text-fill"></i></span>
-            <textarea name="anotacoes" id="anotacoes" class="form-control" placeholder="Observações da sessão"><?= htmlspecialchars($sessao['anotacoes']) ?></textarea>
+            <textarea name="anotacoes" id="anotacoes" class="form-control"
+                      placeholder="Anotações pós-sessão"><?= htmlspecialchars($sessao['anotacoes']) ?></textarea>
           </div>
         </div>
 
         <div class="d-grid">
-          <button type="submit" class="btn text-white"><i class="bi bi-save-fill me-2 text-white"></i> Atualizar Sessão</button>
+          <button type="submit" class="btn text-white">
+            <i class="bi bi-save-fill me-2 text-white"></i> Atualizar Sessão
+          </button>
         </div>
       </form>
     </div>
@@ -168,7 +209,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   document.addEventListener('DOMContentLoaded', function(){
     const ta = document.getElementById('anotacoes');
     function ajusta(){ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; }
-    ajusta(); ta.addEventListener('input', ajusta);
+    ajusta();
+    ta.addEventListener('input', ajusta);
   });
 </script>
 </body>

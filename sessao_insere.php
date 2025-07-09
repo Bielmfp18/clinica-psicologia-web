@@ -1,5 +1,3 @@
-<!-- SESSÃO INSERE -->
-
 <?php
 // Exibe erros para depuração
 ini_set('display_errors', 1);
@@ -26,11 +24,7 @@ $id_psicologo = (int) $_SESSION['psicologo_id'];
 
 // Busca lista de pacientes para o select
 $sql_pacientes = $conn->prepare(
-    "SELECT id, nome 
-       FROM paciente 
-      WHERE psicologo_id = :psid 
-        AND ativo = 1 
-   ORDER BY nome"
+    "SELECT id, nome FROM paciente WHERE psicologo_id = :psid AND ativo = 1 ORDER BY nome"
 );
 $sql_pacientes->bindParam(':psid', $id_psicologo, PDO::PARAM_INT);
 $sql_pacientes->execute();
@@ -65,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bindParam(':pspaciente_id',    $paciente_id);
         $stmt->bindParam(':psanotacoes',      $anotacoes);
         $stmt->bindParam(':psdata_hora',      $data_hora);
-        $stmt->bindParam(':psdata_atualizacao',$data_atualizacao);
+        $stmt->bindParam(':psdata_atualizacao', $data_atualizacao);
         $stmt->bindParam(':psstatus',         $status);
 
         if ($stmt->execute()) {
@@ -93,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastrar Sessão</title>
+    <title>Adicionar Sessão</title>
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -149,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <i class="bi bi-arrow-left text-white"></i>
                 </a>
                 <h2 class="text-white fw-bold p-2 rounded text-center" style="background-color: #DBA632;">
-                    Cadastrar Sessão
+                    Adicionar Sessão
                 </h2>
             </div>
 
@@ -177,7 +171,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label for="data_hora_sessao" class="form-label">Data e Hora:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
-                            <input type="datetime-local" name="data_hora_sessao" id="data_hora_sessao" class="form-control" required>
+                            <input type="datetime-local" name="data_hora_sessao" id="data_hora_sessao"
+                                class="form-control"
+                                value="<?= date('Y-m-d\\TH:i', strtotime($sessao['data_hora_sessao'])) ?>"
+                                min="<?= date('Y-m-d\TH:i') ?>" required>
                         </div>
                     </div>
 
@@ -186,14 +183,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label for="anotacoes" class="form-label">Anotações:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-chat-left-text-fill"></i></span>
-                            <textarea name="anotacoes" id="anotacoes" class="form-control" placeholder="Observações da sessão"></textarea>
+                            <textarea name="anotacoes" id="anotacoes" class="form-control" placeholder="Anotações pré-sessão"></textarea>
                         </div>
                     </div>
 
                     <!-- Botão -->
                     <div class="d-grid">
                         <button type="submit" class="btn text-white">
-                            <i class="bi bi-plus-square me-2 text-white"></i> Cadastrar Sessão
+                            <i class="bi bi-plus-square me-2 text-white"></i> Adicionar Nova Sessão
                         </button>
                     </div>
                 </form>
@@ -202,8 +199,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </main>
 
     <script>
-        // Ajusta altura do textarea automaticamente
         document.addEventListener('DOMContentLoaded', function() {
+            // Ajusta altura do textarea automaticamente
             const ta = document.getElementById('anotacoes');
 
             function ajustaAltura() {
@@ -212,6 +209,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             ajustaAltura();
             ta.addEventListener('input', ajustaAltura);
+
+            // Preenche e limita o datetime-local a partir de agora
+            const input = document.getElementById('data_hora_sessao');
+            const now = new Date();
+            const pad = num => num.toString().padStart(2, '0');
+            const hoje = now.getFullYear() + '-' +
+                pad(now.getMonth() + 1) + '-' +
+                pad(now.getDate()) + 'T' +
+                pad(now.getHours()) + ':' +
+                pad(now.getMinutes());
+            input.min = hoje; // fecha seleção passada
+            input.value = hoje; // pré-seleciona agora
         });
     </script>
 </body>
