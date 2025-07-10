@@ -63,25 +63,28 @@ try {
             "Sessão de {$nomePaciente} desativada" // descrição
         );
 
-        // Feedback ao psicólogo
-        echo "<script>
-                alert('Sessão desativada com sucesso!');
-                window.location.href = 'sessao.php';
-              </script>";
+       // Retorna sucesso em JSON
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'message' => 'Sessão desativada com sucesso!'
+        ]);
         exit;
     } else {
-        // Erro na execução da procedure
-        echo "<script>
-                alert('Erro ao tentar desativar a sessão!');
-                window.location.href = 'sessao.php';
-              </script>";
+        // Erro ao executar a desativação
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro ao tentar desativar a sessão!'
+        ]);
         exit;
     }
 } catch (PDOException $e) {
-    // Em caso de exceção, exibe mensagem e redireciona
-    echo "<script>
-            alert('Erro ao desativar a sessão: " . addslashes($e->getMessage()) . "');
-            window.location.href = 'sessao.php';
-          </script>";
+    // Em caso de exceção, devolve JSON de erro
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro ao desativar a sessão: ' . addslashes($e->getMessage())
+    ]);
     exit;
 }

@@ -62,25 +62,28 @@ try {
             "Sessão {$nomePaciente} ativada " // descrição
         );
 
-        // Feedback ao usuário
-        echo "<script>
-                alert('Sessão ativada com sucesso!');
-                window.location.href = 'sessao.php';
-              </script>";
+        // Retorna sucesso em JSON
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'message' => 'Sessão ativada com sucesso!'
+        ]);
         exit;
     } else {
-        // Erro na execução da procedure
-        echo "<script>
-                alert('Erro ao tentar ativar a sessão!');
-                window.location.href = 'sessao.php';
-              </script>";
+        // Erro ao executar a ativação
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro ao tentar ativar a sessão!'
+        ]);
         exit;
     }
 } catch (PDOException $e) {
-    // Em caso de exceção, exibe mensagem e redireciona
-    echo "<script>
-            alert('Erro ao ativar a sessão: " . addslashes($e->getMessage()) . "');
-            window.location.href = 'sessao.php';
-          </script>";
+    // Em caso de exceção, devolve JSON de erro
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro ao ativar a sessão: ' . addslashes($e->getMessage())
+    ]);
     exit;
 }

@@ -48,7 +48,6 @@ $lista  = $conn->prepare($sql);
 $lista->execute($params);
 $numrow = $lista->rowCount();
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -56,13 +55,16 @@ $numrow = $lista->rowCount();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
   <title>Sessões</title>
+
   <!-- Bootstrap 5 CSS e Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Fundo fixo -->
   <?php include 'css/fundo-fixo.css'; ?>
+
   <style>
+    /* estilos gerais */
     .hidden {
       display: none;
     }
@@ -104,8 +106,12 @@ $numrow = $lista->rowCount();
 
   <!-- TÍTULO -->
   <main class="container my-4">
-    <h1 class="text-center text-white py-2" style="background-color:#DBA632; border-radius:10px;">SESSÕES</h1>
-    <p class="text-center fw-bold">Esta é a página de administração das suas sessões com seus pacientes.</p>
+    <h1 class="text-center text-white py-2" style="background-color:#DBA632; border-radius:10px;">
+      SESSÕES
+    </h1>
+    <p class="text-center fw-bold">
+      Esta é a página de administração das suas sessões com seus pacientes.
+    </p>
   </main>
 
   <!-- FILTRO -->
@@ -114,22 +120,24 @@ $numrow = $lista->rowCount();
       <form action="" method="GET" class="d-flex align-items-center gap-2 mb-0">
         <label for="status_sessao" class="fw-bold mb-0">STATUS</label>
         <select name="status_sessao" id="status_sessao" class="form-select" style="max-width:150px;">
-          <option value="" <?php if ($status_sessao === '') echo 'selected'; ?>>TUDO</option>
-          <option value="AGENDADA" <?php if ($status_sessao === 'AGENDADA') echo 'selected'; ?>>AGENDADA</option>
-          <option value="REALIZADA" <?php if ($status_sessao === 'REALIZADA') echo 'selected'; ?>>REALIZADA</option>
-          <option value="CANCELADA" <?php if ($status_sessao === 'CANCELADA') echo 'selected'; ?>>CANCELADA</option>
+          <option value="" <?= $status_sessao === '' ? 'selected' : '' ?>>TUDO</option>
+          <option value="AGENDADA" <?= $status_sessao === 'AGENDADA' ? 'selected' : '' ?>>AGENDADA</option>
+          <option value="REALIZADA" <?= $status_sessao === 'REALIZADA' ? 'selected' : '' ?>>REALIZADA</option>
+          <option value="CANCELADA" <?= $status_sessao === 'CANCELADA' ? 'selected' : '' ?>>CANCELADA</option>
         </select>
-        <button type="submit" class="btn text-light btn-anim" style="background-color:#DBA632;">FILTRAR</button>
+        <button type="submit" class="btn text-light btn-anim" style="background-color:#DBA632;">
+          FILTRAR
+        </button>
       </form>
-
-        <a href="sessao_insere.php" class="btn btn-primary btn-anim">NOVA SESSÃO <i class="bi bi-plus"></i></a>
-      </div>
+      <a href="sessao_insere.php" class="btn btn-primary btn-anim">
+        NOVA SESSÃO <i class="bi bi-plus"></i>
+      </a>
     </div>
   </div>
 
   <!-- LISTA -->
   <div class="container-fluid">
-    <div class="table-responsive">
+    <div class="table-responsive" style="border-radius:10px;">
       <table class="table table-striped table-bordered text-center align-middle">
         <thead class="table-light">
           <tr>
@@ -144,62 +152,58 @@ $numrow = $lista->rowCount();
           </tr>
         </thead>
         <tbody>
-          <?php if ($numrow > 0): while ($row = $lista->fetch(PDO::FETCH_ASSOC)): ?>
-              <tr>
-                <td class="hidden"><?php echo $row['id']; ?></td>
-                <td><?php echo htmlspecialchars($row['paciente_nome'] ?: '—'); ?></td>
+          <?php if ($numrow > 0): ?>
+            <?php while ($row = $lista->fetch(PDO::FETCH_ASSOC)): ?>
+              <tr data-id="<?= $row['id'] ?>">
+                <td class="hidden"><?= $row['id'] ?></td>
+                <td><?= htmlspecialchars($row['paciente_nome'] ?: '—') ?></td>
                 <td>
                   <?php if (!empty(trim($row['anotacoes'] ?? ''))): ?>
                     <button class="btn btn-info btn-anim"
                       data-bs-toggle="modal"
                       data-bs-target="#obsModal"
-                      data-nome="<?php echo htmlspecialchars($row['paciente_nome']); ?>"
-                      data-obs="<?php echo htmlspecialchars($row['anotacoes']); ?>">
+                      data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>"
+                      data-obs="<?= htmlspecialchars($row['anotacoes']) ?>">
                       <i class="bi bi-chat-dots"></i>
                     </button>
-                  <?php else: ?> — <?php endif; ?>
+                  <?php else: ?>
+                    —
+                  <?php endif; ?>
                 </td>
-                <td><?php echo date('d/m/Y H:i', strtotime($row['data_hora_sessao'])); ?></td>
-                <td><?php echo date('d/m/Y H:i', strtotime($row['data_criacao'])); ?></td>
-                <td><?php echo $row['status_sessao']; ?></td>
+                <td><?= date('d/m/Y H:i', strtotime($row['data_hora_sessao'])) ?></td>
+                <td><?= date('d/m/Y H:i', strtotime($row['data_criacao'])) ?></td>
+                <td class="status-col"><?= $row['status_sessao'] ?></td>
                 <td>
-                  <a href="sessao_atualiza.php?id=<?php echo $row['id']; ?>"
+                  <a href="sessao_atualiza.php?id=<?= $row['id'] ?>"
                     class="btn btn-warning btn-anim">
                     <i class="bi bi-pencil-square"></i>
                   </a>
                 </td>
-                <td>
+                <td class="action-col">
                   <?php if ($row['status_sessao'] === 'AGENDADA'): ?>
-                    <!-- Botão REALIZAR -->
                     <button class="realizar btn btn-primary btn-anim"
-                      data-id="<?php echo $row['id']; ?>"
-                      data-nome="<?php echo htmlspecialchars($row['paciente_nome']); ?>">
+                      data-id="<?= $row['id'] ?>"
+                      data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>">
                       <i class="bi bi-check2-circle"></i>
                     </button>
-                    <!-- Botão CANCELAR -->
                     <button class="delete btn btn-danger btn-anim"
-                      data-id="<?php echo $row['id']; ?>"
-                      data-nome="<?php echo htmlspecialchars($row['paciente_nome']); ?>">
+                      data-id="<?= $row['id'] ?>"
+                      data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>">
                       <i class="bi bi-x-lg"></i>
                     </button>
-
                   <?php elseif ($row['status_sessao'] === 'CANCELADA'): ?>
-                    <!-- Botão ATIVAR -->
                     <button class="activate btn btn-success btn-anim"
-                      data-id="<?php echo $row['id']; ?>"
-                      data-nome="<?php echo htmlspecialchars($row['paciente_nome']); ?>">
+                      data-id="<?= $row['id'] ?>"
+                      data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>">
                       <i class="bi bi-check-lg"></i>
                     </button>
-
                   <?php else: ?>
-                    <!-- REALIZADA -->
                     —
                   <?php endif; ?>
                 </td>
-
               </tr>
-            <?php endwhile;
-          else: ?>
+            <?php endwhile; ?>
+          <?php else: ?>
             <tr>
               <td colspan="8" class="text-center">Nenhuma sessão encontrada.</td>
             </tr>
@@ -209,58 +213,72 @@ $numrow = $lista->rowCount();
     </div>
   </div>
 
-  <!-- Modal REALIZAR -->
+  <!-- Modais -->
+
+  <!-- REALIZAR -->
   <div id="realizarModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header justify-content-center position-relative">
-          <h5 class="modal-title w-100 text-center text-primary">CONFIRMAR</h5>
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title text-primary">CONFIRMAR</h5>
         </div>
         <div class="modal-body text-center">
-          Deseja mesmo <span class="fw-bold text-primary">MARCAR COMO REALIZADA</span> esta sessão de
+          Deseja mesmo <strong class="text-primary">MARCAR COMO REALIZADA</strong> esta sessão de
           <strong><span class="nome-realizar"></span></strong>?
         </div>
         <div class="modal-footer justify-content-center gap-2">
-          <a class="confirm-realizar btn btn-primary btn-anim" href="#">Confirmar</a>
-          <button type="button" class="btn btn-outline-danger btn-anim" data-bs-dismiss="modal">Cancelar</button>
+          <button class="confirm-realizar btn btn-primary btn-anim" type="button" data-id="">
+            Confirmar
+          </button>
+          <button type="button" class="btn btn-outline-danger btn-anim" data-bs-dismiss="modal">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal DESATIVAR -->
+  <!-- DESATIVAR -->
   <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header justify-content-center position-relative">
-          <h5 class="modal-title w-100 text-center text-danger">ATENÇÃO!</h5>
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title text-danger">ATENÇÃO!</h5>
         </div>
         <div class="modal-body text-center">
-          Deseja mesmo <span class="action-text fw-bold text-danger">CANCELAR</span> esta sessão de
+          Deseja mesmo <strong class="text-danger action-text">CANCELAR</strong> esta sessão de
           <strong><span class="nome"></span></strong>?
         </div>
         <div class="modal-footer justify-content-center gap-2">
-          <a class="confirm-delete btn btn-danger btn-anim" href="#">Confirmar Cancelamento</a>
-          <button type="button" class="btn btn-outline-success btn-anim" data-bs-dismiss="modal">Cancelar</button>
+          <button class="confirm-delete btn btn-danger btn-anim" type="button" data-id="">
+            Confirmar Cancelamento
+          </button>
+          <button type="button" class="btn btn-outline-success btn-anim" data-bs-dismiss="modal">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal ATIVAR -->
+  <!-- ATIVAR -->
   <div id="activateModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header justify-content-center position-relative">
-          <h5 class="modal-title w-100 text-center text-success">ATENÇÃO!</h5>
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title text-success">ATENÇÃO!</h5>
         </div>
         <div class="modal-body text-center">
-          Deseja mesmo <span class="action-text fw-bold text-success">ATIVAR</span> esta sessão de
+          Deseja mesmo <strong class="text-success action-text">ATIVAR</strong> esta sessão de
           <strong><span class="nome"></span></strong>?
         </div>
         <div class="modal-footer justify-content-center gap-2">
-          <a class="confirm-activate btn btn-success btn-anim" href="#">Confirmar Ativação</a>
-          <button type="button" class="btn btn-outline-secondary btn-anim" data-bs-dismiss="modal">Cancelar</button>
+          <button class="confirm-activate btn btn-success btn-anim" type="button" data-id="">
+            Confirmar Ativação
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-anim" data-bs-dismiss="modal">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
@@ -283,42 +301,157 @@ $numrow = $lista->rowCount();
     </div>
   </div>
 
-  <!-- Scripts JS -->
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Bootstrap 5 JS com Popper incluso -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- SEUS SCRIPTS PERSONALIZADOS -->
   <script>
-    // Preenche modal de realiza
-    $('.realizar').on('click', function() {
-      var id = $(this).data('id');
-      var nome = $(this).data('nome');
-      $('.nome-realizar').text(nome);
-      $('.confirm-realizar').attr('href', 'sessao_confirma.php?id=' + id);
-      new bootstrap.Modal(document.getElementById('realizarModal')).show();
-    });
-
-    // Preenche modal de desativação
-    $('.delete').on('click', function() {
-      var id = $(this).data('id');
-      var nome = $(this).data('nome');
-      $('.nome').text(nome);
-      $('.confirm-delete').attr('href', 'sessao_desativa.php?id=' + id);
-      new bootstrap.Modal(document.getElementById('myModal')).show();
-    });
-
-    // Preenche modal de ativação
-    $('.activate').on('click', function() {
-      var id = $(this).data('id');
-      var nome = $(this).data('nome');
-      $('.nome').text(nome);
-      $('.confirm-activate').attr('href', 'sessao_ativa.php?id=' + id);
-      new bootstrap.Modal(document.getElementById('activateModal')).show();
-    });
-
     // Modal de anotações
     document.getElementById('obsModal').addEventListener('show.bs.modal', function(e) {
       var btn = e.relatedTarget;
       document.querySelector('.modal-paciente-nome').textContent = btn.getAttribute('data-nome');
       document.querySelector('.modal-anotacoes').textContent = btn.getAttribute('data-obs');
     });
+
+    // 1) Abrir cada modal e guardar data-id
+    $(document).on('click', '.realizar', function() {
+      const id = $(this).data('id');
+      const nome = $(this).data('nome');
+      $('.nome-realizar').text(nome);
+      $('.confirm-realizar').data('id', id);
+      new bootstrap.Modal(document.getElementById('realizarModal')).show();
+    });
+
+    $(document).on('click', '.delete', function() {
+      const id = $(this).data('id');
+      const nome = $(this).data('nome');
+      $('.nome').text(nome);
+      $('.confirm-delete').data('id', id);
+      new bootstrap.Modal(document.getElementById('myModal')).show();
+    });
+
+    $(document).on('click', '.activate', function() {
+      const id = $(this).data('id');
+      const nome = $(this).data('nome');
+      $('.nome').text(nome);
+      $('.confirm-activate').data('id', id);
+      new bootstrap.Modal(document.getElementById('activateModal')).show();
+    });
+
+    // 2) Handlers AJAX
+
+    // Confirmar realização
+    $(document).on('click', '.confirm-realizar', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'sessao_confirma.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col');
+      const actionTd = tr.find('.action-col');
+      bootstrap.Modal.getInstance(document.getElementById('realizarModal')).hide();
+
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
+          statusTd.text('REALIZADA');
+          actionTd.html('—');
+
+          // Mensagem que aparece no topo da tela
+          const $a = $(`<div class="alert alert-success alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">
+          ${res.message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`).appendTo('body');
+          $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
+
+    // Confirmar cancelamento
+    $(document).on('click', '.confirm-delete', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'sessao_desativa.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col');
+      const actionTd = tr.find('.action-col');
+      bootstrap.Modal.getInstance(document.getElementById('myModal')).hide();
+
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
+          statusTd.text('CANCELADA');
+          actionTd.html(`
+          <button class="activate btn btn-success btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(1).text()}">
+            <i class="bi bi-check-lg"></i>
+          </button>
+        `);
+
+          // Mensagem que aparece no topo da tela
+          const $a = $(`<div class="alert alert-danger alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">
+          ${res.message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`).appendTo('body');
+          $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
+
+    // Confirmar ativação
+    $(document).on('click', '.confirm-activate', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'sessao_ativa.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col');
+      const actionTd = tr.find('.action-col');
+      bootstrap.Modal.getInstance(document.getElementById('activateModal')).hide();
+
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
+          statusTd.text('AGENDADA');
+          actionTd.html(`
+          <button class="realizar btn btn-primary btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(1).text()}">
+            <i class="bi bi-check2-circle"></i>
+          </button>
+          <button class="delete btn btn-danger btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(1).text()}">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        `);
+
+          // Mensagem que aparece no topo da tela
+          const $a = $(`<div class="alert alert-success alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">
+          ${res.message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`).appendTo('body');
+          $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
+
+    // 3) No load, converte linhas já realizadas
+    $(function() {
+      if ($('#status_sessao').val() === 'REALIZADA') {
+        $('tbody tr').each(function() {
+          if ($(this).find('.status-col').text().trim() === 'REALIZADA') {
+            $(this).find('.action-col').html('—');
+          }
+        });
+      }
+    });
   </script>
+
+
 </body>
 
 </html>

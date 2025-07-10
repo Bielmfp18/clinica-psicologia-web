@@ -184,7 +184,6 @@ psnome varchar(100),
 psemail varchar(100),
 pstelefone char(14),
 psdata_nasc date,
-psdata_atualizacao datetime,
 psobservacoes text
 )
  BEGIN 
@@ -194,7 +193,6 @@ nome = psnome,
 email = psemail,
 telefone = pstelefone,
 data_nasc = psdata_nasc,
-data_atualizacao = psdata_atualizacao,
 observacoes = psobservacoes
 WHERE id = psid;
 SELECT * FROM paciente WHERE id = psid;
@@ -326,7 +324,6 @@ psicologo_id = pspsicologo_id,
 paciente_id = pspaciente_id,
 anotacoes = psanotacoes,
 data_hora_sessao = psdata_hora_sessao,
-data_atualizacao = psdata_atualizacao,
 status_sessao = psstatus_sessao
 WHERE id = psid;
 SELECT * FROM sessao WHERE id = psid;

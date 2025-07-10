@@ -14,6 +14,8 @@
  */
 function registrarHistorico(PDO $conn, int $psicologoId, string $acao, string $entidade, string $descricao, string $dataHora = null): array
 {
+
+    
     if ($dataHora === null) {
         $dataHora = date('Y-m-d H:i:s');
     }

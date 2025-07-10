@@ -34,7 +34,6 @@ if ($ativo === '1') {
   $params = [
     ':me' => $id_psico
   ];
-
 } elseif ($ativo === '0') {
   // --- SOMENTE OS MEUS PACIENTES INATIVOS ---
   $sql = "
@@ -46,7 +45,6 @@ if ($ativo === '1') {
   $params = [
     ':me' => $id_psico
   ];
-
 } else {
   // --- SEM FILTRO: MOSTRA TODOS OS MEUS PACIENTES (ativos e inativos) ---
   $sql = "
@@ -88,7 +86,7 @@ $numrow = $lista->rowCount();
   <!-- Estilos personalizados -->
   <style>
     /* Esconde os itens de classe "hidden"*/
-    .hidden { 
+    .hidden {
       display: none;
     }
 
@@ -96,6 +94,7 @@ $numrow = $lista->rowCount();
     .btn-anim {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
     .btn-anim:hover {
       transform: scale(1.05);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -137,103 +136,105 @@ $numrow = $lista->rowCount();
   </div>
 
   <!-- LISTA DE PACIENTES -->
-  <div class="table-responsive">
-    <table class="table table-striped table-bordered align-middle text-center">
-      <thead>
-        <tr>
-          <th class="hidden">ID</th>
-          <th class="text-center">NOME</th>
-          <th class="text-center">EMAIL</th>
-          <th class="text-center">TELEFONE</th>
-          <th class="text-center">DATAS</th>
-          <th class="text-center">OBSERVAÇÕES</th>
-          <th class="text-center">EDITAR</th>
-          <th class="text-center">AÇÃO</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- EXIBE OS DADOS DO PACIENTE -->
-        <?php if ($numrow > 0): ?>
-          <?php while ($row = $lista->fetch(PDO::FETCH_ASSOC)) : ?>
-            <tr>
-              <td class="hidden"><?php echo $row['id']; ?></td>
-
-              <!-- Nome -->
-              <td class="text-center"><?php echo $row['nome'] ?? "Sem nome"; ?></td>
-
-              <!-- Email -->
-              <td class="text-center"><?php echo $row['email'] ?? "Sem email"; ?></td>
-
-              <!-- Telefone -->
-              <td class="text-center">(55) <?php echo $row['telefone'] ?? "Sem telefone"; ?></td>
-
-              <!-- Datas (Nascimento / Cadastro) -->
-              <td class="text-center">
-                <?php
-                $data_nasc = isset($row['data_nasc'])
-                  ? date('d/m/Y', strtotime($row['data_nasc']))
-                  : "—";
-                $data_cad = isset($row['data_criacao'])
-                  ? date('d/m/Y', strtotime($row['data_criacao']))
-                  : "—";
-                echo "Nascimento: {$data_nasc}<br>Cadastro: {$data_cad}";
-                ?>
-              </td>
-
-              <!-- Observações em modal -->
-              <td>
-                <?php if (!empty(trim($row['observacoes'] ?? ''))): ?>
-                  <button
-                    class="btn btn-info btn-anim"
-                    data-bs-toggle="modal"
-                    data-bs-target="#obsModal"
-                    data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
-                    data-obs="<?php echo htmlspecialchars($row['observacoes']); ?>">
-                    <i class="bi bi-chat-dots"></i>
-                  </button>
-                <?php else: ?>
-                  —
-                <?php endif; ?>
-              </td>
-
-              <!-- Botão EDITAR -->
-              <td class="btn-block-vertical">
-                <a href="paciente_atualiza.php?id=<?php echo $row['id']; ?>"
-                   class="btn btn-warning btn-anim">
-                  <i class="bi bi-pencil-square"></i> 
-                </a>
-              </td>
-
-              <!-- Botão DESATIVAR / ATIVAR -->
-              <td class="btn-block-vertical">
-                <?php if ($row['ativo'] == 1): ?>
-                  <!-- Paciente ATIVO → mostra o botão “Desativar” -->
-                  <button
-                    data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
-                    data-id="<?php echo $row['id']; ?>"
-                    class="delete btn btn-danger btn-anim">
-                    <i class="bi bi-x-lg"></i> 
-                  </button>
-                <?php else: ?>
-                  <!-- Paciente INATIVO → mostra o botão “Ativar” -->
-                  <button
-                    data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
-                    data-id="<?php echo $row['id']; ?>"
-                    class="activate btn btn-success btn-anim">
-                    <i class="bi bi-check-lg"></i> 
-                  </button>
-                <?php endif; ?>
-              </td>
-            </tr>
-          <?php endwhile; ?>
-        <?php else: ?>
+  <div class="container-fluid">
+    <div class="table-responsive" style="border-radius:10px;">
+      <table class="table table-striped table-bordered align-middle text-center">
+        <thead class="table-light">
           <tr>
-            <td colspan="8" class="text-center">Nenhum paciente encontrado.</td>
+            <th class="hidden">ID</th>
+            <th class="text-center">NOME</th>
+            <th class="text-center">EMAIL</th>
+            <th class="text-center">TELEFONE</th>
+            <th class="text-center">DATAS</th>
+            <th class="text-center">OBSERVAÇÕES</th>
+            <th class="text-center">EDITAR</th>
+            <th class="text-center">AÇÃO</th>
           </tr>
-        <?php endif; ?>
-        <!-- FIM DOS DADOS DO PACIENTE -->
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <!-- EXIBE OS DADOS DO PACIENTE -->
+          <?php if ($numrow > 0): ?>
+            <?php while ($row = $lista->fetch(PDO::FETCH_ASSOC)) : ?>
+              <tr>
+                <td class="hidden"><?php echo $row['id']; ?></td>
+
+                <!-- Nome -->
+                <td class="text-center"><?php echo $row['nome'] ?? "Sem nome"; ?></td>
+
+                <!-- Email -->
+                <td class="text-center"><?php echo $row['email'] ?? "Sem email"; ?></td>
+
+                <!-- Telefone -->
+                <td class="text-center">(55) <?php echo $row['telefone'] ?? "Sem telefone"; ?></td>
+
+                <!-- Datas (Nascimento / Cadastro) -->
+                <td class="text-center">
+                  <?php
+                  $data_nasc = isset($row['data_nasc'])
+                    ? date('d/m/Y', strtotime($row['data_nasc']))
+                    : "—";
+                  $data_cad = isset($row['data_criacao'])
+                    ? date('d/m/Y', strtotime($row['data_criacao']))
+                    : "—";
+                  echo "Nascimento: {$data_nasc}<br>Cadastro: {$data_cad}";
+                  ?>
+                </td>
+
+                <!-- Observações em modal -->
+                <td>
+                  <?php if (!empty(trim($row['observacoes'] ?? ''))): ?>
+                    <button
+                      class="btn btn-info btn-anim"
+                      data-bs-toggle="modal"
+                      data-bs-target="#obsModal"
+                      data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
+                      data-obs="<?php echo htmlspecialchars($row['observacoes']); ?>">
+                      <i class="bi bi-chat-dots"></i>
+                    </button>
+                  <?php else: ?>
+                    —
+                  <?php endif; ?>
+                </td>
+
+                <!-- Botão EDITAR -->
+                <td class="btn-block-vertical">
+                  <a href="paciente_atualiza.php?id=<?php echo $row['id']; ?>"
+                    class="btn btn-warning btn-anim">
+                    <i class="bi bi-pencil-square"></i>
+                  </a>
+                </td>
+
+                <!-- Botão DESATIVAR / ATIVAR -->
+                <td class="btn-block-vertical">
+                  <?php if ($row['ativo'] == 1): ?>
+                    <!-- Paciente ATIVO → mostra o botão “Desativar” -->
+                    <button
+                      data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
+                      data-id="<?php echo $row['id']; ?>"
+                      class="delete btn btn-danger btn-anim">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  <?php else: ?>
+                    <!-- Paciente INATIVO → mostra o botão “Ativar” -->
+                    <button
+                      data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
+                      data-id="<?php echo $row['id']; ?>"
+                      class="activate btn btn-success btn-anim">
+                      <i class="bi bi-check-lg"></i>
+                    </button>
+                  <?php endif; ?>
+                </td>
+              </tr>
+            <?php endwhile; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="8" class="text-center">Nenhum paciente encontrado.</td>
+            </tr>
+          <?php endif; ?>
+          <!-- FIM DOS DADOS DO PACIENTE -->
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Modal de Observações -->

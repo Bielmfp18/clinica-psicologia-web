@@ -1,6 +1,8 @@
 <?php
 // SESSÃO CONFIRMA
 
+// SESSÃO CONFIRMA
+
 // Exibe erros para depuração
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -32,6 +34,9 @@ if (!isset($_GET['id'])) {
 // Garante que o ID seja inteiro
 $id = (int) $_GET['id'];
 
+// Garante que o ID seja inteiro
+$id = (int) $_GET['id'];
+
 try {
     // Chama procedure para confirmar a sessão
     $sql = "CALL ps_sessao_confirm(:psid)";
@@ -51,46 +56,48 @@ try {
         $nomePsicologo = $psic['nome'] ?? "ID {$psicologoId}";
 
         // Recupera nome do paciente da sessão
-
         $stmtInfo = $conn->prepare(
-        "SELECT  p.nome AS nomePaciente FROM sessao s 
-        JOIN paciente p ON s.paciente_id = p.id WHERE s.id = :id"
+            "SELECT p.nome AS nomePaciente
+             FROM sessao s 
+             JOIN paciente p ON s.paciente_id = p.id 
+             WHERE s.id = :id"
         );
         $stmtInfo->bindValue(':id', $id, PDO::PARAM_INT);
         $stmtInfo->execute();
         $info = $stmtInfo->fetch(PDO::FETCH_ASSOC);
-
-        // Define valores, caso não encontrado
-        $nomePaciente   = $info['nomePaciente']   ?? "ID {$id}";
+        $nomePaciente = $info['nomePaciente'] ?? "ID {$id}";
 
         // Registra no histórico usando o nome do psicólogo
         registrarHistorico(
             $conn,
             $psicologoId,
-            'Confrimação',    // ação de confirmação
-            'Sessão',      // entidade afetada
+            'Confirmação',    // ação de confirmação
+            'Sessão',         // entidade afetada
             "Sessão de {$nomePaciente} confirmada" // descrição detalhada
         );
 
-        // Feedback ao usuário
-        echo "<script>
-                alert('Sessão confirmada com sucesso!');
-                window.location.href = 'sessao.php';
-              </script>";
+        // Retorna sucesso em JSON
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'message' => 'Sessão confirmada com sucesso!'
+        ]);
         exit;
     } else {
         // Erro ao executar a confirmação
-        echo "<script>
-                alert('Erro ao tentar confirmar a sessão!');
-                window.location.href = 'sessao.php';
-              </script>";
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro ao tentar confirmar a sessão!'
+        ]);
         exit;
     }
 } catch (PDOException $e) {
-    // Em caso de exceção, exibe mensagem de erro e volta
-    echo "<script>
-            alert('Erro ao confirmar a sessão: " . addslashes($e->getMessage()) . "');
-            window.location.href = 'sessao.php';
-          </script>";
+    // Em caso de exceção, devolve JSON de erro
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro ao confirmar a sessão: ' . addslashes($e->getMessage())
+    ]);
     exit;
 }
