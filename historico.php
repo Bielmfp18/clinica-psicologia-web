@@ -91,15 +91,14 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
             padding: 1rem 0;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 1rem;
             position: relative;
         }
 
         .historico-header h1 {
             font-size: 1.75rem;
             color: #333;
-            flex: 1;
+            margin: 0 auto;
+            /* título centralizado */
         }
 
         .btn-back,
@@ -108,18 +107,17 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
             height: 2.5rem;
             border-radius: 50%;
             display: flex;
-            top: 0.5rem;
             align-items: center;
             justify-content: center;
+            position: absolute;
+            top: 1rem;
         }
 
         .btn-back {
-            position: absolute;
             left: 1rem;
         }
 
         .btn-apagar-tudo {
-            position: absolute;
             right: 1rem;
             background-color: #e55353;
             color: #fff;
@@ -147,23 +145,82 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
         }
 
         button {
-            /* Transição longa e easing bem brando */
             transition:
                 transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
                 box-shadow 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         button:hover {
-            /* Scale muito sutil */
             transform: scale(1.02);
-            /* Sombra suave e espalhada */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         button:active {
-            /* Feedback rápido porém suave */
             transform: scale(0.97);
             transition-duration: 0.2s;
+        }
+
+        /* Modal styling e animações */
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-content {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            background: linear-gradient(90deg, #DBA632, #E55353);
+            border-bottom: none;
+            justify-content: center;
+        }
+
+        .modal-title {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+            opacity: 0.8;
+        }
+
+        .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .modal-footer {
+            justify-content: center;
+            border-top: none;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .modal-footer .btn {
+            min-width: 100px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .modal-footer .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-footer .btn:active {
+            transform: scale(0.95);
+            transition-duration: 0.1s;
         }
     </style>
 </head>
@@ -174,16 +231,20 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
     <div class="container py-4">
         <div class="card card-historico mx-auto" style="max-width:1000px;">
             <div class="historico-header">
+                <!-- Botão voltar -->
                 <button onclick="location.href='perfil_ps.php'" class="btn btn-outline-primary btn-back">
                     <i class="bi bi-arrow-left"></i>
                 </button>
+                <!-- Título centralizado -->
                 <h1>HISTÓRICO</h1>
+                <!-- Botão apagar tudo -->
                 <form method="POST">
                     <button name="clear_all" type="submit" class="btn-apagar-tudo">
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </form>
             </div>
+
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover mb-0">
@@ -205,24 +266,40 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
                                         <td><?= htmlspecialchars($item['tipo_entidade']) ?></td>
                                         <td><?= nl2br(htmlspecialchars($item['descricao'])) ?></td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete<?= $item['id'] ?>">
+                                            <!-- Botão abrir modal de confirmação -->
+                                            <button class="btn btn-sm btn-outline-danger btn-anim"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmDelete<?= $item['id'] ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
-                                            <div class="modal fade" id="confirmDelete<?= $item['id'] ?>" tabindex="-1">
+
+                                            <!-- Modal de confirmação individual -->
+                                            <div class="modal fade" id="confirmDelete<?= $item['id'] ?>" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Confirmar exclusão</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        <!-- HEADER COM GRADIENT E TÍTULO CENTRALIZADO -->
+                                                        <div class="modal-header justify-content-center text-white">
+                                                            <h5 class="modal-title">
+                                                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                                                Confirmar Exclusão
+                                                            </h5>
                                                         </div>
-                                                        <div class="modal-body">
-                                                            Deseja apagar este registro?
+                                                        <!-- CORPO DO MODAL -->
+                                                        <div class="modal-body text-center">
+                                                            <strong> Deseja apagar este registro? </strong>
                                                         </div>
+                                                        <!-- FOOTER COM BOTÕES PADRÃO btn-anim -->
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancelar</button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-success btn-anim"
+                                                                data-bs-dismiss="modal">
+                                                                <i class="bi bi-x-lg me-1"></i> Cancelar
+                                                            </button>
                                                             <form method="POST" class="d-inline">
                                                                 <input type="hidden" name="delete_id" value="<?= $item['id'] ?>">
-                                                                <button type="submit" class="btn btn-danger">Apagar</button>
+                                                                <button type="submit" class="btn btn-danger btn-anim">
+                                                                    <i class="bi bi-trash me-1"></i> Apagar
+                                                                </button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -240,6 +317,7 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 

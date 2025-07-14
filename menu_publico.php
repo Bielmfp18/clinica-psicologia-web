@@ -76,8 +76,7 @@ if (isset($_SESSION['login_admin'])) {
     : $diretorio . 'default.png';
 }
 
-?>
-<style>
+?><style>
   /* HTML */
   html,
   body {
@@ -106,21 +105,60 @@ if (isset($_SESSION['login_admin'])) {
     object-fit: contain;
     transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
   }
-
   .navbar-brand img:hover {
     transform: scale(1.1);
     filter: drop-shadow(0 0 10px #DBA632);
   }
 
   /* LINKS DA NAVBAR */
-  .nav-link {
+/* —————————————————————————————————————————————————————
+     Preparação geral dos nav-links
+   ————————————————————————————————————————————————————— */
+  .navbar .nav-link {
+    position: relative;
+    display: inline-block;
+    font-size: 15px;             /* garante mesmo tamanho */
     font-weight: bold;
+    text-transform: uppercase;
     color: #333 !important;
-    transition: color 0.3s;
+    padding: 0.5rem 0.75rem;
+    overflow: hidden;            /* para o underline animado não vazar */
+    transition: color 0.2s ease, transform 0.2s ease;
   }
 
-  .nav-link:hover {
+  /* —————————————————————————————————————————————————————
+     Efeito de underline deslizante
+   ————————————————————————————————————————————————————— */
+  .navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 0%;
+    height: 2px;
+    background-color: #DBA632;
+    transition: width 0.3s ease, left 0.3s ease;
+  }
+
+  /* muda cor do texto e expande underline ao hover */
+  .navbar .nav-link:hover {
     color: #DBA632 !important;
+  }
+  .navbar .nav-link:hover::after {
+    left: 0;
+    width: 100%;
+  }
+
+  /* Risco que aparece abaixo dos navbar kinks  */
+  @keyframes navBounce {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  .navbar .nav-link:active,
+  .navbar .nav-link:focus {
+    animation: navBounce 0.3s ease;
+    outline: none;
   }
 
   /* IMAGEM DO PERFIL */
@@ -129,15 +167,13 @@ if (isset($_SESSION['login_admin'])) {
     height: 50px;
     border-radius: 50%;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-
   }
-
   .perfil-img:hover {
     transform: scale(1.15);
     box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
   }
 
-  /* REGISTRAR-SE */
+  /* REGISTRAR-SE e LOGIN */
   .registrar-text,
   .login-text {
     font-size: 15px;
@@ -150,25 +186,20 @@ if (isset($_SESSION['login_admin'])) {
     font-weight: bold;
     transition: all 0.3s ease-in-out;
   }
-
   .registrar-text {
     background-color: #DBA632;
     color: white;
   }
-
   .registrar-text:hover {
     background-color: white;
     color: #DBA632;
     transform: scale(1.05);
     box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
   }
-
-  /* LOGIN */
   .login-text {
     background-color: white;
     color: #DBA632;
   }
-
   .login-text:hover {
     background-color: #DBA632;
     color: white;
@@ -187,19 +218,15 @@ if (isset($_SESSION['login_admin'])) {
       border-radius: 12px;
       margin-top: 1rem;
     }
-
     .navbar-brand img {
       height: 90px;
-      /* mantém mesmo tamanho */
     }
-
     .navbar-nav {
       flex-direction: column !important;
       align-items: center;
       gap: 1rem;
       margin: 1rem 0;
     }
-
     .nav-buttons {
       flex-direction: column !important;
       gap: 0.8rem;
@@ -207,7 +234,6 @@ if (isset($_SESSION['login_admin'])) {
       width: 100%;
       align-items: center;
     }
-
     .registrar-text,
     .login-text {
       width: 100%;
@@ -215,25 +241,15 @@ if (isset($_SESSION['login_admin'])) {
       font-size: 14px;
       padding: 0.6rem 1rem;
     }
-
     .navbar-toggler {
       margin-right: 1rem;
     }
-
     .nav-link {
-      font-size: 16px;
+      font-size: 16px;  /* maior em telas pequenas */
     }
   }
-
-  /* Garante que todos os links da navbar fiquem sempre no mesmo tamanho */
-  .navbar .nav-link {
-    font-size: 15px;      
-    font-weight: bold;  
-    text-transform: uppercase; 
-  }
-
-  
 </style>
+
 
 <!-- NAVBAR FUNCIONAL -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">

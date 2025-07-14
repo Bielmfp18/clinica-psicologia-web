@@ -124,6 +124,22 @@ $numrow = $lista->rowCount();
       /* cor personalizada */
       color: #fff;
     }
+
+    /* Gradiente para modal de DESATIVAR (base #dc3545) */
+    .modal-header-danger {
+      background: linear-gradient(135deg, #e85a58 0%, #dc3545 100%);
+      color: #fff !important;
+    }
+    /* Gradiente para modal de ATIVAR (base #198754) */
+    .modal-header-success {
+      background: linear-gradient(135deg, #3fa86d 0%, #198754 100%);
+      color: #fff !important;
+    }
+    /* Gradiente para modal de OBSERVAÇÕES (base #0dcaf0) */
+    .modal-header-info {
+      background: linear-gradient(135deg, #5ddcf9 0%, #0dcaf0 100%);
+      color: #fff !important;
+    }
   </style>
 
 </head>
@@ -169,7 +185,7 @@ $numrow = $lista->rowCount();
             <th class="text-center">NOME</th>
             <th class="text-center">EMAIL</th>
             <th class="text-center">TELEFONE</th>
-            <th class="text-center" >DATAS</th>
+            <th class="text-center">DATAS</th>
             <th class="text-center">STATUS</th>
             <th class="text-center">OBSERVAÇÕES</th>
             <th class="text-center">EDITAR</th>
@@ -201,31 +217,30 @@ $numrow = $lista->rowCount();
                               : '—'; ?>
                 </td>
 
-                
                 <!-- Status -->
                 <td class="status-col">
                   <?php if ($row['ativo'] == 1): ?>
                     <span class="badge bg-success">Ativo</span>
-                    <?php else: ?>
-                      <span class="badge bg-danger">Inativo</span>
-                      <?php endif; ?>
-                    </td>
+                  <?php else: ?>
+                    <span class="badge bg-danger">Inativo</span>
+                  <?php endif; ?>
+                </td>
 
-                    <!-- Observações -->
-                    <td>
-                      <?php if (!empty(trim($row['observacoes'] ?? ''))): ?>
-                        <button
-                          class="btn btn-info btn-anim"
-                          data-bs-toggle="modal"
-                          data-bs-target="#obsModal"
-                          data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
-                          data-obs="<?php echo htmlspecialchars($row['observacoes']); ?>">
-                          <i class="bi bi-chat-dots"></i>
-                        </button>
-                      <?php else: ?>
-                        —
-                      <?php endif; ?>
-                    </td>
+                <!-- Observações -->
+                <td>
+                  <?php if (!empty(trim($row['observacoes'] ?? ''))): ?>
+                    <button
+                      class="btn btn-info btn-anim"
+                      data-bs-toggle="modal"
+                      data-bs-target="#obsModal"
+                      data-nome="<?php echo htmlspecialchars($row['nome']); ?>"
+                      data-obs="<?php echo htmlspecialchars($row['observacoes']); ?>">
+                      <i class="bi bi-chat-dots"></i>
+                    </button>
+                  <?php else: ?>
+                    —
+                  <?php endif; ?>
+                </td>
 
                 <!-- Editar -->
                 <td>
@@ -247,7 +262,7 @@ $numrow = $lista->rowCount();
                     <button class="activate btn btn-success btn-anim"
                       data-id="<?php echo $row['id']; ?>"
                       data-nome="<?php echo htmlspecialchars($row['nome']); ?>">
-                      <i class="bi bi-check-lg"></i>
+                                          <i class="bi bi-check-lg"></i>
                     </button>
                   <?php endif; ?>
                 </td>
@@ -267,12 +282,12 @@ $numrow = $lista->rowCount();
   <div class="modal fade" id="obsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <!-- Cabeçalho em fundo azul, texto escuro -->
-        <div class="modal-header bg-info text-dark">
-          <h5 class="modal-title">Observações de <strong><span id="obsNome"></span></strong></h5>
+        <!-- Cabeçalho em gradiente azul, título branco -->
+        <div class="modal-header modal-header-info">
+          <h5 class="modal-title text-white">Observações de <strong><span id="obsNome"></span></strong></h5>
         </div>
         <!-- Corpo em fundo claro -->
-        <div class="modal-body bg-light" id="obsTexto"></div>
+        <div class="modal-body bg-light text-center" id="obsTexto"></div>
         <!-- Rodapé com botão azul de fechar -->
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-info btn-anim" data-bs-dismiss="modal">
@@ -282,209 +297,219 @@ $numrow = $lista->rowCount();
       </div>
     </div>
   </div>
+
   <!-- Modal de Desativar/Ativar (Bootstrap 5) -->
   <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-
-        <!-- Cabeçalho do modal -->
+        <!-- Cabeçalho dinâmico, título branco -->
         <div class="modal-header justify-content-center">
-          <h5 class="modal-title text-danger">ATENÇÃO!</h5>
+          <h5 class="modal-title text-white">ATENÇÃO!</h5>
         </div>
-
         <!-- Corpo do modal -->
         <div class="modal-body text-center">
-          Deseja mesmo
-          <span class="action-text fw-bold"></span>
+          Deseja mesmo <span class="action-text fw-bold"></span>
           <strong><span class="nome"></span></strong>?
         </div>
-
         <!-- Rodapé do modal -->
         <div class="modal-footer justify-content-center gap-2">
-          <!-- botão genérico que vira confirm-delete ou confirm-activate -->
           <button type="button" class="btn action-confirm btn-anim"></button>
-          <!-- botão de cancelar -->
           <button type="button"
-            class="btn modal-cancel btn-anim btn-outline-secondary"
-            data-bs-dismiss="modal">
+                  class="btn modal-cancel btn-anim btn-outline-secondary"
+                  data-bs-dismiss="modal">
             Cancelar
           </button>
         </div>
-
       </div>
     </div>
   </div>
 
   <!-- Scripts -->
-  
   <script>
-    // Preenche o modal de Observações antes de abri-lo
-    $('#obsModal').on('show.bs.modal', function(event) {
-      const button = $(event.relatedTarget); // quem disparou
-      const nome = button.data('nome'); // pega o data-nome
-      const obs = button.data('obs'); // pega o data-obs
+  // Preenche o modal de Observações antes de abri-lo
+  $('#obsModal').on('show.bs.modal', function(event) {
+    const button = $(event.relatedTarget); // quem disparou
+    const nome   = button.data('nome');     // pega o data-nome
+    const obs    = button.data('obs');      // pega o data-obs
 
-      // ajusta título e corpo
-      $(this).find('#obsNome').text(nome);
-      $(this).find('#obsTexto').text(obs);
-    });
+    // ajusta título e corpo
+    $('#obsNome').text(nome);
+    $('#obsTexto').text(obs);
 
-    // ----------------------------------------------------------------
-    // 1) Quando clica em “.delete” → abrir modal para DESATIVAR
-    // ----------------------------------------------------------------
-    $(document).on('click', '.delete', function() {
-      const nome = $(this).data('nome');
-      const id = $(this).data('id');
+    // Gradiente no header de OBSERVAÇÕES
+    $('#obsModal .modal-header')
+      .removeClass('modal-header-danger modal-header-success')
+      .addClass('modal-header-info');
+  });
 
-      // Preenche o nome no corpo do modal
-      $('.nome').text(nome);
+  // Função auxiliar para mudar header do myModal
+  function setHeaderClass(cls) {
+    const hdr = $('#myModal .modal-header');
+    hdr.removeClass('modal-header-danger modal-header-success modal-header-info');
+    hdr.addClass(cls);
+    hdr.find('.modal-title').addClass('text-white');
+  }
 
-      // Ajusta o texto e a cor do “action-text”
-      $('.action-text')
-        .text('DESATIVAR')
-        .removeClass('text-success')
-        .addClass('text-danger');
+  // ----------------------------------------------------------------
+  // 1) Quando clica em “.delete” → abrir modal para DESATIVAR
+  // ----------------------------------------------------------------
+  $(document).on('click', '.delete', function() {
+    const nome = $(this).data('nome');
+    const id   = $(this).data('id');
 
-      // Configura o botão action-confirm para ser o “confirm-delete”
-      $('.action-confirm')
-        .off('click') // limpa handlers anteriores
-        .removeClass('confirm-activate btn-success')
-        .addClass('confirm-delete btn-danger')
-        .text('Confirmar Desativação')
-        .data('id', id); // guarda o id para o AJAX
+    // Preenche o nome no corpo do modal
+    $('.nome').text(nome);
 
-      // Botão “Cancelar” em verde
-      $('.modal-cancel')
-        .removeClass('btn-outline-danger')
-        .addClass('btn-outline-success')
-        .text('Cancelar');
+    // Ajusta o texto e a cor do “action-text”
+    $('.action-text')
+      .text('DESATIVAR')
+      .removeClass('text-success')
+      .addClass('text-danger');
 
-      // Abre o modal
-      new bootstrap.Modal($('#myModal')).show();
-    });
+    // Ajusta gradiente do header para vermelho
+    setHeaderClass('modal-header-danger');
 
-    // ----------------------------------------------------------------
-    // 2) Quando clica em “.activate” → abrir modal para ATIVAR
-    // ----------------------------------------------------------------
-    $(document).on('click', '.activate', function() {
-      const nome = $(this).data('nome');
-      const id = $(this).data('id');
+    // Configura o botão action-confirm para ser o “confirm-delete”
+    $('.action-confirm')
+      .off('click') // limpa handlers anteriores
+      .removeClass('confirm-activate btn-success')
+      .addClass('confirm-delete btn-danger')
+      .text('Confirmar Desativação')
+      .data('id', id); // guarda o id para o AJAX
 
-      // Preenche o nome no corpo do modal
-      $('.nome').text(nome);
+    // Botão “Cancelar” em VERDE outline para DESATIVAR
+    $('.modal-cancel')
+      .removeClass('btn-outline-danger')
+      .addClass('btn-outline-success')
+      .text('Cancelar');
 
-      // Ajusta o texto e a cor do “action-text”
-      $('.action-text')
-        .text('ATIVAR')
-        .removeClass('text-danger')
-        .addClass('text-success');
+    // Abre o modal
+    new bootstrap.Modal($('#myModal')).show();
+  });
 
-      // Configura o botão action-confirm para ser o “confirm-activate”
-      $('.action-confirm')
-        .off('click')
-        .removeClass('confirm-delete btn-danger')
-        .addClass('confirm-activate btn-success')
-        .text('Confirmar Ativação')
-        .data('id', id);
+  // ----------------------------------------------------------------
+  // 2) Quando clica em “.activate” → abrir modal para ATIVAR
+  // ----------------------------------------------------------------
+  $(document).on('click', '.activate', function() {
+    const nome = $(this).data('nome');
+    const id   = $(this).data('id');
 
-      // Botão “Cancelar” em vermelho
-      $('.modal-cancel')
-        .removeClass('btn-outline-success')
-        .addClass('btn-outline-danger')
-        .text('Cancelar');
+    // Preenche o nome no corpo do modal
+    $('.nome').text(nome);
 
-      // Abre o modal
-      new bootstrap.Modal($('#myModal')).show();
-    });
+    // Ajusta o texto e a cor do “action-text”
+    $('.action-text')
+      .text('ATIVAR')
+      .removeClass('text-danger')
+      .addClass('text-success');
 
-    // ----------------------------------------------------------------
-    // 3) Handler AJAX: Confirmar DESATIVAÇÃO
-    // ----------------------------------------------------------------
-    $(document).on('click', '.confirm-delete', function() {
-      const btn = $(this);
-      const id = btn.data('id');
-      const url = 'paciente_desativa.php?id=' + id;
-      const tr = $('tr[data-id="' + id + '"]');
-      const statusTd = tr.find('.status-col'); // <— badge de status
-      const actionTd = tr.find('.action-col');
+    // Ajusta gradiente do header para verde
+    setHeaderClass('modal-header-success');
 
-      // Fecha o modal
-      bootstrap.Modal.getInstance($('#myModal')).hide();
+    // Configura o botão action-confirm para ser o “confirm-activate”
+    $('.action-confirm')
+      .off('click')
+      .removeClass('confirm-delete btn-danger')
+      .addClass('confirm-activate btn-success')
+      .text('Confirmar Ativação')
+      .data('id', id);
 
-      $.getJSON(url)
-        .done(res => {
-          if (!res.success) return alert(res.message);
+    // Botão “Cancelar” em VERMELHO outline para ATIVAR
+    $('.modal-cancel')
+      .removeClass('btn-outline-success')
+      .addClass('btn-outline-danger')
+      .text('Cancelar');
 
-          // 1) Atualiza badge para "Inativo" instantâneo
-          statusTd.html('<span class="badge bg-danger">Inativo</span>');
+    // Abre o modal
+    new bootstrap.Modal($('#myModal')).show();
+  });
 
-          // 2) Substitui o botão por “.activate” na linha
-          actionTd.html(`
-        <button class="activate btn btn-success btn-anim"
-                data-id="${id}"
-                data-nome="${tr.find('td').eq(1).text()}">
-          <i class="bi bi-check-lg"></i>
-        </button>
-      `);
+  // ----------------------------------------------------------------
+  // 3) Handler AJAX: Confirmar DESATIVAÇÃO
+  // ----------------------------------------------------------------
+  $(document).on('click', '.confirm-delete', function() {
+    const btn     = $(this);
+    const id      = btn.data('id');
+    const url     = 'paciente_desativa.php?id=' + id;
+    const tr      = $('tr[data-id="' + id + '"]');
+    const statusTd = tr.find('.status-col'); // <— badge de status
+    const actionTd = tr.find('.action-col');
 
-          mostrarAlert(res.message, 'danger');
-        })
-        .fail(() => alert('Erro ao comunicar com o servidor.'));
-    });
+    // Fecha o modal
+    bootstrap.Modal.getInstance($('#myModal')).hide();
 
+    $.getJSON(url)
+      .done(res => {
+        if (!res.success) return alert(res.message);
 
-    // ----------------------------------------------------------------
-    // 4) Handler AJAX: Confirmar ATIVAÇÃO
-    // ----------------------------------------------------------------
-    $(document).on('click', '.confirm-activate', function() {
-      const btn = $(this);
-      const id = btn.data('id');
-      const url = 'paciente_ativa.php?id=' + id;
-      const tr = $('tr[data-id="' + id + '"]');
-      const statusTd = tr.find('.status-col'); // <— badge de status
-      const actionTd = tr.find('.action-col');
+        // 1) Atualiza badge para "Inativo" instantâneo
+        statusTd.html('<span class="badge bg-danger">Inativo</span>');
 
-      // Fecha o modal
-      bootstrap.Modal.getInstance($('#myModal')).hide();
+        // 2) Substitui o botão por “.activate” na linha
+        actionTd.html(`
+          <button class="activate btn btn-success btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(0).text()}">
+            <i class="bi bi-check-lg"></i>
+          </button>
+        `);
 
-      $.getJSON(url)
-        .done(res => {
-          if (!res.success) return alert(res.message);
+        mostrarAlert(res.message, 'danger');
+      })
+      .fail(() => alert('Erro ao comunicar com o servidor.'));
+  });
 
-          // 1) Atualiza badge para "Ativo" instantâneo
-          statusTd.html('<span class="badge bg-success">Ativo</span>');
+  // ----------------------------------------------------------------
+  // 4) Handler AJAX: Confirmar ATIVAÇÃO
+  // ----------------------------------------------------------------
+  $(document).on('click', '.confirm-activate', function() {
+    const btn     = $(this);
+    const id      = btn.data('id');
+    const url     = 'paciente_ativa.php?id=' + id;
+    const tr      = $('tr[data-id="' + id + '"]');
+    const statusTd = tr.find('.status-col'); // <— badge de status
+    const actionTd = tr.find('.action-col');
 
-          // 2) Substitui pelos botão “.delete”
-          actionTd.html(`
-        <button class="delete btn btn-danger btn-anim"
-                data-id="${id}"
-                data-nome="${tr.find('td').eq(1).text()}">
-          <i class="bi bi-x-lg"></i>
-        </button>
-      `);
+    // Fecha o modal
+    bootstrap.Modal.getInstance($('#myModal')).hide();
 
-          mostrarAlert(res.message, 'success');
-        })
-        .fail(() => alert('Erro ao comunicar com o servidor.'));
-    });
-    // ----------------------------------------------------------------
-    // 5) Função utilitária para exibir alerts temporários
-    // ----------------------------------------------------------------
-    function mostrarAlert(texto, tipo) {
-      const $a = $(`
-        <div class="alert alert-${tipo} alert-dismissible
-                    position-fixed top-0 start-50 translate-middle-x mt-3"
-             style="z-index:1050; display:none;">
-          ${texto}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      `).appendTo('body');
-      $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
-    }
-  </script>
+    $.getJSON(url)
+      .done(res => {
+        if (!res.success) return alert(res.message);
 
+        // 1) Atualiza badge para "Ativo" instantâneo
+        statusTd.html('<span class="badge bg-success">Ativo</span>');
 
+        // 2) Substitui pelos botão “.delete”
+        actionTd.html(`
+          <button class="delete btn btn-danger btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(0).text()}">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        `);
+
+        mostrarAlert(res.message, 'success');
+      })
+      .fail(() => alert('Erro ao comunicar com o servidor.'));
+  });
+
+  // ----------------------------------------------------------------
+  // 5) Função utilitária para exibir alerts temporários
+  // ----------------------------------------------------------------
+  function mostrarAlert(texto, tipo) {
+    const $a = $(`
+      <div class="alert alert-${tipo} alert-dismissible
+                  position-fixed top-0 start-50 translate-middle-x mt-3"
+           style="z-index:1050; display:none;">
+        ${texto}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    `).appendTo('body');
+    $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+  }
+</script>
 
 </body>
-
 </html>
+
