@@ -85,21 +85,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 "Paciente cadastrado: {$nome}" // descrição detalhada
             );
 
-            echo "<script>
-                    alert('Paciente adicionado com sucesso!');
-                    window.location.href = 'paciente.php';
-                  </script>";
+            // Retorna sucesso em JSON
+            echo json_encode([
+                'success' => true,
+                'id'      => $id,
+                'message' => 'Paciente cadastrado com sucesso!'
+            ]);
             exit;
         } else {
-            echo "<script>alert('Erro ao adicionar o paciente.');</script>";
+            // Erro ao executar a ativação
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao tentar cadastrar o paciente!'
+            ]);
+            exit;
         }
     } catch (PDOException $e) {
-        echo "<script>
-                alert('Erro ao adicionar o paciente: " . addslashes($e->getMessage()) . "');
-              </script>";
+        // Em caso de exceção, devolve JSON de erro
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro ao cadastrar o paciente: ' . addslashes($e->getMessage())
+        ]);
+        exit;
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -233,6 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Faz o textarea ajustar a altura ao conteúdo de observações do paciente.
         document.addEventListener('DOMContentLoaded', function() {
             const ta = document.getElementById('observacoes');
+
             function ajustaAltura() {
                 ta.style.height = 'auto';
                 ta.style.height = ta.scrollHeight + 'px';
@@ -242,4 +256,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     </script>
 </body>
+
 </html>

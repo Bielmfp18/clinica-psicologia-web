@@ -350,7 +350,132 @@ $numrow = $lista->rowCount();
 
       new bootstrap.Modal(document.getElementById('myModal')).show();
     });
+ 
+  // 1) Abrir cada modal e guardar data-id
+    $(document).on('click', '.realizar', function() {
+      const id = $(this).data('id');
+      const nome = $(this).data('nome');
+      $('.nome-realizar').text(nome);
+      $('.confirm-realizar').data('id', id);
+      new bootstrap.Modal(document.getElementById('realizarModal')).show();
+    });
+
+    $(document).on('click', '.delete', function() {
+      const id = $(this).data('id');
+      const nome = $(this).data('nome');
+      $('.nome').text(nome);
+      $('.confirm-delete').data('id', id);
+      new bootstrap.Modal(document.getElementById('myModal')).show();
+    });
+
+    $(document).on('click', '.activate', function() {
+      const id = $(this).data('id');
+      const nome = $(this).data('nome');
+      $('.nome').text(nome);
+      $('.confirm-activate').data('id', id);
+      new bootstrap.Modal(document.getElementById('activateModal')).show();
+    });
+
+    // 2) Handlers AJAX
+
+    // Confirmar realização
+    $(document).on('click', '.confirm-realizar', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'paciente_confirma.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col');
+      const actionTd = tr.find('.action-col');
+      bootstrap.Modal.getInstance(document.getElementById('realizarModal')).hide();
+
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
+          statusTd.text('REALIZADA');
+          actionTd.html('—');
+
+          // Mensagem que aparece no topo da tela
+          const $a = $(`<div class="alert alert-success alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">
+          ${res.message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`).appendTo('body');
+          $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
+
+    // Confirmar cancelamento
+    $(document).on('click', '.confirm-delete', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'paciente_desativa.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col');
+      const actionTd = tr.find('.action-col');
+      bootstrap.Modal.getInstance(document.getElementById('myModal')).hide();
+
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
+          statusTd.text('CANCELADA');
+          actionTd.html(`
+          <button class="activate btn btn-success btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(1).text()}">
+            <i class="bi bi-check-lg"></i>
+          </button>
+        `);
+
+          // Mensagem que aparece no topo da tela
+          const $a = $(`<div class="alert alert-danger alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">
+          ${res.message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`).appendTo('body');
+          $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
+
+    // Confirmar ativação
+    $(document).on('click', '.confirm-activate', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'paciente_ativa.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col');
+      const actionTd = tr.find('.action-col');
+      bootstrap.Modal.getInstance(document.getElementById('activateModal')).hide();
+
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
+          statusTd.text('AGENDADA');
+          actionTd.html(`
+          <button class="realizar btn btn-primary btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(1).text()}">
+            <i class="bi bi-check2-circle"></i>
+          </button>
+          <button class="delete btn btn-danger btn-anim"
+                  data-id="${id}"
+                  data-nome="${tr.find('td').eq(1).text()}">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        `);
+
+          // Mensagem que aparece no topo da tela
+          const $a = $(`<div class="alert alert-success alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">
+          ${res.message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`).appendTo('body');
+          $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
+
+   
   </script>
+
 
 </body>
 

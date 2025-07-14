@@ -1,7 +1,11 @@
 <!-- PACIENTE DESATIVA -->
-
+ 
 <?php
-// Exibe erros para depuração
+
+// força saída JSON
+header('Content-Type: application/json; charset=utf-8');
+
+// Exibe erros para depuração (remova em produção!)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -10,12 +14,13 @@ error_reporting(E_ALL);
 session_name('Mente_Renovada');
 session_start();
 
-// Verifica se o psicólogo está logado
+// sessão expirada → JSON de erro
 if (!isset($_SESSION['psicologo_id'])) {
-    die("<script>
-            alert('Faça login antes de desativar pacientes.');
-            window.location.href = 'index.php';
-         </script>");
+    echo json_encode([
+        'success' => false,
+        'message' => 'Sessão expirada. Faça login novamente.'
+    ]);
+    exit;
 }
 
 // Conexão com o banco
@@ -26,55 +31,61 @@ include 'funcao_historico.php';
 // ID do psicólogo logado
 $psicologoId = (int) $_SESSION['psicologo_id'];
 
-// Verifica se o ID do paciente foi informado via GET
-if (!isset($_GET['id'])) {
-    die("ID do paciente não informado.");
+// Valida ID recebido
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'ID do paciente inválido.'
+    ]);
+    exit;
 }
-$id = (int) $_GET['id'];
 
 try {
     // Chama procedure para desativar o paciente
-    $sql = "CALL ps_paciente_disable(:psid)";
-    $stmt = $conn->prepare($sql);
+    $stmt = $conn->prepare("CALL ps_paciente_disable(:psid)");
     $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
+    $ok = $stmt->execute();
+    $stmt->closeCursor();
 
-    if ($stmt->execute()) {
-        $stmt->closeCursor();
-
-        // Recupera o nome do paciente antes de registrar no histórico
-        $stmtNome = $conn->prepare("SELECT nome FROM paciente WHERE id = :id");
-        $stmtNome->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmtNome->execute();
-        $paciente = $stmtNome->fetch(PDO::FETCH_ASSOC);
-        $nomePaciente = $paciente['nome'] ?? "ID {$id}";
-
-        // Registra com nome no histórico
-        registrarHistorico(
-            $conn,
-            $psicologoId,
-            'Desativação',
-            'Paciente',
-            "Paciente desativado: {$nomePaciente}"
-        );
-
-        echo "<script>
-                alert('Paciente desativado com sucesso!');
-                window.location.href = 'paciente.php';
-              </script>";
-        exit;
-    } else {
-        echo "<script>
-                alert('Erro ao tentar desativar o paciente!');
-                window.location.href = 'paciente.php';
-              </script>";
+    if (!$ok) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro ao tentar desativar o paciente!'
+        ]);
         exit;
     }
 
+    // Recupera o nome do paciente antes de registrar no histórico
+    $stmtNome = $conn->prepare("SELECT nome FROM paciente WHERE id = :id");
+    $stmtNome->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmtNome->execute();
+    $paciente = $stmtNome->fetch(PDO::FETCH_ASSOC);
+    $nomePaciente = $paciente['nome'] ?? "ID {$id}";
+
+    // Registra no histórico
+    registrarHistorico(
+        $conn,
+        $psicologoId,
+        'Desativação',
+        'Paciente',
+        "Paciente desativado: {$nomePaciente}"
+    );
+
+    // Retorna sucesso
+    echo json_encode([
+        'success' => true,
+        'id'      => $id,
+        'message' => 'Paciente desativado com sucesso!'
+    ]);
+    exit;
+
 } catch (PDOException $e) {
-    echo "<script>
-            alert('Erro ao desativar o paciente: " . addslashes($e->getMessage()) . "');
-            window.location.href = 'paciente.php';
-          </script>";
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro ao desativar o paciente: ' . addslashes($e->getMessage())
+    ]);
     exit;
 }
-?>

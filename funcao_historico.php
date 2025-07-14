@@ -15,10 +15,18 @@
 function registrarHistorico(PDO $conn, int $psicologoId, string $acao, string $entidade, string $descricao, string $dataHora = null): array
 {
 
-    
+
     if ($dataHora === null) {
-        $dataHora = date('Y-m-d H:i:s');
+        $tz = $timezone ?? 'America/Sao_Paulo'; // Usa o timezone informado, ou UTC por padrão
+        try {
+            $dt = new DateTime('now', new DateTimeZone($tz));
+            $dataHora = $dt->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            // Se o timezone for inválido, usa UTC como fallback seguro
+            $dataHora = gmdate('Y-m-d H:i:s');
+        }
     }
+
 
     $stmt = $conn->prepare("
         CALL ps_historico_insert(

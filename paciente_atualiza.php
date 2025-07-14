@@ -98,19 +98,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "Paciente atualizado: {$nome} " // descrição detalhada
             );
 
-            // Feedback e redirecionamento
-            echo "<script>
-                        alert('Paciente atualizado com sucesso!');
-                        window.location.href = 'paciente.php';
-                      </script>";
+            // Retorna sucesso em JSON
+            echo json_encode([
+                'success' => true,
+                'id'      => $id,
+                'message' => 'Paciente atualizado com sucesso!'
+            ]);
             exit;
         } else {
-            echo "<script>alert('Erro ao atualizar o paciente.');</script>";
+            // Erro ao executar a ativação
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erro ao tentar atualizar o paciente!'
+            ]);
+            exit;
         }
     } catch (PDOException $e) {
-        echo "<script>
-                alert('Erro ao atualizar o paciente: " . addslashes($e->getMessage()) . "');
-              </script>";
+        // Em caso de exceção, devolve JSON de erro
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Erro ao atualizar o paciente: ' . addslashes($e->getMessage())
+        ]);
+        exit;
     }
 }
 ?>
