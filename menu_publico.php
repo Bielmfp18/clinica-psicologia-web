@@ -1,4 +1,4 @@
-<!-- menu público -->
+<!-- MENU PÚBLICO -->
 
 <?php
 ///////////////////////////////// LOGIN DO PSICÓLOGO /////////////////////////////////////////
@@ -224,6 +224,15 @@ if (isset($_SESSION['login_admin'])) {
       font-size: 16px;
     }
   }
+
+  /* Garante que todos os links da navbar fiquem sempre no mesmo tamanho */
+  .navbar .nav-link {
+    font-size: 15px;      
+    font-weight: bold;  
+    text-transform: uppercase; 
+  }
+
+  
 </style>
 
 <!-- NAVBAR FUNCIONAL -->

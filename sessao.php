@@ -96,6 +96,37 @@ $numrow = $lista->rowCount();
       white-space: pre-wrap;
       word-break: break-word;
     }
+
+    /* ================================
+   BADGES DE STATUS DE SESSÃO
+   ================================ */
+.status-col .badge {
+  display: inline-block;
+  font-weight: 600;
+  text-transform: capitalize;  /* “Agendada”, “Realizada”, etc */
+  padding: 0.35em 0.75em;
+  font-size: 0.85rem;
+  border-radius: 0.25rem;
+}
+
+/* Agendada (amarelo) */
+.status-col .badge.bg-warning {
+  background-color: #ffc107 !important; /* igual ao bg-warning */
+  color: #212529;                       /* texto escuro */
+}
+
+/* Realizada (verde) */
+.status-col .badge.bg-success {
+  background-color: #198754 !important; /* igual ao bg-success */
+  color: #fff;
+}
+
+/* Cancelada (vermelho) */
+.status-col .badge.bg-danger {
+  background-color: #dc3545 !important; /* igual ao bg-danger */
+  color: #fff;
+}
+
   </style>
 </head>
 
@@ -143,10 +174,10 @@ $numrow = $lista->rowCount();
           <tr>
             <th class="hidden">ID</th>
             <th>PACIENTE</th>
-            <th>ANOTAÇÕES</th>
             <th>DATA/HORA</th>
             <th>CRIADO EM</th>
             <th>STATUS</th>
+            <th>ANOTAÇÕES</th>
             <th>EDITAR</th>
             <th>AÇÃO</th>
           </tr>
@@ -155,8 +186,33 @@ $numrow = $lista->rowCount();
           <?php if ($numrow > 0): ?>
             <?php while ($row = $lista->fetch(PDO::FETCH_ASSOC)): ?>
               <tr data-id="<?= $row['id'] ?>">
+                <!-- ID da sessão (oculto) -->
                 <td class="hidden"><?= $row['id'] ?></td>
+
+                <!-- Nome do paciente -->
                 <td><?= htmlspecialchars($row['paciente_nome'] ?: '—') ?></td>
+                
+                <!-- Data e hora da sessão -->
+                <td><?= date('d/m/Y H:i', strtotime($row['data_hora_sessao'])) ?></td>
+                <!-- Data de criação do registro -->
+                <td><?= date('d/m/Y H:i', strtotime($row['data_criacao'])) ?></td>
+                
+                <!-- Status da sessão -->
+                <td class="status-col">
+                    <?php if ($row['status_sessao'] === 'AGENDADA'): ?>
+                      <span class="badge bg-warning">Agendada</span>
+                    <?php elseif ($row['status_sessao'] === 'REALIZADA'): ?>
+                      <span class="badge bg-success">Realizada</span>
+                    <?php elseif ($row['status_sessao'] === 'CANCELADA'): ?>
+                      <span class="badge bg-danger">Cancelada</span>
+                    <?php else: ?>
+                      <span class="badge bg-secondary"><?= htmlspecialchars($row['status_sessao']) ?></span>
+                    <?php endif; ?>
+                  </td>
+                </td>
+               
+                
+                <!-- Botão para ver anotações -->
                 <td>
                   <?php if (!empty(trim($row['anotacoes'] ?? ''))): ?>
                     <button class="btn btn-info btn-anim"
@@ -170,15 +226,15 @@ $numrow = $lista->rowCount();
                     —
                   <?php endif; ?>
                 </td>
-                <td><?= date('d/m/Y H:i', strtotime($row['data_hora_sessao'])) ?></td>
-                <td><?= date('d/m/Y H:i', strtotime($row['data_criacao'])) ?></td>
-                <td class="status-col"><?= $row['status_sessao'] ?></td>
+                
+                
+                <!-- Botão de edição -->
                 <td>
-                  <a href="sessao_atualiza.php?id=<?= $row['id'] ?>"
-                    class="btn btn-warning btn-anim">
+                  <a href="sessao_atualiza.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-anim">
                     <i class="bi bi-pencil-square"></i>
                   </a>
-                </td>
+                
+                <!-- Botões de ação (realizar, cancelar, ativar) -->
                 <td class="action-col">
                   <?php if ($row['status_sessao'] === 'AGENDADA'): ?>
                     <button class="realizar btn btn-primary btn-anim"
@@ -209,6 +265,7 @@ $numrow = $lista->rowCount();
             </tr>
           <?php endif; ?>
         </tbody>
+
       </table>
     </div>
   </div>
@@ -383,7 +440,7 @@ $numrow = $lista->rowCount();
       $.getJSON(url)
         .done(res => {
           if (!res.success) return alert(res.message);
-          statusTd.text('CANCELADA');
+          statusTd.html('<span class="badge bg-danger">Cancelada</span>');
           actionTd.html(`
           <button class="activate btn btn-success btn-anim"
                   data-id="${id}"
@@ -415,7 +472,7 @@ $numrow = $lista->rowCount();
       $.getJSON(url)
         .done(res => {
           if (!res.success) return alert(res.message);
-          statusTd.text('AGENDADA');
+          statusTd.html('<span class="badge bg-warning">Agendada</span>');
           actionTd.html(`
           <button class="realizar btn btn-primary btn-anim"
                   data-id="${id}"

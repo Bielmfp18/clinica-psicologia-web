@@ -1,6 +1,6 @@
-<!-- PACIENTE ATIVA -->
- 
 <?php
+// PACIENTE ATIVA
+
 // Exibe erros para depuração
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -14,7 +14,7 @@ session_name('Mente_Renovada');
 session_start();
 
 // Se não estiver logado, retorna erro 401
-if (!empty($_SESSION['psicologo_id']) === false) {
+if (!isset($_SESSION['psicologo_id'])) {
     http_response_code(401);
     echo json_encode([
         'success' => false,
@@ -40,9 +40,9 @@ include 'conn/conexao.php';
 include 'funcao_historico.php';
 
 try {
+    // Chama a procedure que ativa o paciente
     $stmt = $conn->prepare("CALL ps_paciente_enable(:psid)");
     $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
-
     if (!$stmt->execute()) {
         throw new Exception('Falha ao executar procedure.');
     }
@@ -52,11 +52,19 @@ try {
     $stmt2 = $conn->prepare("SELECT nome FROM paciente WHERE id = :id");
     $stmt2->bindValue(':id', $id, PDO::PARAM_INT);
     $stmt2->execute();
-    $pac = $stmt2->fetch(PDO::FETCH_ASSOC);
-    $nome = $pac['nome'] ?? "ID {$id}";
+    $pac   = $stmt2->fetch(PDO::FETCH_ASSOC);
+    $nome  = $pac['nome'] ?? "ID {$id}";
 
-    registrarHistorico($conn, $psicologoId, 'Ativação', 'Paciente', "Paciente ativado: {$nome}");
+    // Registra no histórico
+    registrarHistorico(
+        $conn,
+        $psicologoId,
+        'Ativação',
+        'Paciente',
+        "Paciente ativado: {$nome}"
+    );
 
+    // Retorna sucesso
     echo json_encode([
         'success' => true,
         'id'      => $id,

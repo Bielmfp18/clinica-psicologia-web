@@ -41,13 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Limpeza total
     if (isset($_POST['clear_all'])) {
         $conn->prepare("DELETE FROM historico WHERE psicologo_id = :id")
-             ->execute([':id' => $usuario['id']]);
-        header('Location: ' . $_SERVER['PHP_SELF']); exit;
+            ->execute([':id' => $usuario['id']]);
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
     }
     // Exclusão individual
     if (isset($_POST['delete_id'])) {
         apagarHistorico($conn, (int)$_POST['delete_id']);
-        header('Location: ' . $_SERVER['PHP_SELF']); exit;
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
     }
 }
 
@@ -64,6 +66,7 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -79,7 +82,7 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
 
         .card-historico {
             border-radius: 1rem;
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             overflow: hidden;
         }
 
@@ -105,7 +108,7 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
             height: 2.5rem;
             border-radius: 50%;
             display: flex;
-              top: 0.5rem;
+            top: 0.5rem;
             align-items: center;
             justify-content: center;
         }
@@ -137,16 +140,38 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
             overflow-y: auto;
         }
 
-        table td, table th {
+        table td,
+        table th {
             vertical-align: middle;
             text-align: center;
         }
+
+        button {
+            /* Transição longa e easing bem brando */
+            transition:
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button:hover {
+            /* Scale muito sutil */
+            transform: scale(1.02);
+            /* Sombra suave e espalhada */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            /* Feedback rápido porém suave */
+            transform: scale(0.97);
+            transition-duration: 0.2s;
+        }
     </style>
 </head>
+
 <body>
     <?php include 'menu_publico.php'; ?>
 
-      <div class="container py-4">
+    <div class="container py-4">
         <div class="card card-historico mx-auto" style="max-width:1000px;">
             <div class="historico-header">
                 <button onclick="location.href='perfil_ps.php'" class="btn btn-outline-primary btn-back">
@@ -173,41 +198,43 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
                         </thead>
                         <tbody>
                             <?php if ($registros): ?>
-                            <?php foreach ($registros as $item): ?>
-                                <tr>
-                                    <td><?= date('d/m/Y H:i', strtotime($item['data_hora'])) ?></td>
-                                    <td><?= htmlspecialchars($item['acao']) ?></td>
-                                    <td><?= htmlspecialchars($item['tipo_entidade']) ?></td>
-                                    <td><?= nl2br(htmlspecialchars($item['descricao'])) ?></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete<?= $item['id'] ?>">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <div class="modal fade" id="confirmDelete<?= $item['id'] ?>" tabindex="-1">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Confirmar exclusão</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Deseja apagar este registro?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                        <form method="POST" class="d-inline">
-                                                            <input type="hidden" name="delete_id" value="<?= $item['id'] ?>">
-                                                            <button type="submit" class="btn btn-danger">Apagar</button>
-                                                        </form>
+                                <?php foreach ($registros as $item): ?>
+                                    <tr>
+                                        <td><?= date('d/m/Y H:i', strtotime($item['data_hora'])) ?></td>
+                                        <td><?= htmlspecialchars($item['acao']) ?></td>
+                                        <td><?= htmlspecialchars($item['tipo_entidade']) ?></td>
+                                        <td><?= nl2br(htmlspecialchars($item['descricao'])) ?></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete<?= $item['id'] ?>">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            <div class="modal fade" id="confirmDelete<?= $item['id'] ?>" tabindex="-1">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Confirmar exclusão</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Deseja apagar este registro?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancelar</button>
+                                                            <form method="POST" class="d-inline">
+                                                                <input type="hidden" name="delete_id" value="<?= $item['id'] ?>">
+                                                                <button type="submit" class="btn btn-danger">Apagar</button>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             <?php else: ?>
-                                <tr><td colspan="5" class="py-4">Nenhuma atividade registrada.</td></tr>
+                                <tr>
+                                    <td colspan="5" class="py-4">Nenhuma atividade registrada.</td>
+                                </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -216,6 +243,7 @@ $registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
