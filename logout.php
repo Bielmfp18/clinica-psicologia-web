@@ -1,14 +1,17 @@
-<?php 
-session_name('Mente_Renovada');// Define o nome da sessão
-session_start(); // Inicia a sessão
+<?php
+session_name('Mente_Renovada');
+session_start();
 
-session_unset(); // Remove todas as variáveis de sessão
-session_destroy(); // Destrói a sessão
+// Seta só o flash
+$_SESSION['flash'] = [
+  'type'    => 'danger',
+  'message' => 'Você se desconectou da conta!'
+];
 
-//Exibe a mensagem de desconexão após o logout e redireciona a página de login.
-echo "<script>
-            alert('Você se desconectou da sua conta!');
-            window.location.href='index.php';
-      </script>";
-exit();
+// Remove a autenticação, mas mantém o flash
+unset($_SESSION['login_admin'], $_SESSION['psicologo_id']);
+
+// Redireciona para index, onde o menu_publico vai ler e exibir o flash
+header('Location: index.php');
+exit;
 ?>

@@ -164,11 +164,15 @@ $numrow = $lista->rowCount();
         <tbody>
           <?php if ($numrow > 0): ?>
             <?php while ($row = $lista->fetch(PDO::FETCH_ASSOC)): ?>
+              <!-- ID -->
               <tr data-id="<?= $row['id'] ?>">
                 <td class="hidden"><?= $row['id'] ?></td>
+                <!-- NOME -->
                 <td><?= htmlspecialchars($row['paciente_nome'] ?: '—') ?></td>
+                <!-- DATA/HORA E CRIAÇÃO -->
                 <td><?= date('d/m/Y H:i', strtotime($row['data_hora_sessao'])) ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($row['data_criacao'])) ?></td>
+                <!-- STATUS -->
                 <td class="status-col">
                   <?php if ($row['status_sessao']==='AGENDADA'): ?>
                     <span class="badge bg-warning">Agendada</span>
@@ -180,6 +184,7 @@ $numrow = $lista->rowCount();
                     <span class="badge bg-secondary"><?= htmlspecialchars($row['status_sessao']) ?></span>
                   <?php endif; ?>
                 </td>
+                <!-- ANOTAÇÕES -->
                 <td>
                   <?php if (!empty(trim($row['anotacoes'] ?? ''))): ?>
                     <button class="btn btn-info btn-anim"
@@ -192,11 +197,13 @@ $numrow = $lista->rowCount();
                     —
                   <?php endif; ?>
                 </td>
+                <!-- EDITAR -->
                 <td>
                   <a href="sessao_atualiza.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-anim">
                     <i class="bi bi-pencil-square"></i>
                   </a>
                 </td>
+                <!-- AÇÃO -->
                 <td class="action-col">
                   <?php if ($row['status_sessao']==='AGENDADA'): ?>
                     <button class="realizar btn btn-primary btn-anim"

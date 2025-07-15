@@ -6,12 +6,18 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Inicia sessão e inclui a conexão com o banco de dados
 include 'conn/conexao.php';
 
+// Define o nome da sessão
 session_name('Mente_Renovada');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Resgata e apaga o flash, se existir
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['login_admin'])) {
@@ -44,6 +50,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,10 +62,12 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
         .btn-anim {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .btn-anim:hover {
             transform: scale(1.07);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
+
         .btn-anim:active {
             transform: scale(0.97);
         }
@@ -71,19 +80,19 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
     <div class="container py-5">
         <!-- card recebe position-relative -->
         <div class="card shadow-lg position-relative mx-auto" style="max-width:600px;">
-            
+
             <!-- Ícone de Histórico -->
             <a href="historico.php"
-               class="btn btn-outline-primary position-absolute top-0 end-0 m-3 btn-anim"
-               title="Histórico">
+                class="btn btn-outline-primary position-absolute top-0 end-0 m-3 btn-anim"
+                title="Histórico">
                 <i class="bi bi-clock-history"></i>
             </a>
 
             <div class="card-body text-center">
                 <img src="<?= htmlspecialchars($foto) ?>"
-                     alt="Foto de perfil"
-                     class="rounded-circle mb-3"
-                     width="150" height="150">
+                    alt="Foto de perfil"
+                    class="rounded-circle mb-3"
+                    width="150" height="150">
 
                 <h3><?= htmlspecialchars($usuario['nome']) ?></h3>
                 <p>Email: <?= htmlspecialchars($usuario['email']) ?></p>
@@ -106,6 +115,17 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
             </div>
         </div> <!-- fim card -->
 
+
+        <!-- ALERTA FIXO NO TOPO -->
+        <?php if ($flash): ?>
+            <div class="alert-wrapper">
+                <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0 justify-content-center" role="alert">
+                    <span><?= htmlspecialchars($flash['message']) ?></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- Modal Editar Perfil -->
         <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -123,7 +143,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                                         <i class="bi bi-person-fill text-white"></i>
                                     </span>
                                     <input type="text" class="form-control" name="nome"
-                                           value="<?= htmlspecialchars($usuario['nome']) ?>" required>
+                                        value="<?= htmlspecialchars($usuario['nome']) ?>" required>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -133,7 +153,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                                         <i class="bi bi-envelope-fill text-white"></i>
                                     </span>
                                     <input type="email" class="form-control" name="email"
-                                           value="<?= htmlspecialchars($usuario['email']) ?>" required>
+                                        value="<?= htmlspecialchars($usuario['email']) ?>" required>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -143,7 +163,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                                         <i class="bi bi-lock-fill text-white"></i>
                                     </span>
                                     <input type="password" class="form-control" name="senha"
-                                           placeholder="Digite sua nova senha">
+                                        placeholder="Digite sua nova senha">
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -161,7 +181,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                                 Cancelar
                             </button>
                             <button type="submit" class="btn btn-anim"
-                                    style="background-color: #DBA632; color: white;">
+                                style="background-color: #DBA632; color: white;">
                                 Salvar
                             </button>
                         </div>
@@ -172,6 +192,19 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
 
     </div> <!-- fim container -->
 
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fecha o alert de flash automaticamente
+        setTimeout(() => {
+            const alertEl = document.querySelector('.alert-wrapper .alert');
+            if (alertEl) {
+                bootstrap.Alert.getOrCreateInstance(alertEl).close();
+            }
+        }, 5000);
+    </script>
+
 </body>
+
 </html>
