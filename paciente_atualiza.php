@@ -13,11 +13,13 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    die("<script> 
-        alert('Faça login antes de atualizar pacientes.');
-        window.location.href = 'index.php';
-        </script>");
-    exit;
+  // preparar flash de aviso
+  $_SESSION['flash'] = [
+    'type'    => 'warning',  // ou 'danger', como preferir
+    'message' => 'Faça login antes de atualizar pacientes.'
+  ];
+  header('Location: index.php');
+  exit;
 }
 
 // Arquivo de conexão com o banco de dados
@@ -65,24 +67,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Chama a procedure para atualizar o paciente
         $sql = "CALL ps_paciente_update(
                     :psid,
+                    :pspsicologo_id,
                     :psnome,
                     :psemail,
                     :pstelefone,
                     :psdata_nasc,
-                    :psobservacoes,
-                    :psativo
+                    :psobservacoes
                 )";
 
         // Prepara a consulta
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':psid',           $id,                 PDO::PARAM_INT);
-        $stmt->bindParam(':psnome',         $nome,               PDO::PARAM_STR);
-        $stmt->bindParam(':psemail',        $email,              PDO::PARAM_STR);
-        $stmt->bindParam(':pstelefone',     $telefone,           PDO::PARAM_STR);
-        $stmt->bindParam(':psdata_nasc',    $data_nasc,          PDO::PARAM_STR);
-        $stmt->bindParam(':psobservacoes',  $observacoes,        PDO::PARAM_STR);
-        // mantém o mesmo status sem reativação automática
-        $stmt->bindParam(':psativo',        $paciente['ativo'],  PDO::PARAM_INT);
+        $stmt->bindParam(':psid', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':pspsicologo_id', $psicologoId, PDO::PARAM_INT);
+        $stmt->bindParam(':psnome',  $nome, PDO::PARAM_STR);
+        $stmt->bindParam(':psemail',  $email, PDO::PARAM_STR);
+        $stmt->bindParam(':pstelefone', $telefone, PDO::PARAM_STR);
+        $stmt->bindParam(':psdata_nasc', $data_nasc, PDO::PARAM_STR);
+        $stmt->bindParam(':psobservacoes', $observacoes,PDO::PARAM_STR);
+
 
         // Executa a atualização
         if ($stmt->execute()) {
@@ -98,31 +100,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "Paciente atualizado: {$nome} " // descrição detalhada
             );
 
-            // Retorna sucesso em JSON
-            echo json_encode([
-                'success' => true,
-                'id'      => $id,
-                'message' => 'Paciente atualizado com sucesso!'
-            ]);
+            // Flash de sucesso para ser exibida na página (fora de qualquer modal)
+            $_SESSION['flash'] = [
+                'type'    => 'success',
+                'message' => "Paciente <strong>{$nome}</strong> atualizado com sucesso!!"
+            ];
+            // Redireciona para index passando ?login=1 para abrir o modal de login
+            header('Location: paciente.php');
             exit;
         } else {
-            // Erro ao executar a ativação
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao tentar atualizar o paciente!'
-            ]);
+            // Flash de erro para ser exibida na página
+            $_SESSION['flash'] = [
+                'type'    => 'danger',
+                'message' => 'Erro ao inserir o paciente.'
+            ];
+            header('Location: paciente.php');
             exit;
         }
     } catch (PDOException $e) {
-        // Em caso de exceção, devolve JSON de erro
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Erro ao atualizar o paciente: ' . addslashes($e->getMessage())
-        ]);
+        // Em caso de exceção, também usamos flash de erro
+        $_SESSION['flash'] = [
+            'type'    => 'danger',
+            'message' => 'Erro no servidor: ' . $e->getMessage()
+        ];
+        header('Location: paciente.php');
         exit;
     }
+    exit;
 }
 ?>
 

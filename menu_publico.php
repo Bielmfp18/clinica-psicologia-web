@@ -92,8 +92,7 @@ if (isset($_SESSION['login_admin'])) {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
   <style>
-
-        /* ======== CSS ======== */
+    /* ======== CSS ======== */
     html,
     body {
       margin: 0;
@@ -104,38 +103,63 @@ if (isset($_SESSION['login_admin'])) {
       padding-top: 120px;
     }
 
-    /* ALERTA: wrapper mais estreito e alerta em flexbox */
+    /* Mensagem de aviso */
+    /* Posiciona a wrapper e deixa-a apenas do tamanho do conteúdo */
     .alert-wrapper {
       position: fixed;
       top: 1rem;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2000;
-      max-width: 300px;
-      /* largura reduzida */
-      width: 100%;
+      display: inline-block;
+      /* só o tamanho do alerta */
     }
 
-/* deixa o X menor */
-.alert-wrapper .btn-close {
-  font-size: 1rem;       /* antes estava 1.2rem ou 1.25rem */
-}
+    /* O próprio alerta */
+    .alert-wrapper .alert {
+      position: relative;
+      display: inline-block;
+      /* largura ajusta ao texto */
+      box-sizing: border-box;
+      white-space: normal;
+      /* permite quebra de linha */
+      word-wrap: break-word;
 
-/* aproxima do topo e centraliza verticalmente */
-.alert-wrapper .btn-close {
-  top: 50%;
-  transform: translateY(-50%);
-}
+      /* padding: topo | direita | base | esquerda */
+      padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+      /* 2.5rem reserva espaço para o X sem impactar o conteúdo */
 
-/* afasta um pouco da borda direita */
-.alert-wrapper .btn-close {
-  right: 1rem;           /* ajusta esse valor entre 0.75rem e 1.25rem conforme seu gosto */
-}
+      font-size: 0.95rem;
+      border-radius: 0.375rem;
+      /* cantos suaves como na sua imagem */
+    }
 
+    /* Botão de fechar */
+    .alert-wrapper .btn-close {
+      position: absolute;
+      top: 50%;
+      right: 0.5rem;
+      /* afasta um pouco da borda interna */
+      transform: translateY(-50%);
+      background: none !important;
+      border: none;
+      padding: 0;
+      font-size: 1rem;
+      line-height: 1;
+      color: #000;
+      opacity: .6;
+    }
 
+    /* Insere o “×” puro e remove qualquer SVG */
+    .alert-wrapper .btn-close::before {
+      content: "×";
+    }
 
+    .alert-wrapper .btn-close svg {
+      display: none !important;
+    }
 
-
+    /* Estilo do navbar */
     .navbar {
       position: fixed;
       top: 0;
@@ -146,6 +170,7 @@ if (isset($_SESSION['login_admin'])) {
       padding: .5rem 1rem;
     }
 
+    /* Logo da Mente Renovada */
     .navbar-brand img {
       height: 90px;
       object-fit: contain;
@@ -157,6 +182,8 @@ if (isset($_SESSION['login_admin'])) {
       filter: drop-shadow(0 0 10px #DBA632);
     }
 
+    /* Links do menu */
+    /* Início, Sessão e Paciente */
     .navbar .nav-link {
       position: relative;
       display: inline-block;
@@ -169,6 +196,7 @@ if (isset($_SESSION['login_admin'])) {
       transition: color .2s, transform .2s;
     }
 
+    /* Animação dos links */
     .navbar .nav-link::after {
       content: "";
       position: absolute;
@@ -189,6 +217,7 @@ if (isset($_SESSION['login_admin'])) {
       width: 100%;
     }
 
+    /* Animação do cursor nos botões */
     @keyframes navBounce {
 
       0%,
@@ -207,6 +236,7 @@ if (isset($_SESSION['login_admin'])) {
       outline: none;
     }
 
+    /* Imagem do Perfil do psicólogo */
     .perfil-img {
       width: 50px;
       height: 50px;
@@ -221,6 +251,7 @@ if (isset($_SESSION['login_admin'])) {
       box-shadow: 0 0 10px rgba(219, 166, 50, .5);
     }
 
+    /* Botões de registrar e login */
     .registrar-text,
     .login-text {
       font-size: 15px;
@@ -258,6 +289,7 @@ if (isset($_SESSION['login_admin'])) {
       box-shadow: 0 0 10px rgba(219, 166, 50, .5);
     }
 
+    /* Responsividade para celular e tablet */
     @media (max-width:991.98px) {
       .navbar-collapse {
         flex-direction: column;
@@ -303,11 +335,12 @@ if (isset($_SESSION['login_admin'])) {
   <?php if ($flash): ?>
     <div class="alert-wrapper">
       <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0" role="alert">
-        <span><?= htmlspecialchars($flash['message'])?></span>
+        <?= $flash['message'] /* aqui o <strong> é renderizado como HTML */ ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
       </div>
     </div>
   <?php endif; ?>
+
 
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">

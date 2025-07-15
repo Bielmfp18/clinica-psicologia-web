@@ -14,10 +14,13 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    die("<script>
-            alert('Faça login antes de confirmar sessões.');
-            window.location.href = 'index.php';
-         </script>");
+  // preparar flash de aviso
+  $_SESSION['flash'] = [
+    'type'    => 'warning',  // ou 'danger', como preferir
+    'message' => 'Faça login antes de confirmar sessões.'
+  ];
+  header('Location: index.php');
+  exit;
 }
 
 // Inclui conexão com o banco e função de histórico

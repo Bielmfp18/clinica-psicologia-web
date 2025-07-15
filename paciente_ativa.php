@@ -68,7 +68,7 @@ try {
     echo json_encode([
         'success' => true,
         'id'      => $id,
-        'message' => 'Paciente ativado com sucesso!'
+        'message' => "Paciente <strong>{$nome}</strong> ativado com sucesso!"
     ]);
     exit;
 

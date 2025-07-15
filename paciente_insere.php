@@ -12,11 +12,13 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    die("<script> 
-        alert('Faça login antes de cadastrar pacientes.');
-        window.location.href = 'index.php';
-        </script>");
-    exit;
+  // preparar flash de aviso
+  $_SESSION['flash'] = [
+    'type'    => 'warning',  // ou 'danger', como preferir
+    'message' => 'Faça login antes de cadastrar pacientes.'
+  ];
+  header('Location: index.php');
+  exit;
 }
 
 include 'conn/conexao.php';        // Conexão com o banco de dados
@@ -80,36 +82,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             registrarHistorico(
                 $conn,
                 $psicologo_id,
-                'Cadastro',                    // ação de criação
-                'Paciente',                  // entidade afetada
+                'Cadastro', // ação de criação
+                'Paciente', // entidade afetada
                 "Paciente cadastrado: {$nome}" // descrição detalhada
             );
 
-            // Retorna sucesso em JSON
-            echo json_encode([
-                'success' => true,
-                'id'      => $id,
-                'message' => 'Paciente cadastrado com sucesso!'
-            ]);
+            // Flash de sucesso para ser exibida na página (fora de qualquer modal)
+            $_SESSION['flash'] = [
+                'type'    => 'success',
+                'message' => "Paciente <strong>{$nome}</strong> adicionado à lista!"
+            ];
+            // Redireciona para index passando ?login=1 para abrir o modal de login
+            header('Location: paciente.php');
             exit;
         } else {
-            // Erro ao executar a ativação
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao tentar cadastrar o paciente!'
-            ]);
+            // Flash de erro para ser exibida na página
+            $_SESSION['flash'] = [
+                'type'    => 'danger',
+                'message' => 'Erro ao inserir o paciente.'
+            ];
+            header('Location: paciente.php');
             exit;
         }
     } catch (PDOException $e) {
-        // Em caso de exceção, devolve JSON de erro
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Erro ao cadastrar o paciente: ' . addslashes($e->getMessage())
-        ]);
+        // Em caso de exceção, também usamos flash de erro
+        $_SESSION['flash'] = [
+            'type'    => 'danger',
+            'message' => 'Erro no servidor: ' . $e->getMessage()
+        ];
+        header('Location: paciente.php');
         exit;
     }
+    exit;
 }
 ?>
 
@@ -241,6 +245,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </main>
+
+     <!-- ALERTA FIXO NO TOPO -->
+        <?php if ($flash): ?>
+            <div class="alert-wrapper">
+                <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0 justify-content-center" role="alert">
+                    <span><?= htmlspecialchars($flash['message']) ?></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+            </div>
+        <?php endif; ?>
 
     <script>
         // Faz o textarea ajustar a altura ao conteúdo de observações do paciente.

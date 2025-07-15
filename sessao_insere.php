@@ -11,11 +11,13 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-    die("<script>
-        alert('Faça login antes de cadastrar sessões.');
-        window.location.href = 'index.php';
-        </script>");
-    exit;
+  // preparar flash de aviso
+  $_SESSION['flash'] = [
+    'type'    => 'warning',  // ou 'danger', como preferir
+    'message' => 'Faça login antes de cadastrar sessões.'
+  ];
+  header('Location: index.php');
+  exit;
 }
 
 include 'conn/conexao.php'; // Conexão com o banco de dados
@@ -56,12 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 )";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':pspsicologo_id',   $psicologo_id);
-        $stmt->bindParam(':pspaciente_id',    $paciente_id);
-        $stmt->bindParam(':psanotacoes',      $anotacoes);
-        $stmt->bindParam(':psdata_hora',      $data_hora);
+        $stmt->bindParam(':pspsicologo_id', $psicologo_id);
+        $stmt->bindParam(':pspaciente_id', $paciente_id);
+        $stmt->bindParam(':psanotacoes', $anotacoes);
+        $stmt->bindParam(':psdata_hora', $data_hora);
         $stmt->bindParam(':psdata_atualizacao', $data_atualizacao);
-        $stmt->bindParam(':psstatus',         $status);
+        $stmt->bindParam(':psstatus', $status);
 
         if ($stmt->execute()) {
             echo "<script>

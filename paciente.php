@@ -7,11 +7,15 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-  die("<script> 
-        alert('Faça login antes de acessar os pacientes.');
-        window.location.href = 'index.php';
-        </script>");
+  // preparar flash de aviso
+  $_SESSION['flash'] = [
+    'type'    => 'warning',  // ou 'danger', como preferir
+    'message' => 'Faça login antes de acessar os pacientes.'
+  ];
+  header('Location: index.php');
+  exit;
 }
+
 
 // Pega o ID do psicólogo logado
 $id_psico = (int) $_SESSION['psicologo_id'];
@@ -130,16 +134,44 @@ $numrow = $lista->rowCount();
       background: linear-gradient(135deg, #e85a58 0%, #dc3545 100%);
       color: #fff !important;
     }
+
     /* Gradiente para modal de ATIVAR (base #198754) */
     .modal-header-success {
       background: linear-gradient(135deg, #3fa86d 0%, #198754 100%);
       color: #fff !important;
     }
+
     /* Gradiente para modal de OBSERVAÇÕES (base #0dcaf0) */
     .modal-header-info {
       background: linear-gradient(135deg, #5ddcf9 0%, #0dcaf0 100%);
       color: #fff !important;
     }
+
+ /* Container da alert: usa flex para alinhar botão */
+/* Torna a .alert um flex container */
+.alert-dismissible {
+  position: relative;
+  padding-right: 2.5rem; /* espaço pro X */
+}
+
+/* Botão de fechar pequeno e centralizado verticalmente */
+.alert-wrapper .btn-close {
+  position: absolute;
+  top: 0.5rem;       /* ajusta conforme o padding-top do .alert */
+  right: 0.5rem;     /* mesma distância da borda direita */
+  background: none !important;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Remove sombra ao focar */
+.alert-dismissible .btn-close:focus {
+  box-shadow: none;
+}
+
+
   </style>
 
 </head>
@@ -262,7 +294,7 @@ $numrow = $lista->rowCount();
                     <button class="activate btn btn-success btn-anim"
                       data-id="<?php echo $row['id']; ?>"
                       data-nome="<?php echo htmlspecialchars($row['nome']); ?>">
-                                          <i class="bi bi-check-lg"></i>
+                      <i class="bi bi-check-lg"></i>
                     </button>
                   <?php endif; ?>
                 </td>
@@ -315,8 +347,8 @@ $numrow = $lista->rowCount();
         <div class="modal-footer justify-content-center gap-2">
           <button type="button" class="btn action-confirm btn-anim"></button>
           <button type="button"
-                  class="btn modal-cancel btn-anim btn-outline-secondary"
-                  data-bs-dismiss="modal">
+            class="btn modal-cancel btn-anim btn-outline-secondary"
+            data-bs-dismiss="modal">
             Cancelar
           </button>
         </div>
@@ -326,127 +358,127 @@ $numrow = $lista->rowCount();
 
   <!-- Scripts -->
   <script>
-  // Preenche o modal de Observações antes de abri-lo
-  $('#obsModal').on('show.bs.modal', function(event) {
-    const button = $(event.relatedTarget); // quem disparou
-    const nome   = button.data('nome');     // pega o data-nome
-    const obs    = button.data('obs');      // pega o data-obs
+    // Preenche o modal de Observações antes de abri-lo
+    $('#obsModal').on('show.bs.modal', function(event) {
+      const button = $(event.relatedTarget); // quem disparou
+      const nome = button.data('nome'); // pega o data-nome
+      const obs = button.data('obs'); // pega o data-obs
 
-    // ajusta título e corpo
-    $('#obsNome').text(nome);
-    $('#obsTexto').text(obs);
+      // ajusta título e corpo
+      $('#obsNome').text(nome);
+      $('#obsTexto').text(obs);
 
-    // Gradiente no header de OBSERVAÇÕES
-    $('#obsModal .modal-header')
-      .removeClass('modal-header-danger modal-header-success')
-      .addClass('modal-header-info');
-  });
+      // Gradiente no header de OBSERVAÇÕES
+      $('#obsModal .modal-header')
+        .removeClass('modal-header-danger modal-header-success')
+        .addClass('modal-header-info');
+    });
 
-  // Função auxiliar para mudar header do myModal
-  function setHeaderClass(cls) {
-    const hdr = $('#myModal .modal-header');
-    hdr.removeClass('modal-header-danger modal-header-success modal-header-info');
-    hdr.addClass(cls);
-    hdr.find('.modal-title').addClass('text-white');
-  }
+    // Função auxiliar para mudar header do myModal
+    function setHeaderClass(cls) {
+      const hdr = $('#myModal .modal-header');
+      hdr.removeClass('modal-header-danger modal-header-success modal-header-info');
+      hdr.addClass(cls);
+      hdr.find('.modal-title').addClass('text-white');
+    }
 
-  // ----------------------------------------------------------------
-  // 1) Quando clica em “.delete” → abrir modal para DESATIVAR
-  // ----------------------------------------------------------------
-  $(document).on('click', '.delete', function() {
-    const nome = $(this).data('nome');
-    const id   = $(this).data('id');
+    // ----------------------------------------------------------------
+    // 1) Quando clica em “.delete” → abrir modal para DESATIVAR
+    // ----------------------------------------------------------------
+    $(document).on('click', '.delete', function() {
+      const nome = $(this).data('nome');
+      const id = $(this).data('id');
 
-    // Preenche o nome no corpo do modal
-    $('.nome').text(nome);
+      // Preenche o nome no corpo do modal
+      $('.nome').text(nome);
 
-    // Ajusta o texto e a cor do “action-text”
-    $('.action-text')
-      .text('DESATIVAR')
-      .removeClass('text-success')
-      .addClass('text-danger');
+      // Ajusta o texto e a cor do “action-text”
+      $('.action-text')
+        .text('DESATIVAR')
+        .removeClass('text-success')
+        .addClass('text-danger');
 
-    // Ajusta gradiente do header para vermelho
-    setHeaderClass('modal-header-danger');
+      // Ajusta gradiente do header para vermelho
+      setHeaderClass('modal-header-danger');
 
-    // Configura o botão action-confirm para ser o “confirm-delete”
-    $('.action-confirm')
-      .off('click') // limpa handlers anteriores
-      .removeClass('confirm-activate btn-success')
-      .addClass('confirm-delete btn-danger')
-      .text('Confirmar Desativação')
-      .data('id', id); // guarda o id para o AJAX
+      // Configura o botão action-confirm para ser o “confirm-delete”
+      $('.action-confirm')
+        .off('click') // limpa handlers anteriores
+        .removeClass('confirm-activate btn-success')
+        .addClass('confirm-delete btn-danger')
+        .text('Confirmar Desativação')
+        .data('id', id); // guarda o id para o AJAX
 
-    // Botão “Cancelar” em VERDE outline para DESATIVAR
-    $('.modal-cancel')
-      .removeClass('btn-outline-danger')
-      .addClass('btn-outline-success')
-      .text('Cancelar');
+      // Botão “Cancelar” em VERDE outline para DESATIVAR
+      $('.modal-cancel')
+        .removeClass('btn-outline-danger')
+        .addClass('btn-outline-success')
+        .text('Cancelar');
 
-    // Abre o modal
-    new bootstrap.Modal($('#myModal')).show();
-  });
+      // Abre o modal
+      new bootstrap.Modal($('#myModal')).show();
+    });
 
-  // ----------------------------------------------------------------
-  // 2) Quando clica em “.activate” → abrir modal para ATIVAR
-  // ----------------------------------------------------------------
-  $(document).on('click', '.activate', function() {
-    const nome = $(this).data('nome');
-    const id   = $(this).data('id');
+    // ----------------------------------------------------------------
+    // 2) Quando clica em “.activate” → abrir modal para ATIVAR
+    // ----------------------------------------------------------------
+    $(document).on('click', '.activate', function() {
+      const nome = $(this).data('nome');
+      const id = $(this).data('id');
 
-    // Preenche o nome no corpo do modal
-    $('.nome').text(nome);
+      // Preenche o nome no corpo do modal
+      $('.nome').text(nome);
 
-    // Ajusta o texto e a cor do “action-text”
-    $('.action-text')
-      .text('ATIVAR')
-      .removeClass('text-danger')
-      .addClass('text-success');
+      // Ajusta o texto e a cor do “action-text”
+      $('.action-text')
+        .text('ATIVAR')
+        .removeClass('text-danger')
+        .addClass('text-success');
 
-    // Ajusta gradiente do header para verde
-    setHeaderClass('modal-header-success');
+      // Ajusta gradiente do header para verde
+      setHeaderClass('modal-header-success');
 
-    // Configura o botão action-confirm para ser o “confirm-activate”
-    $('.action-confirm')
-      .off('click')
-      .removeClass('confirm-delete btn-danger')
-      .addClass('confirm-activate btn-success')
-      .text('Confirmar Ativação')
-      .data('id', id);
+      // Configura o botão action-confirm para ser o “confirm-activate”
+      $('.action-confirm')
+        .off('click')
+        .removeClass('confirm-delete btn-danger')
+        .addClass('confirm-activate btn-success')
+        .text('Confirmar Ativação')
+        .data('id', id);
 
-    // Botão “Cancelar” em VERMELHO outline para ATIVAR
-    $('.modal-cancel')
-      .removeClass('btn-outline-success')
-      .addClass('btn-outline-danger')
-      .text('Cancelar');
+      // Botão “Cancelar” em VERMELHO outline para ATIVAR
+      $('.modal-cancel')
+        .removeClass('btn-outline-success')
+        .addClass('btn-outline-danger')
+        .text('Cancelar');
 
-    // Abre o modal
-    new bootstrap.Modal($('#myModal')).show();
-  });
+      // Abre o modal
+      new bootstrap.Modal($('#myModal')).show();
+    });
 
-  // ----------------------------------------------------------------
-  // 3) Handler AJAX: Confirmar DESATIVAÇÃO
-  // ----------------------------------------------------------------
-  $(document).on('click', '.confirm-delete', function() {
-    const btn     = $(this);
-    const id      = btn.data('id');
-    const url     = 'paciente_desativa.php?id=' + id;
-    const tr      = $('tr[data-id="' + id + '"]');
-    const statusTd = tr.find('.status-col'); // <— badge de status
-    const actionTd = tr.find('.action-col');
+    // ----------------------------------------------------------------
+    // 3) Handler AJAX: Confirmar DESATIVAÇÃO
+    // ----------------------------------------------------------------
+    $(document).on('click', '.confirm-delete', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'paciente_desativa.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col'); // <— badge de status
+      const actionTd = tr.find('.action-col');
 
-    // Fecha o modal
-    bootstrap.Modal.getInstance($('#myModal')).hide();
+      // Fecha o modal
+      bootstrap.Modal.getInstance($('#myModal')).hide();
 
-    $.getJSON(url)
-      .done(res => {
-        if (!res.success) return alert(res.message);
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
 
-        // 1) Atualiza badge para "Inativo" instantâneo
-        statusTd.html('<span class="badge bg-danger">Inativo</span>');
+          // 1) Atualiza badge para "Inativo" instantâneo
+          statusTd.html('<span class="badge bg-danger">Inativo</span>');
 
-        // 2) Substitui o botão por “.activate” na linha
-        actionTd.html(`
+          // 2) Substitui o botão por “.activate” na linha
+          actionTd.html(`
           <button class="activate btn btn-success btn-anim"
                   data-id="${id}"
                   data-nome="${tr.find('td').eq(0).text()}">
@@ -454,34 +486,34 @@ $numrow = $lista->rowCount();
           </button>
         `);
 
-        mostrarAlert(res.message, 'danger');
-      })
-      .fail(() => alert('Erro ao comunicar com o servidor.'));
-  });
+          mostrarAlert(res.message, 'danger');
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
 
-  // ----------------------------------------------------------------
-  // 4) Handler AJAX: Confirmar ATIVAÇÃO
-  // ----------------------------------------------------------------
-  $(document).on('click', '.confirm-activate', function() {
-    const btn     = $(this);
-    const id      = btn.data('id');
-    const url     = 'paciente_ativa.php?id=' + id;
-    const tr      = $('tr[data-id="' + id + '"]');
-    const statusTd = tr.find('.status-col'); // <— badge de status
-    const actionTd = tr.find('.action-col');
+    // ----------------------------------------------------------------
+    // 4) Handler AJAX: Confirmar ATIVAÇÃO
+    // ----------------------------------------------------------------
+    $(document).on('click', '.confirm-activate', function() {
+      const btn = $(this);
+      const id = btn.data('id');
+      const url = 'paciente_ativa.php?id=' + id;
+      const tr = $('tr[data-id="' + id + '"]');
+      const statusTd = tr.find('.status-col'); // <— badge de status
+      const actionTd = tr.find('.action-col');
 
-    // Fecha o modal
-    bootstrap.Modal.getInstance($('#myModal')).hide();
+      // Fecha o modal
+      bootstrap.Modal.getInstance($('#myModal')).hide();
 
-    $.getJSON(url)
-      .done(res => {
-        if (!res.success) return alert(res.message);
+      $.getJSON(url)
+        .done(res => {
+          if (!res.success) return alert(res.message);
 
-        // 1) Atualiza badge para "Ativo" instantâneo
-        statusTd.html('<span class="badge bg-success">Ativo</span>');
+          // 1) Atualiza badge para "Ativo" instantâneo
+          statusTd.html('<span class="badge bg-success">Ativo</span>');
 
-        // 2) Substitui pelos botão “.delete”
-        actionTd.html(`
+          // 2) Substitui pelos botão “.delete”
+          actionTd.html(`
           <button class="delete btn btn-danger btn-anim"
                   data-id="${id}"
                   data-nome="${tr.find('td').eq(0).text()}">
@@ -489,16 +521,16 @@ $numrow = $lista->rowCount();
           </button>
         `);
 
-        mostrarAlert(res.message, 'success');
-      })
-      .fail(() => alert('Erro ao comunicar com o servidor.'));
-  });
+          mostrarAlert(res.message, 'success');
+        })
+        .fail(() => alert('Erro ao comunicar com o servidor.'));
+    });
 
-  // ----------------------------------------------------------------
-  // 5) Função utilitária para exibir alerts temporários
-  // ----------------------------------------------------------------
-  function mostrarAlert(texto, tipo) {
-    const $a = $(`
+    // ----------------------------------------------------------------
+    // 5) Função utilitária para exibir alerts temporários
+    // ----------------------------------------------------------------
+    function mostrarAlert(texto, tipo) {
+      const $a = $(`
       <div class="alert alert-${tipo} alert-dismissible
                   position-fixed top-0 start-50 translate-middle-x mt-3"
            style="z-index:1050; display:none;">
@@ -506,10 +538,10 @@ $numrow = $lista->rowCount();
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     `).appendTo('body');
-    $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
-  }
-</script>
+      $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+    }
+  </script>
 
 </body>
-</html>
 
+</html>

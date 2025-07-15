@@ -5,7 +5,7 @@ session_start();
 // Seta só o flash
 $_SESSION['flash'] = [
   'type'    => 'danger',
-  'message' => 'Você se desconectou da conta!'
+  'message' => 'Você se desconectou da sua conta!'
 ];
 
 // Remove a autenticação, mas mantém o flash

@@ -18,14 +18,17 @@ session_name('Mente_Renovada');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Verifica se o psicólogo está logado
 if (!isset($_SESSION['login_admin'])) {
-    echo "<script>
-        alert('Você precisa estar logado para acessar essa página.');
-        window.location.href = 'index.php';
-    </script>";
+    // preparar flash de aviso
+    $_SESSION['flash'] = [
+        'type'    => 'warning',  // ou 'danger', como preferir
+        'message' => 'Você precisa estar logado para acessar essa página.'
+    ];
+    header('Location: index.php');
     exit;
 }
-
 // Busca dados do psicólogo
 $email_psicologo = $_SESSION['login_admin'];
 $stmt_user = $conn->prepare(

@@ -7,12 +7,19 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-  die("<script>
-        alert('Faça login antes de acessar as sessões.');
-        window.location.href = 'index.php';
-      </script>");
+  // preparar flash de aviso
+  $_SESSION['flash'] = [
+    'type'    => 'warning',  // ou 'danger', como preferir
+    'message' => 'Faça login antes de acessar as sessões.'
+  ];
+  header('Location: index.php');
   exit;
 }
+
+
+// Resgata e apaga o flash, se existir
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 
 // Pega o ID do psicólogo logado
 $id_psico = (int) $_SESSION['psicologo_id'];
@@ -65,47 +72,89 @@ $numrow = $lista->rowCount();
 
   <style>
     /* estilos gerais */
-    .hidden { display: none; }
-    .btn-anim { transition: transform .2s ease, box-shadow .2s ease; }
-    .btn-anim:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    .table-responsive { overflow-x: auto; }
+    .hidden {
+      display: none;
+    }
+
+    .btn-anim {
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .btn-anim:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
 
     /* BADGES DE STATUS DE SESSÃO */
     .status-col .badge {
-      display: inline-block; font-weight:600; text-transform:capitalize;
-      padding:0.35em 0.75em; font-size:0.85rem; border-radius:0.25rem;
+      display: inline-block;
+      font-weight: 600;
+      text-transform: capitalize;
+      padding: 0.35em 0.75em;
+      font-size: 0.85rem;
+      border-radius: 0.25rem;
     }
-    .status-col .badge.bg-warning { background-color:#ffc107 !important; color:#212529; }
-    .status-col .badge.bg-success { background-color:#198754 !important; color:#fff; }
-    .status-col .badge.bg-danger  { background-color:#dc3545 !important; color:#fff; }
+
+    .status-col .badge.bg-warning {
+      background-color: #ffc107 !important;
+      color: #212529;
+    }
+
+    .status-col .badge.bg-success {
+      background-color: #198754 !important;
+      color: #fff;
+    }
+
+    .status-col .badge.bg-danger {
+      background-color: #dc3545 !important;
+      color: #fff;
+    }
 
     /* MODAL ANOTAÇÕES */
-    #obsModal .modal-header { background-color:#00c0f0; color:#000; }
-    #obsModal .modal-body { max-height:400px; overflow-y:auto; }
-    .modal-anotacoes { white-space:pre-wrap; word-break:break-word; }
+    #obsModal .modal-header {
+      background-color: #00c0f0;
+      color: #000;
+    }
+
+    #obsModal .modal-body {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .modal-anotacoes {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
 
     /* GRADIENTES DOS HEADERS */
     .modal-header-realizar {
       background: linear-gradient(135deg, #64b5f6 0%, #2196f3 100%);
-      color:#fff !important;
+      color: #fff !important;
     }
+
     .modal-header-danger {
       background: linear-gradient(135deg, #e85a58 0%, #dc3545 100%);
-      color:#fff !important;
+      color: #fff !important;
     }
+
     .modal-header-success {
       background: linear-gradient(135deg, #3fa86d 0%, #198754 100%);
-      color:#fff !important;
+      color: #fff !important;
     }
 
     @media (max-width: 576px) {
-  /* Garante que, no modal-footer em celular, os botões fiquem alinhados em linha */
-  .modal-footer {
-    flex-wrap: nowrap !important;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-}
+
+      /* Garante que, no modal-footer em celular, os botões fiquem alinhados em linha */
+      .modal-footer {
+        flex-wrap: nowrap !important;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+    }
   </style>
 </head>
 
@@ -131,9 +180,9 @@ $numrow = $lista->rowCount();
         <label for="status_sessao" class="fw-bold mb-0">STATUS</label>
         <select name="status_sessao" id="status_sessao" class="form-select" style="max-width:150px;">
           <option value="" <?= $status_sessao === '' ? 'selected' : '' ?>>TUDO</option>
-          <option value="AGENDADA"  <?= $status_sessao==='AGENDADA'? 'selected':'' ?>>AGENDADA</option>
-          <option value="REALIZADA" <?= $status_sessao==='REALIZADA'?'selected':'' ?>>REALIZADA</option>
-          <option value="CANCELADA" <?= $status_sessao==='CANCELADA'?'selected':'' ?>>CANCELADA</option>
+          <option value="AGENDADA" <?= $status_sessao === 'AGENDADA' ? 'selected' : '' ?>>AGENDADA</option>
+          <option value="REALIZADA" <?= $status_sessao === 'REALIZADA' ? 'selected' : '' ?>>REALIZADA</option>
+          <option value="CANCELADA" <?= $status_sessao === 'CANCELADA' ? 'selected' : '' ?>>CANCELADA</option>
         </select>
         <button type="submit" class="btn text-light btn-anim" style="background-color:#DBA632;">
           FILTRAR
@@ -174,11 +223,11 @@ $numrow = $lista->rowCount();
                 <td><?= date('d/m/Y H:i', strtotime($row['data_criacao'])) ?></td>
                 <!-- STATUS -->
                 <td class="status-col">
-                  <?php if ($row['status_sessao']==='AGENDADA'): ?>
+                  <?php if ($row['status_sessao'] === 'AGENDADA'): ?>
                     <span class="badge bg-warning">Agendada</span>
-                  <?php elseif ($row['status_sessao']==='REALIZADA'): ?>
+                  <?php elseif ($row['status_sessao'] === 'REALIZADA'): ?>
                     <span class="badge bg-success">Realizada</span>
-                  <?php elseif ($row['status_sessao']==='CANCELADA'): ?>
+                  <?php elseif ($row['status_sessao'] === 'CANCELADA'): ?>
                     <span class="badge bg-danger">Cancelada</span>
                   <?php else: ?>
                     <span class="badge bg-secondary"><?= htmlspecialchars($row['status_sessao']) ?></span>
@@ -205,7 +254,7 @@ $numrow = $lista->rowCount();
                 </td>
                 <!-- AÇÃO -->
                 <td class="action-col">
-                  <?php if ($row['status_sessao']==='AGENDADA'): ?>
+                  <?php if ($row['status_sessao'] === 'AGENDADA'): ?>
                     <button class="realizar btn btn-primary btn-anim"
                       data-id="<?= $row['id'] ?>" data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>">
                       <i class="bi bi-check2-circle"></i>
@@ -214,7 +263,7 @@ $numrow = $lista->rowCount();
                       data-id="<?= $row['id'] ?>" data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>">
                       <i class="bi bi-x-lg"></i>
                     </button>
-                  <?php elseif ($row['status_sessao']==='CANCELADA'): ?>
+                  <?php elseif ($row['status_sessao'] === 'CANCELADA'): ?>
                     <button class="activate btn btn-success btn-anim"
                       data-id="<?= $row['id'] ?>" data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>">
                       <i class="bi bi-check-lg"></i>
@@ -226,7 +275,9 @@ $numrow = $lista->rowCount();
               </tr>
             <?php endwhile; ?>
           <?php else: ?>
-            <tr><td colspan="8" class="text-center">Nenhuma sessão encontrada.</td></tr>
+            <tr>
+              <td colspan="8" class="text-center">Nenhuma sessão encontrada.</td>
+            </tr>
           <?php endif; ?>
         </tbody>
       </table>
@@ -341,7 +392,7 @@ $numrow = $lista->rowCount();
     // ----------------------------------------------------------------
     function setHeaderClass(modalId, cls) {
       const hdr = document.querySelector(modalId + ' .modal-header');
-      hdr.classList.remove('modal-header-realizar','modal-header-danger','modal-header-success');
+      hdr.classList.remove('modal-header-realizar', 'modal-header-danger', 'modal-header-success');
       hdr.classList.add(cls);
       hdr.querySelector('.modal-title').classList.add('text-white');
     }
@@ -350,7 +401,7 @@ $numrow = $lista->rowCount();
     // 1) Abrir cada modal e guardar data-id
     // ----------------------------------------------------------------
     $(document).on('click', '.realizar', function() {
-      const id   = $(this).data('id');
+      const id = $(this).data('id');
       const nome = $(this).data('nome');
       $('.nome-realizar').text(nome);
       $('.confirm-realizar').data('id', id);
@@ -359,7 +410,7 @@ $numrow = $lista->rowCount();
     });
 
     $(document).on('click', '.delete', function() {
-      const id   = $(this).data('id');
+      const id = $(this).data('id');
       const nome = $(this).data('nome');
       $('.nome').text(nome);
       $('.action-text').text('CANCELAR').removeClass('text-success').addClass('text-danger');
@@ -369,7 +420,7 @@ $numrow = $lista->rowCount();
     });
 
     $(document).on('click', '.activate', function() {
-      const id   = $(this).data('id');
+      const id = $(this).data('id');
       const nome = $(this).data('nome');
       $('.nome').text(nome);
       $('.action-text').text('ATIVAR').removeClass('text-danger').addClass('text-success');
@@ -465,4 +516,5 @@ $numrow = $lista->rowCount();
   </script>
 
 </body>
+
 </html>

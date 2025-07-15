@@ -21,10 +21,12 @@ unset($_SESSION['flash']);
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['login_admin'])) {
-    echo "<script>
-    alert('Você precisa estar logado para acessar essa página.');
-    window.location.href = 'index.php';
-    </script>";
+    // preparar flash de aviso
+    $_SESSION['flash'] = [
+        'type'    => 'warning',  // ou 'danger', como preferir
+        'message' => 'Você precisa estar logado para acessar essa página.'
+    ];
+    header('Location: index.php');
     exit;
 }
 
