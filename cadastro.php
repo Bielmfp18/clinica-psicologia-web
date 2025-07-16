@@ -1,5 +1,6 @@
-<!-- cadastro.php -->
+<!-- CADASTRO -->
 <?php
+// Define uma sessão e a inicia
 session_name('Mente_Renovada');
 session_start();
 

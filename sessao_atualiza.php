@@ -136,7 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
     header("Location: sessao_atualiza.php?id={$id}");
     exit;
-
   } catch (PDOException $e) {
     // Flash de erro e redireciona de volta ao formulário
     $_SESSION['flash'] = [
@@ -151,6 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -159,19 +159,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+  <!-- Link para o ícone da aba -->
+  <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
   <style>
     body.fundofixo {
       background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
       background-size: cover;
     }
-    .card { background-color: rgba(255,255,255,0.92); border:none; box-shadow:0 0 20px rgba(0,0,0,0.15); }
-    .form-label { font-weight:600; }
-    .input-group-text { background-color:#DBA632; color:white; border:none; }
-    .btn, .btn-voltar { background-color:#DBA632; color:white; border:none; transition:background-color .3s ease, transform .2s ease; }
-    .btn:hover, .btn-voltar:hover { background-color:#b38121!important; transform:scale(1.05); }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.92);
+      border: none;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-label {
+      font-weight: 600;
+    }
+
+    .input-group-text {
+      background-color: #DBA632;
+      color: white;
+      border: none;
+    }
+
+    .btn,
+    .btn-voltar {
+      background-color: #DBA632;
+      color: white;
+      border: none;
+      transition: background-color .3s ease, transform .2s ease;
+    }
+
+    .btn:hover,
+    .btn-voltar:hover {
+      background-color: #b38121 !important;
+      transform: scale(1.05);
+    }
   </style>
 </head>
+
 <body class="fundofixo">
 
   <!-- Exibe flash se vier de redirect -->
@@ -251,6 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const ta = document.getElementById('anotacoes');
+
       function ajusta() {
         ta.style.height = 'auto';
         ta.style.height = ta.scrollHeight + 'px';
@@ -260,4 +288,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
   </script>
 </body>
+
 </html>

@@ -114,6 +114,8 @@ try {
   <!-- jQuery  -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+   <!-- Link para o ícone da aba -->
+    <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 

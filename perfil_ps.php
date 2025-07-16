@@ -60,6 +60,8 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Link para o ícone da aba -->
+    <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
     <style>
         .btn-anim {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -76,6 +78,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
     </style>
 </head>
 
+<!-- Menu público -->
 <?php include 'menu_publico.php'; ?>
 
 <body class="bg-light">

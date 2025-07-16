@@ -1,6 +1,9 @@
+<!-- EDITAR PERFIL -->
+
 <?php 
 include "conn/conexao.php"; // Conexão com o banco de dados
 
+// Verifica se há uma session nome e inicia a sessão.
 session_name('Mente_Renovada');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
