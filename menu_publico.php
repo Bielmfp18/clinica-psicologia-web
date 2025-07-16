@@ -184,6 +184,13 @@ if (isset($_SESSION['login_admin'])) {
 
     /* Links do menu */
     /* Início, Sessão e Paciente */
+
+    .navbar-nav {
+      display: flex !important;/* garante flex */
+      gap: 2rem; /* ajusta o espaçamento horizontal */
+      margin: 0 auto;    /* empurra os links para a direita, se quiser */
+    }
+
     .navbar .nav-link {
       position: relative;
       display: inline-block;
@@ -358,28 +365,30 @@ if (isset($_SESSION['login_admin'])) {
         aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <!-- LINKS + BOTÕES -->
-      <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
-        <ul class="navbar-nav flex-lg-row flex-column align-items-center mb-2 mb-lg-0 gap-3 mx-auto">
+      <ul class="navbar-nav …">
+        <?php if (isset($_SESSION['psicologo_id'])): ?>
           <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
           <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
           <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
-        </ul>
-        <div class="d-flex align-items-center nav-buttons" style="min-width:250px">
-          <?php if (!isset($_SESSION['login_admin'])): ?>
-            <a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-              <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
-            </a>
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
-              <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
-            </a>
-          <?php else: ?>
-            <a href="perfil_ps.php" title="Meu Perfil">
-              <img src="<?= htmlspecialchars($fotoPerfilPath) ?>" class="perfil-img" alt="Perfil">
-            </a>
-          <?php endif; ?>
-        </div>
-      </div>
+      </ul>
+    <?php endif; ?>
+    <div class="d-flex align-items-center nav-buttons" style="min-width:250px">
+      <?php if (!isset($_SESSION['login_admin'])): ?>
+        <a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+          <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
+        </a>
+        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
+          <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
+        </a>
+      <?php else: ?>
+        <a href="perfil_ps.php" title="Meu Perfil">
+          <img src="<?= htmlspecialchars($fotoPerfilPath) ?>" class="perfil-img" alt="Perfil">
+        </a>
+      <?php endif; ?>
+    </div>
+    </div>
     </div>
   </nav>
 

@@ -55,6 +55,7 @@ if ($ativo === '1') {
     SELECT *
       FROM paciente
      WHERE psicologo_id = :me
+     AND ativo = '1'
   ";
   $params = [
     ':me' => $id_psico
@@ -128,6 +129,17 @@ $numrow = $lista->rowCount();
       /* cor personalizada */
       color: #fff;
     }
+
+    /* Estilo do modal de observações */
+    .modal-body {
+      max-height: 60vh;
+      overflow-y: auto; /* scroll vertical quando passar do limite */
+      overflow-x: hidden;  /* força quebra de palavras longas */
+      white-space: normal;
+      word-break: break-all;
+      hyphens: auto; /*adiciona hífen quando possível */
+    }
+
 
     /* Gradiente para modal de DESATIVAR (base #dc3545) */
     .modal-header-danger {
@@ -333,23 +345,31 @@ $numrow = $lista->rowCount();
 
   <!-- Modal de Observações -->
   <div class="modal fade" id="obsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
       <div class="modal-content">
         <!-- Cabeçalho em gradiente azul, título branco -->
         <div class="modal-header modal-header-info">
-          <h5 class="modal-title text-white">Observações de <strong><span id="obsNome"></span></strong></h5>
+          <h5 class="modal-title text-white">
+            Observações de <strong><span id="obsNome"></span></strong>
+          </h5>
         </div>
-        <!-- Corpo em fundo claro -->
-        <div class="modal-body bg-light text-center" id="obsTexto"></div>
+        <div
+          class="modal-body bg-light text-start"
+          id="obsTexto"
+          style="max-height: 60vh; overflow-y: auto;"></div>
         <!-- Rodapé com botão azul de fechar -->
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-info btn-anim" data-bs-dismiss="modal">
+          <button
+            type="button"
+            class="btn btn-outline-info btn-anim"
+            data-bs-dismiss="modal">
             Fechar
           </button>
         </div>
       </div>
     </div>
   </div>
+
 
   <!-- Modal de Desativar/Ativar (Bootstrap 5) -->
   <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true">

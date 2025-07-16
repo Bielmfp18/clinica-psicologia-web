@@ -217,77 +217,79 @@ try {
     <!-- Jumbotron de boas‑vindas -->
     <div class="jumbotron text-center"></div>
 
-    <!-- Seção de resumo em cards -->
-    <div class="row g-4">
-      <!-- Card: Total de Pacientes -->
-      <div class="col-12 col-md-6 col-lg-3">
-        <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes cadastrados">
-          <div class="card border-primary h-100 shadow-sm rounded card-custom">
-            <div class="card-body text-center">
-              <i class="bi bi-people-fill fs-1 text-primary"></i>
-              <h5 class="card-title mt-2">Pacientes</h5>
-              <p class="display-6 mb-0"><?= $totalPacientes ?></p>
+    <?php if (isset($_SESSION['psicologo_id'])): ?>
+      <!-- Seção de resumo em cards -->
+      <div class="row g-4">
+        <!-- Card: Total de Pacientes -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes cadastrados">
+            <div class="card border-primary h-100 shadow-sm rounded card-custom">
+              <div class="card-body text-center">
+                <i class="bi bi-people-fill fs-1 text-primary"></i>
+                <h5 class="card-title mt-2">Pacientes</h5>
+                <p class="display-6 mb-0"><?= $totalPacientes ?></p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <!-- Card: Pacientes Ativos vs. Inativos -->
-      <div class="col-12 col-md-6 col-lg-3">
-        <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes ativos e inativos no sistema">
-          <div class="card border-info h-100 shadow-sm rounded card-custom">
-            <div class="card-body text-center">
-              <i class="bi bi-person-check-fill fs-1 text-info me-4"></i>
-              <i class="bi bi-person-fill-x fs-1 text-danger"></i>
-              <h5 class="card-title mt-2">Ativos / Inativos</h5>
-              <p class="fs-4 mb-0">
-                <span class="fw-bold"><?= $pacientesAtivos ?></span>
-                <span class="text-muted mx-1">/</span>
-                <span class="fw-light"><?= $pacientesInativos ?></span>
-              </p>
+        <!-- Card: Pacientes Ativos vs. Inativos -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes ativos e inativos no sistema">
+            <div class="card border-info h-100 shadow-sm rounded card-custom">
+              <div class="card-body text-center">
+                <i class="bi bi-person-check-fill fs-1 text-info me-4"></i>
+                <i class="bi bi-person-fill-x fs-1 text-danger"></i>
+                <h5 class="card-title mt-2">Ativos / Inativos</h5>
+                <p class="fs-2 mb-0">
+                  <span class="fw-bold"><?= $pacientesAtivos ?></span>
+                  <span class="text-muted mx-1">/</span>
+                  <span class="fw-light"><?= $pacientesInativos ?></span>
+                </p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <!-- Card: Total de Sessões -->
-      <div class="col-12 col-md-6 col-lg-3">
-        <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Suas sessões agendadas com seus pacientes">
-          <div class="card border-success h-100 shadow-sm rounded card-custom">
-            <div class="card-body text-center">
-              <i class="bi bi-journal-medical fs-1 text-success"></i>
-              <h5 class="card-title mt-2">Sessões</h5>
-              <p class="display-6 mb-0"><?= $totalSessoes ?></p>
+        <!-- Card: Total de Sessões -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Suas sessões agendadas com seus pacientes">
+            <div class="card border-success h-100 shadow-sm rounded card-custom">
+              <div class="card-body text-center">
+                <i class="bi bi-journal-medical fs-1 text-success"></i>
+                <h5 class="card-title mt-2">Sessões</h5>
+                <p class="display-6 mb-0"><?= $totalSessoes ?></p>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <!-- Card: Sessões este Mês -->
-      <div class="col-12 col-md-6 col-lg-3">
-        <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Sessões agendadas ou realizadas no mês atual">
-          <div class="card border-warning h-100 shadow-sm rounded card-custom">
-            <div class="card-body text-center">
-              <i class="bi bi-calendar-check-fill fs-1 text-warning"></i>
-              <h5 class="card-title mt-2">Sessões este mês</h5>
-              <p class="display-6 mb-0"><?= $sessoesMes ?></p>
+        <!-- Card: Sessões este Mês -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Sessões agendadas ou realizadas no mês atual">
+            <div class="card border-warning h-100 shadow-sm rounded card-custom">
+              <div class="card-body text-center">
+                <i class="bi bi-calendar-check-fill fs-1 text-warning"></i>
+                <h5 class="card-title mt-2">Sessões este mês</h5>
+                <p class="display-6 mb-0"><?= $sessoesMes ?></p>
+              </div>
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
       </div>
-    </div>
   </main>
+<?php endif; ?>
 
-  <!-- Rodapé -->
-  <?php include 'rodape.php'; ?>
+<!-- Rodapé -->
+<?php include 'rodape.php'; ?>
 
-  <script>
-    // Inicializa tooltips do Bootstrap
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.forEach(function(el) {
-      new bootstrap.Tooltip(el);
-    });
-  </script>
+<script>
+  // Inicializa tooltips do Bootstrap
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function(el) {
+    new bootstrap.Tooltip(el);
+  });
+</script>
 </body>
 
 </html>
