@@ -185,14 +185,10 @@ if (isset($_SESSION['login_admin'])) {
     /* Links do menu */
     /* Início, Sessão e Paciente */
     .navbar-nav {
-      display: flex !important;
-      /* para manter o gap funcionando */
-      gap: 2rem;
-      /* espaço entre os próprios links */
-      padding-left: 1.5rem;
-      /* <<— afasta o grupo de links do logo */
+      display: flex !important; /* Para manter o gap funcionando */
+      gap: 2rem; /* Espaço entre os próprios links */
+      padding-left: 1.5rem; /* Afasta o grupo de links do logo */
     }
-
 
     .navbar .nav-link {
       position: relative;
