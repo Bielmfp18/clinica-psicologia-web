@@ -55,6 +55,7 @@ $lista  = $conn->prepare($sql);
 $lista->execute($params);
 $numrow = $lista->rowCount();
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -146,6 +147,34 @@ $numrow = $lista->rowCount();
       color: #fff !important;
     }
 
+    /* Mensagem de aviso */
+.alert-wrapper {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: inline-block;
+}
+.alert-wrapper .alert {
+  position: relative;
+  display: inline-block;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+}
+.alert-wrapper .btn-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none !important;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+  opacity: .6;
+}
+
     @media (max-width: 576px) {
 
       /* Garante que, no modal-footer em celular, os botões fiquem alinhados em linha */
@@ -159,6 +188,16 @@ $numrow = $lista->rowCount();
 </head>
 
 <body class="fundofixo">
+
+  <!-- Mensagem Flash -->
+  <?php if (!empty($flash)): ?>
+    <div class="alert-wrapper">
+      <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show">
+        <?= htmlspecialchars($flash['message'], ENT_QUOTES) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    </div>
+  <?php endif; ?>
 
   <!-- MENU NAVBAR -->
   <?php include "menu_publico.php"; ?>

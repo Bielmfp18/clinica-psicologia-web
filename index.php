@@ -232,19 +232,6 @@ try {
         </a>
       </div>
 
-      <!-- Card: Total de Sessões -->
-      <div class="col-12 col-md-6 col-lg-3">
-        <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Suas sessões agendadas com seus pacientes">
-          <div class="card border-success h-100 shadow-sm rounded card-custom">
-            <div class="card-body text-center">
-              <i class="bi bi-journal-medical fs-1 text-success"></i>
-              <h5 class="card-title mt-2">Sessões</h5>
-              <p class="display-6 mb-0"><?= $totalSessoes ?></p>
-            </div>
-          </div>
-        </a>
-      </div>
-
       <!-- Card: Pacientes Ativos vs. Inativos -->
       <div class="col-12 col-md-6 col-lg-3">
         <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes ativos e inativos no sistema">
@@ -258,6 +245,19 @@ try {
                 <span class="text-muted mx-1">/</span>
                 <span class="fw-light"><?= $pacientesInativos ?></span>
               </p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card: Total de Sessões -->
+      <div class="col-12 col-md-6 col-lg-3">
+        <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Suas sessões agendadas com seus pacientes">
+          <div class="card border-success h-100 shadow-sm rounded card-custom">
+            <div class="card-body text-center">
+              <i class="bi bi-journal-medical fs-1 text-success"></i>
+              <h5 class="card-title mt-2">Sessões</h5>
+              <p class="display-6 mb-0"><?= $totalSessoes ?></p>
             </div>
           </div>
         </a>

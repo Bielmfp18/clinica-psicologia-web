@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Flash de sucesso para ser exibida na página (fora de qualquer modal)
             $_SESSION['flash'] = [
-                'type'    => 'success',
+                'type'    => 'warning',
                 'message' => "Paciente <strong>{$nome}</strong> atualizado com sucesso!!"
             ];
             // Redireciona para index passando ?login=1 para abrir o modal de login

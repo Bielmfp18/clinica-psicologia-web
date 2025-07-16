@@ -1,7 +1,12 @@
 <?php
 // HISTÓRICO
 
-// Configurações de fuso horário
+// Inicia sessão se ainda não houver
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Configura fuso horário
 date_default_timezone_set('America/Sao_Paulo');
 
 // Debug
@@ -10,63 +15,52 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 include 'conn/conexao.php';
-// Inclui funções de histórico
 include 'funcao_historico.php';
 
-// Sessão e validação de login
-session_name('Mente_Renovada');
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Verifica se o psicólogo está logado
+// Verifica login
 if (!isset($_SESSION['login_admin'])) {
-    // preparar flash de aviso
-    $_SESSION['flash'] = [
-        'type'    => 'warning',  // ou 'danger', como preferir
-        'message' => 'Você precisa estar logado para acessar essa página.'
-    ];
-    header('Location: index.php');
+    echo "<script>
+        alert('Você precisa estar logado para acessar essa página.');
+        window.location.href = 'index.php';
+    </script>";
     exit;
 }
+
 // Busca dados do psicólogo
-$email_psicologo = $_SESSION['login_admin'];
-$stmt_user = $conn->prepare(
-    "SELECT id, nome FROM psicologo WHERE email = :email LIMIT 1"
-);
-$stmt_user->bindParam(':email', $email_psicologo);
-$stmt_user->execute();
-$usuario = $stmt_user->fetch(PDO::FETCH_ASSOC);
+$email = $_SESSION['login_admin'];
+$stmt = $conn->prepare("SELECT id, nome FROM psicologo WHERE email = :email LIMIT 1");
+$stmt->bindParam(':email', $email);
+$stmt->execute();
+$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$usuario) die('Usuário não encontrado.');
 
-// Processa exclusão individual ou limpeza total
+// Exclusão
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Limpeza total
     if (isset($_POST['clear_all'])) {
         $conn->prepare("DELETE FROM historico WHERE psicologo_id = :id")
-            ->execute([':id' => $usuario['id']]);
-        header('Location: ' . $_SERVER['PHP_SELF']);
+             ->execute([':id' => $usuario['id']]);
+        header('Location: '.$_SERVER['PHP_SELF']);
         exit;
     }
-    // Exclusão individual
     if (isset($_POST['delete_id'])) {
         apagarHistorico($conn, (int)$_POST['delete_id']);
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        header('Location: '.$_SERVER['PHP_SELF']);
         exit;
     }
 }
 
-// Busca histórico de atividades
-$stmt_hist = $conn->prepare(
+// Carrega histórico
+$stmt = $conn->prepare(
     "SELECT id, data_hora, acao, tipo_entidade, descricao
        FROM historico
       WHERE psicologo_id = :id
    ORDER BY data_hora DESC"
 );
-$stmt_hist->bindParam(':id', $usuario['id'], PDO::PARAM_INT);
-$stmt_hist->execute();
-$registros = $stmt_hist->fetchAll(PDO::FETCH_ASSOC);
+$stmt->bindParam(':id', $usuario['id'], PDO::PARAM_INT);
+$stmt->execute();
+$registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
