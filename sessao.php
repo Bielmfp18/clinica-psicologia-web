@@ -43,10 +43,11 @@ if (in_array($status_sessao, ['AGENDADA', 'REALIZADA', 'CANCELADA'])) {
 } else {
   // --- FILTRO: TUDO ---
   $sql = "
-    SELECT s.*, (SELECT p.nome FROM paciente p WHERE p.id = s.paciente_id) AS paciente_nome
-    FROM sessao s
-    WHERE s.psicologo_id = :me
-  ";
+  SELECT s.*, (SELECT p.nome FROM paciente p WHERE p.id = s.paciente_id) AS paciente_nome
+  FROM sessao s
+  WHERE s.psicologo_id = :me
+    AND s.status_sessao = 'AGENDADA'
+";
   $params = [':me' => $id_psico];
 }
 
@@ -148,32 +149,34 @@ $numrow = $lista->rowCount();
     }
 
     /* Mensagem de aviso */
-.alert-wrapper {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2000;
-  display: inline-block;
-}
-.alert-wrapper .alert {
-  position: relative;
-  display: inline-block;
-  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-  font-size: 0.95rem;
-  border-radius: 0.375rem;
-}
-.alert-wrapper .btn-close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: none !important;
-  border: none;
-  padding: 0;
-  font-size: 1rem;
-  line-height: 1;
-  opacity: .6;
-}
+    .alert-wrapper {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2000;
+      display: inline-block;
+    }
+
+    .alert-wrapper .alert {
+      position: relative;
+      display: inline-block;
+      padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+      font-size: 0.95rem;
+      border-radius: 0.375rem;
+    }
+
+    .alert-wrapper .btn-close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: none !important;
+      border: none;
+      padding: 0;
+      font-size: 1rem;
+      line-height: 1;
+      opacity: .6;
+    }
 
     @media (max-width: 576px) {
 

@@ -1,65 +1,80 @@
 <?php
 // HISTÓRICO
 
-// Inicia sessão se ainda não houver
+// Inicia a sessão caso ainda não tenha sido iniciada
+session_name('Mente_Renovada');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Configura fuso horário
+// Define fuso horário
 date_default_timezone_set('America/Sao_Paulo');
 
-// Debug
+// Ativa erros para debug
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Inclui conexão e função para apagar histórico
 include 'conn/conexao.php';
 include 'funcao_historico.php';
 
-// Verifica login
-if (!isset($_SESSION['login_admin'])) {
-    echo "<script>
-        alert('Você precisa estar logado para acessar essa página.');
-        window.location.href = 'index.php';
-    </script>";
+// Verifica se o psicólogo está logado
+if (!isset($_SESSION['psicologo_id'])) {
+    $_SESSION['flash'] = [
+        'type' => 'warning',
+        'message' => 'Faça login antes de acessar o histórico.'
+    ];
+    header('Location: index.php');
     exit;
 }
 
-// Busca dados do psicólogo
-$email = $_SESSION['login_admin'];
-$stmt = $conn->prepare("SELECT id, nome FROM psicologo WHERE email = :email LIMIT 1");
-$stmt->bindParam(':email', $email);
+// Recupera dados do psicólogo logado
+$id_psico = $_SESSION['psicologo_id'];
+$stmt = $conn->prepare("SELECT id, nome FROM psicologo WHERE id = :id LIMIT 1");
+$stmt->bindParam(':id', $id_psico, PDO::PARAM_INT);
 $stmt->execute();
 $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$usuario) die('Usuário não encontrado.');
 
-// Exclusão
+// Se não encontrar o usuário, encerra
+if (!$usuario) {
+    die('Usuário não encontrado.');
+}
+
+// Exclusão de histórico (todos ou individual)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['clear_all'])) {
+        // Apaga todos os registros do histórico do psicólogo
         $conn->prepare("DELETE FROM historico WHERE psicologo_id = :id")
              ->execute([':id' => $usuario['id']]);
-        header('Location: '.$_SERVER['PHP_SELF']);
+        header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
+
     if (isset($_POST['delete_id'])) {
+        // Apaga um registro específico do histórico
         apagarHistorico($conn, (int)$_POST['delete_id']);
-        header('Location: '.$_SERVER['PHP_SELF']);
+        header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
 }
 
-// Carrega histórico
-$stmt = $conn->prepare(
-    "SELECT id, data_hora, acao, tipo_entidade, descricao
-       FROM historico
-      WHERE psicologo_id = :id
-   ORDER BY data_hora DESC"
-);
+// Busca todos os registros do histórico
+$stmt = $conn->prepare("
+    SELECT id, data_hora, acao, tipo_entidade, descricao
+      FROM historico
+     WHERE psicologo_id = :id
+  ORDER BY data_hora DESC
+");
 $stmt->bindParam(':id', $usuario['id'], PDO::PARAM_INT);
 $stmt->execute();
 $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Recupera e limpa o flash da sessão (alerta)
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -224,6 +239,16 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
     <?php include 'menu_publico.php'; ?>
+
+    <!-- ALERTA FIXO NO TOPO -->
+    <?php if ($flash): ?>
+        <div class="alert-wrapper">
+            <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0 justify-content-center" role="alert">
+                <span><?= htmlspecialchars($flash['message']) ?></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        </div>
+    <?php endif; ?>
 
     <div class="container py-4">
         <div class="card card-historico mx-auto" style="max-width:1000px;">

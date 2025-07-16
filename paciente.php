@@ -147,31 +147,32 @@ $numrow = $lista->rowCount();
       color: #fff !important;
     }
 
- /* Container da alert: usa flex para alinhar botão */
-/* Torna a .alert um flex container */
-.alert-dismissible {
-  position: relative;
-  padding-right: 2.5rem; /* espaço pro X */
-}
+    /* Container da alert: usa flex para alinhar botão */
+    /* Torna a .alert um flex container */
+    .alert-dismissible {
+      position: relative;
+      padding-right: 2.5rem;
+      /* espaço pro X */
+    }
 
-/* Botão de fechar pequeno e centralizado verticalmente */
-.alert-wrapper .btn-close {
-  position: absolute;
-  top: 0.5rem;       /* ajusta conforme o padding-top do .alert */
-  right: 0.5rem;     /* mesma distância da borda direita */
-  background: none !important;
-  border: none;
-  padding: 0;
-  font-size: 1rem;
-  line-height: 1;
-}
+    /* Botão de fechar pequeno e centralizado verticalmente */
+    .alert-wrapper .btn-close {
+      position: absolute;
+      top: 0.5rem;
+      /* ajusta conforme o padding-top do .alert */
+      right: 0.5rem;
+      /* mesma distância da borda direita */
+      background: none !important;
+      border: none;
+      padding: 0;
+      font-size: 1rem;
+      line-height: 1;
+    }
 
-/* Remove sombra ao focar */
-.alert-dismissible .btn-close:focus {
-  box-shadow: none;
-}
-
-
+    /* Remove sombra ao focar */
+    .alert-dismissible .btn-close:focus {
+      box-shadow: none;
+    }
   </style>
 
 </head>
@@ -216,7 +217,7 @@ $numrow = $lista->rowCount();
           <tr>
             <th class="text-center">NOME</th>
             <th class="text-center">EMAIL</th>
-            <th class="text-center">TELEFONE</th>
+            <th class="text-center">WHATSAPP</th>
             <th class="text-center">DATAS</th>
             <th class="text-center">STATUS</th>
             <th class="text-center">OBSERVAÇÕES</th>
@@ -235,9 +236,29 @@ $numrow = $lista->rowCount();
                 <td><?php echo htmlspecialchars($row['email'] ?? '—'); ?></td>
 
                 <!-- Telefone -->
-                <td><?php echo $row['telefone']
-                      ? "(55) " . htmlspecialchars($row['telefone'])
-                      : '—'; ?></td>
+                <td>
+                  <?php
+                  if (!empty($row['telefone'])) {
+                    // Remove tudo que não for dígito
+                    $digits = preg_replace('/\D+/', '', $row['telefone']);
+                    // Garante o código do Brasil (55) no início
+                    if (strpos($digits, '55') !== 0) {
+                      $whatsapp = '55' . $digits;
+                    } else {
+                      $whatsapp = $digits;
+                    }
+                    // Gera o link para o WhatsApp Web/Mobile
+                    $display = '(55) ' . htmlspecialchars($row['telefone']);
+                    echo '<a href="https://wa.me/' . $whatsapp . '" '
+                      . 'target="_blank" '
+                      . 'class="text-decoration-none">'
+                      . '<i class="bi bi-whatsapp"></i> ' . $display
+                      . '</a>';
+                  } else {
+                    echo '—';
+                  }
+                  ?>
+                </td>
 
                 <!-- Datas -->
                 <td>
