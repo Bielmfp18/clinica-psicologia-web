@@ -184,12 +184,15 @@ if (isset($_SESSION['login_admin'])) {
 
     /* Links do menu */
     /* Início, Sessão e Paciente */
-
     .navbar-nav {
-      display: flex !important;/* garante flex */
-      gap: 2rem; /* ajusta o espaçamento horizontal */
-      margin: 0 auto;    /* empurra os links para a direita, se quiser */
+      display: flex !important;
+      /* para manter o gap funcionando */
+      gap: 2rem;
+      /* espaço entre os próprios links */
+      padding-left: 1.5rem;
+      /* <<— afasta o grupo de links do logo */
     }
+
 
     .navbar .nav-link {
       position: relative;
@@ -236,6 +239,7 @@ if (isset($_SESSION['login_admin'])) {
         transform: scale(1.1)
       }
     }
+
 
     .navbar .nav-link:active,
     .navbar .nav-link:focus {
