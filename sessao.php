@@ -557,6 +557,9 @@ $numrow = $lista->rowCount();
     });
   </script>
 
+<!-- Rodapé -->
+<?php include 'rodape.php'; ?>
+
 </body>
 
 </html>

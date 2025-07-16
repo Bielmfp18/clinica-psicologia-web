@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['clear_all'])) {
         // Apaga todos os registros do histórico do psicólogo
         $conn->prepare("DELETE FROM historico WHERE psicologo_id = :id")
-             ->execute([':id' => $usuario['id']]);
+            ->execute([':id' => $usuario['id']]);
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
@@ -339,9 +339,10 @@ unset($_SESSION['flash']);
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
+    <!-- Rodapé -->
+    <?php include 'rodape.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

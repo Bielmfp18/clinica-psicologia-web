@@ -25,7 +25,7 @@
     text-decoration: none !important;
     color: white !important;
     transition: transform 0.4s ease-in-out, color 0.7s ease-in-out;
-    color: #BD8AFD !important;
+    color: #DBA632 !important;
     transform: scale(1.1);
   }
 </style>

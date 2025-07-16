@@ -227,7 +227,7 @@ try {
               <div class="card-body text-center">
                 <i class="bi bi-people-fill fs-1 text-primary"></i>
                 <h5 class="card-title mt-2">Pacientes</h5>
-                <p class="display-6 mb-0"><?= $totalPacientes ?></p>
+                <p class="display-6 mb-0 text-primary"><?= $totalPacientes ?></p>
               </div>
             </div>
           </a>
@@ -242,9 +242,9 @@ try {
                 <i class="bi bi-person-fill-x fs-1 text-danger"></i>
                 <h5 class="card-title mt-2">Ativos / Inativos</h5>
                 <p class="fs-2 mb-0">
-                  <span class="fw-bold"><?= $pacientesAtivos ?></span>
+                  <span class="fw-bold text-success"><?= $pacientesAtivos ?></span>
                   <span class="text-muted mx-1">/</span>
-                  <span class="fw-light"><?= $pacientesInativos ?></span>
+                  <span class="fw-bold text-danger"><?= $pacientesInativos ?></span>
                 </p>
               </div>
             </div>
@@ -256,9 +256,9 @@ try {
           <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Suas sessões agendadas com seus pacientes">
             <div class="card border-success h-100 shadow-sm rounded card-custom">
               <div class="card-body text-center">
-                <i class="bi bi-journal-medical fs-1 text-success"></i>
+                <i class="bi bi-journal-medical fs-1 text-dark"></i>
                 <h5 class="card-title mt-2">Sessões</h5>
-                <p class="display-6 mb-0"><?= $totalSessoes ?></p>
+                <p class="display-6 mb-0 text-dark"><?= $totalSessoes ?></p>
               </div>
             </div>
           </a>
@@ -271,7 +271,7 @@ try {
               <div class="card-body text-center">
                 <i class="bi bi-calendar-check-fill fs-1 text-warning"></i>
                 <h5 class="card-title mt-2">Sessões este mês</h5>
-                <p class="display-6 mb-0"><?= $sessoesMes ?></p>
+                <p class="display-6 mb-0 text-warning"><?= $sessoesMes ?></p>
               </div>
             </div>
           </a>
