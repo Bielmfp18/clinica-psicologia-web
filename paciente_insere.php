@@ -12,13 +12,13 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-  // preparar flash de aviso
-  $_SESSION['flash'] = [
-    'type'    => 'warning',  // ou 'danger', como preferir
-    'message' => 'Faça login antes de cadastrar pacientes.'
-  ];
-  header('Location: index.php');
-  exit;
+    // preparar flash de aviso
+    $_SESSION['flash'] = [
+        'type'    => 'warning',  // ou 'danger', como preferir
+        'message' => 'Faça login antes de cadastrar pacientes.'
+    ];
+    header('Location: index.php');
+    exit;
 }
 
 include 'conn/conexao.php';        // Conexão com o banco de dados
@@ -128,8 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-      <!-- Link para o ícone da aba -->
-    <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
+    <!-- Link para o ícone da aba -->
+    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
     <style>
         body.fundofixo {
             background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
@@ -208,12 +208,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
 
-                    <!-- Telefone -->
+                    <!-- Telefone/WhatsApp -->
                     <div class="mb-4">
-                        <label for="telefone" class="form-label">Telefone:</label>
+                        <label for="telefone" class="form-label">WhatsApp:</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                            <input type="text" name="telefone" id="telefone" class="form-control" required maxlength="14" placeholder="Digite o telefone">
+                            <input type="text" name="telefone" id="telefone" class="form-control" required maxlength="14" placeholder="Digite o WhatsApp">
                         </div>
                     </div>
 
@@ -248,15 +248,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </main>
 
-     <!-- ALERTA FIXO NO TOPO -->
-        <?php if ($flash): ?>
-            <div class="alert-wrapper">
-                <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0 justify-content-center" role="alert">
-                    <span><?= htmlspecialchars($flash['message']) ?></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-                </div>
+    <!-- ALERTA FIXO NO TOPO -->
+    <?php if ($flash): ?>
+        <div class="alert-wrapper">
+            <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0 justify-content-center" role="alert">
+                <span><?= htmlspecialchars($flash['message']) ?></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
             </div>
-        <?php endif; ?>
+        </div>
+    <?php endif; ?>
 
     <script>
         // Faz o textarea ajustar a altura ao conteúdo de observações do paciente.

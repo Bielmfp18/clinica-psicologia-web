@@ -23,9 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $stmt->bindParam("psCRP",   $CRP);
         $stmt->bindParam("psativo", $ativo, PDO::PARAM_INT);
 
+        // Se existir a consulta ao Banco de Dados execute a condição
         if ($stmt->execute()) {
             $stmt->closeCursor();
-            // Flash de sucesso para ser exibida na página (fora de qualquer modal)
+            // Flash de sucesso para ser exibida na página
             $_SESSION['flash'] = [
               'type'    => 'success',
               'message' => 'Cadastro realizado com sucesso!'
@@ -39,10 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
               'type'    => 'danger',
               'message' => 'Erro ao realizar o cadastro. Verifique os dados e tente novamente.'
             ];
+            // Redireciona para index passando ?Cadastro=1 para abrir o modal de cadastro
             header('Location: index.php?Cadastro=1');
             exit;
         }
-    } catch (PDOException $e) {
+    } catch (PDOException $e) { 
         // Em caso de exceção, também usamos flash de erro
         $_SESSION['flash'] = [
           'type'    => 'danger',

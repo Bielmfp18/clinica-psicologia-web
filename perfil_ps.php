@@ -6,10 +6,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Inicia sessão e inclui a conexão com o banco de dados
-include 'conn/conexao.php';
-
-// Define o nome da sessão
+// Define o nome da sessão e inicia a sessão, se necessário
 session_name('Mente_Renovada');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -18,6 +15,9 @@ if (session_status() === PHP_SESSION_NONE) {
 // Resgata e apaga o flash, se existir
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
+
+// Inclui a conexão com o banco de dados
+include 'conn/conexao.php';
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['login_admin'])) {
@@ -43,6 +43,7 @@ if (!$usuario) {
     die('Usuário não encontrado.');
 }
 
+// Monta caminho da foto de perfil
 $caminhoImagem = 'image/';
 $fotoArquivo = $usuario['foto_perfil'];
 $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
@@ -61,7 +62,7 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Link para o ícone da aba -->
-    <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
     <style>
         .btn-anim {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -75,14 +76,56 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
         .btn-anim:active {
             transform: scale(0.97);
         }
+
+        /* Estilos para o alerta fixo no topo */
+        .alert-wrapper {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: inline-block;
+        }
+
+        .alert-wrapper .alert {
+            position: relative;
+            display: inline-block;
+            padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+            font-size: 0.95rem;
+            border-radius: 0.375rem;
+        }
+
+        .alert-wrapper .btn-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none !important;
+            border: none;
+            padding: 0;
+            font-size: 1rem;
+            line-height: 1;
+            opacity: .6;
+        }
     </style>
 </head>
 
-<!-- Menu público -->
-<?php include 'menu_publico.php'; ?>
-
 <body class="bg-light">
+
+    <!-- Exibe flash, se existir -->
+    <?php if ($flash): ?>
+        <div class="alert-wrapper">
+            <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($flash['message'], ENT_QUOTES) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- Menu público -->
+    <?php include 'menu_publico.php'; ?>
+
     <div class="container py-5">
+
         <!-- card recebe position-relative -->
         <div class="card shadow-lg position-relative mx-auto" style="max-width:600px;">
 
@@ -115,21 +158,9 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
                     <a href="logout.php" class="btn btn-outline-danger btn-anim">
                         Sair da Conta
                     </a>
-
                 </div>
             </div>
         </div> <!-- fim card -->
-
-
-        <!-- ALERTA FIXO NO TOPO -->
-        <?php if ($flash): ?>
-            <div class="alert-wrapper">
-                <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0 justify-content-center" role="alert">
-                    <span><?= htmlspecialchars($flash['message']) ?></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-                </div>
-            </div>
-        <?php endif; ?>
 
         <!-- Modal Editar Perfil -->
         <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
@@ -203,13 +234,12 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
     <script>
         // Fecha o alert de flash automaticamente
         setTimeout(() => {
-            const alertEl = document.querySelector('.alert-wrapper .alert');
+            const alertEl = document.querySelector('.alert-dismissible');
             if (alertEl) {
                 bootstrap.Alert.getOrCreateInstance(alertEl).close();
             }
         }, 5000);
     </script>
-
 </body>
 
 </html>

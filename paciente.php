@@ -82,7 +82,7 @@ $numrow = $lista->rowCount();
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
    <!-- Link para o ícone da aba -->
-  <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon"> 
+    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">> 
   <!-- Bootstrap 5 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- jQuery -->
@@ -198,9 +198,6 @@ $numrow = $lista->rowCount();
 
   <!-- MENU NAVBAR -->
   <?php include "menu_publico.php" ?>
-
-  <!-- Link para o ícone da aba -->
-  <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
 
   <!-- TÍTULO E DESCRIÇÃO-->
   <main class="container my-4">

@@ -87,7 +87,7 @@ unset($_SESSION['flash']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Link para o ícone da aba -->
-    <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
     <style>
         body {
             background-color: #f8f9fa;

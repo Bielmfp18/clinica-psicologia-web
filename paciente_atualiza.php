@@ -103,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Flash de sucesso para ser exibida na página (fora de qualquer modal)
             $_SESSION['flash'] = [
                 'type'    => 'warning',
-                'message' => "Paciente <strong>{$nome}</strong> atualizado com sucesso!!"
+                'message' => "Paciente <strong>{$nome}</strong> atualizado com sucesso!"
             ];
             // Redireciona para index passando ?login=1 para abrir o modal de login
             header('Location: paciente.php');
@@ -141,8 +141,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-     <!-- Link para o ícone da aba -->
-    <link rel="shortcut icon" href="image/MTM.ico" type="image/x-icon">
+   <!-- Link para o ícone da aba -->
+    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
    <style>
         body.fundofixo {
             background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
@@ -238,16 +238,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
 
-                    <!-- Telefone -->
+                    <!-- Telefone/WhatsApp -->
                     <div class="mb-4">
-                        <label for="telefone" class="form-label">Telefone:</label>
+                        <label for="telefone" class="form-label">WhatsApp::</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
                             <input type="text"
                                 name="telefone" id="telefone"
                                 class="form-control"
                                 required maxlength="14"
-                                placeholder="Digite o telefone"
+                                placeholder="Digite o WhatsApp"
                                 value="<?php echo htmlspecialchars($paciente['telefone']); ?>">
                         </div>
                     </div>
