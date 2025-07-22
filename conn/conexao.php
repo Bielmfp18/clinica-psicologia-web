@@ -1,9 +1,9 @@
 <?php 
 //Iniciando conexão 
-$host = "sql103.infinityfree.com";
-$database = "if0_39533260_mente_renovada";
-$user = "if0_39533260";
-$password = "K5FskwHTIK9a";
+$host = "127.0.0.1";
+$database = "Psicologia";
+$user = "root";
+$password = "";
 $charset = "UTF8";
 $porta = 3306;
 
