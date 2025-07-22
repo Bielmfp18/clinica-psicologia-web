@@ -51,7 +51,7 @@
 
                 <div class="row">
                     <div class="col-12 d-flex justify-content-center mb-3">
-                        <a href="https://github.com/Bielmfp18/clinica-psicologia-web" class="text-dark me-3" style="text-decoration: none;"><i class="bi bi-github"> Desenvolvido por Gabriel Martins </i></a>
+                        <a href="https://github.com/Bielmfp18" class="text-dark me-3" style="text-decoration: none;"><i class="bi bi-github"> Desenvolvido por Gabriel Martins </i></a>
                     </div>
                 </div>
 
