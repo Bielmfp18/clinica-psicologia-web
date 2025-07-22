@@ -1,5 +1,8 @@
 -- SCRIPT SQL DO BANCO DE DADOS DA CLÍNICA DE PSICOLOGIA (MENTE RENOVADA)
 
+Create database if not exists psicologia;
+Use psicologia;
+
 -- Tabela de Psicólogo
 
 Create table psicologo (
