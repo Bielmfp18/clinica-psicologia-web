@@ -1,7 +1,7 @@
 <?php 
 //Iniciando conexão 
-$host = "sql102.infinityfree.com";
-$database = "if0_39054069_mente_renovada";
+$host = "sql103.infinityfree.com";
+$database = "if0_39533260_mente_renovada";
 $user = "if0_39533260";
 $password = "K5FskwHTIK9a";
 $charset = "UTF8";
