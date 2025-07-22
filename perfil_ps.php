@@ -40,8 +40,14 @@ $stmt->execute();
 $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$usuario) {
-    die('Usuário não encontrado.');
+    $_SESSION['flash'] = [
+        'type'    => 'danger',
+        'message' => 'Usuário não encontrado.'
+    ];
+    header('Location: index.php');
+    exit;
 }
+
 
 // Monta caminho da foto de perfil
 $caminhoImagem = 'image/';
