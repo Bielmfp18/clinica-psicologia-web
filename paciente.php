@@ -1,6 +1,23 @@
 <?php
 // PACIENTE
 
+
+// Definir um tratador de exceções não capturadas
+set_exception_handler(function ($e) {
+    http_response_code(500);
+    $errorMsg = "Erro fatal: " . $e->getMessage();
+    include __DIR__ . '/conn/error.php';
+    exit;
+});
+
+// Definir um tratador de erros do PHP
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    http_response_code(500);
+    $errorMsg = "Erro interno: $errstr em $errfile na linha $errline";
+    include __DIR__ . '/conn/error.php';
+    exit;
+});
+
 // Inicia sessão para validar psicólogo logado
 session_name('Mente_Renovada');
 session_start();
@@ -30,7 +47,7 @@ $ativo = isset($_GET['ativo']) ? trim($_GET['ativo']) : '';
 if ($ativo === '1') {
   // --- SOMENTE OS MEUS PACIENTES ATIVOS ---
   $sql = "
-    SELECT *
+    SELECT ç *
       FROM paciente
      WHERE ativo = 1
        AND psicologo_id = :me

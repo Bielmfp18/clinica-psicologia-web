@@ -1,6 +1,23 @@
 <!-- INDEX -->
 
 <?php
+
+// Definir um tratador de exceções não capturadas
+set_exception_handler(function ($e) {
+    http_response_code(500);
+    $errorMsg = "Erro fatal: " . $e->getMessage();
+    include __DIR__ . '/conn/error.php';
+    exit;
+});
+
+// Definir um tratador de erros do PHP
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    http_response_code(500);
+    $errorMsg = "Erro interno: $errstr em $errfile na linha $errline";
+    include __DIR__ . '/conn/error.php';
+    exit;
+});
+
 // Inicia sessão para recuperar o psicólogo logado
 if (session_status() !== PHP_SESSION_ACTIVE) {
   session_name('Mente_Renovada');
