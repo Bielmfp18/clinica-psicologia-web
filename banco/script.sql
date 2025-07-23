@@ -135,12 +135,11 @@ DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE ps_paciente_insert (
-psicologo_id int,
+pspsicologo_id int,
 psnome varchar(100),
 psemail varchar(100),
 pstelefone char(14),
 psdata_nasc date,
-psdata_atualizacao datetime,
 psobservacoes text,
 psativo tinyint(1)
 )
@@ -153,7 +152,6 @@ INSERT INTO paciente(
   telefone,
   data_nasc,
   data_criacao, 
-  data_atualizacao,
   observacoes,
   ativo
 )
@@ -165,7 +163,6 @@ VALUES (
   pstelefone,
   psdata_nasc,
   NOW(),
-  psdata_atualizacao,
   psobservacoes,
   1
 );

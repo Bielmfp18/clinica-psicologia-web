@@ -71,9 +71,9 @@ try {
 
 // Sessões AGENDADAS do mês corrente
 try {
-  if ($psicologoId !== null) {
-    $inicioMes = date('Y-m-01');  // primeiro dia do mês
-    $fimMes    = date('Y-m-t');   // último dia do mês
+  if ($psicologoId !== null) {  
+    $inicioMes = date('Y-m-01 00:00:00');  // primeiro dia do mês
+    $fimMes    = date('Y-m-t 23:59:59');   // último dia do mês
     $stmt = $conn->prepare(
       "SELECT COUNT(*) AS sessoes_mes 
        FROM sessao 
@@ -114,8 +114,8 @@ try {
   <!-- jQuery  -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-   <!-- Link para o ícone da aba -->
-    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
+  <!-- Link para o ícone da aba -->
+  <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
@@ -268,7 +268,7 @@ try {
 
         <!-- Card: Sessões este Mês -->
         <div class="col-12 col-md-6 col-lg-3">
-          <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Sessões agendadas ou realizadas no mês atual">
+          <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Sessões agendadas no mês atual">
             <div class="card border-warning h-100 shadow-sm rounded card-custom">
               <div class="card-body text-center">
                 <i class="bi bi-calendar-check-fill fs-1 text-warning"></i>
