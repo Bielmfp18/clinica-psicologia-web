@@ -134,17 +134,14 @@ $numrow = $lista->rowCount();
 
     /* Estilo do modal de observações */
     .modal-body {
-      max-height: 60vh;
-      overflow-y: auto;
-      /* scroll vertical quando passar do limite */
-      overflow-x: hidden;
-      /* força quebra de palavras longas */
-      white-space: normal;
-      word-break: break-all;
-      hyphens: auto;
-      /*adiciona hífen quando possível */
-    }
-
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: normal;
+  word-break: normal;     /* respeita a divisão natural das palavras */
+  overflow-wrap: break-word; /* quebra só quando não couber na linha */
+  /* hyphens: none; */    /* opcionalmente, desliga hífens automáticos */
+}
 
     /* Gradiente para modal de DESATIVAR (base #dc3545) */
     .modal-header-danger {
@@ -354,14 +351,11 @@ $numrow = $lista->rowCount();
       <div class="modal-content">
         <!-- Cabeçalho em gradiente azul, título branco -->
         <div class="modal-header modal-header-info">
-          <h5 class="modal-title text-white">
+          <h5 class="modal-title text-white mx-auto">
             Observações de <strong><span id="obsNome"></span></strong>
           </h5>
         </div>
-        <div
-          class="modal-body bg-light text-start"
-          id="obsTexto"
-          style="max-height: 60vh; overflow-y: auto;"></div>
+        <div class="modal-body bg-light text-center" id="obsTexto" style="max-height: 60vh; overflow-y: auto;"></div>
         <!-- Rodapé com botão azul de fechar -->
         <div class="modal-footer">
           <button

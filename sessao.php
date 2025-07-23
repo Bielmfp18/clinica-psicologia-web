@@ -404,7 +404,7 @@ $numrow = $lista->rowCount();
     <div class="modal-dialog modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title text-white">Anotações da sessão de <strong><span class="modal-paciente-nome"></span></strong></h5>
+          <h5 class="modal-title text-white mx-auto">Anotações da sessão de <strong><span class="modal-paciente-nome"></span></strong></h5>
         </div>
         <div class="modal-body">
           <p class="modal-anotacoes text-center"></p>
