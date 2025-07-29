@@ -1,131 +1,148 @@
 <?php
-// Página de erro personalizada para o sistema Mente Renovada
-
-// Se a mensagem de erro não estiver definida, define um padrão
-if (!isset($errorMsg)) {
-  $errorMsg = "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.";
-}
+// ============================
+// ERROR HANDLER
+// ============================
+$errorMsg = "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.";
+http_response_code(404);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
-  <title>Erro no Sistema</title>
+  <title>Error</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Bootstrap CSS e ícones -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+  <!-- Link para o ícone da aba -->
+  <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
+  
   <style>
-    /* Zera margens e paddings globais */
+    /* RESET E BODY */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    /* Centraliza vertical e horizontalmente */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
-      padding: 20px;
-    }
-
-    /* Container da mensagem de erro */
-    .error-box {
-      position: relative;            /* referência para o botão absoluto */
-      background: #ffffff;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
-      border-top: 8px solid #e74c3c;
-      animation: slideIn 0.4s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateY(-20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    /* Logo acima do título */
-    .error-box img {
-      width: 120px;
-      margin-bottom: 20px;
-    }
-
-    /* Título da caixa de erro */
-    .error-box h1 {
-      color: #e74c3c;
-      font-size: 26px;
-      margin-bottom: 12px;
-    }
-
-    /* Texto de descrição do erro */
-    .error-box p {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
       color: #333;
-      font-size: 16px;
-      margin-bottom: 25px;
+    }
+
+    /* FULL‑PAGE ERROR */
+    .page-error {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .page-error .error-logo {
+      width: 80px;
+      margin-bottom: 1.5rem;
+    }
+
+    .page-error h1 {
+      font-size: 6rem;
+      font-weight: bold;
+      color: #dc3545;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-error h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #495057;
+    }
+
+    .page-error p {
+      font-size: 1.1rem;
+      color: #6c757d;
+      margin-bottom: 2rem;
       white-space: pre-line;
-      word-break: break-word;
     }
 
-    /* Botão de voltar posicionado no canto superior esquerdo */
+    /* BOTÃO VOLTAR SIMPLES */
     .btn-back {
-      position: absolute;            /* tira do fluxo e posiciona em relação à .error-box */
-      top: 16px;                     /* distância do topo da .error-box */
-      left: 16px;                    /* distância da esquerda da .error-box */
-      padding: 8px;                  /* tamanho do clique confortável */
-      font-size: 1.2rem;             /* aumenta o ícone */
-      line-height: 1;                /* corrige alinhamento de ícone */
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #dc3545;
+      cursor: pointer;
+      transition: color .2s;
     }
 
-    @media (max-width: 480px) {
-      .error-box {
-        padding: 30px 20px;
+    .btn-back:hover {
+      color: #a71d2a;
+    }
+
+    /* AÇÕES */
+    .page-error .btn {
+      margin: 0 .5rem;
+      padding: .75rem 1.5rem;
+      border-radius: .5rem;
+      font-size: 1rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .page-error .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 576px) {
+      .page-error h1 {
+        font-size: 4rem;
       }
-      .error-box h1 {
-        font-size: 22px;
+
+      .page-error h2 {
+        font-size: 1.5rem;
       }
-      .btn-back {
-        top: 12px;
-        left: 12px;
-        padding: 6px;
+
+      .page-error p {
         font-size: 1rem;
+      }
+
+      .page-error .error-logo {
+        width: 60px;
+        margin-bottom: 1rem;
       }
     }
   </style>
 </head>
+
 <body>
 
-   <!-- Menu público -->
-    <?php include 'menu_publico.php'; ?>
 
-  <div class="error-box">
-    <!-- Botão vermelho de voltar, usando classes Bootstrap e ícone -->
-  
+  <div class="page-error">
 
-    <!-- Logotipo do sistema -->
-    <img src="image/logo_principal.png" alt="Logo Mente Renovada">
+    <!-- Código de erro e mensagens -->
+    <h1>500</h1>
+    <p><?php echo htmlspecialchars($errorMsg, ENT_QUOTES, 'UTF-8'); ?></p>
 
-    <!-- Título de erro -->
-    <h1>Ocorreu um erro</h1>
-    <br>
+    <!-- Botões de ação -->
+    <a href="index.php" class="btn btn-danger">
+      <i class="bi bi-house-door-fill"></i> Início
+    </a>
+    <a href="javascript:history.back()" class="btn btn-warning">
+      <i class="bi bi-arrow-left-circle-fill"></i> Voltar à página anterior
+    </a>
 
-    <!-- Mensagem detalhada do erro (escapando HTML para segurança) -->
-    <strong><?php echo htmlspecialchars($errorMsg, ENT_QUOTES, 'UTF-8'); ?></strong>
   </div>
+
+  <!-- Bootstrap JS opcional -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
