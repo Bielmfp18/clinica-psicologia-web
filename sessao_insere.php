@@ -20,8 +20,11 @@ if (!isset($_SESSION['psicologo_id'])) {
   exit;
 }
 
-include 'conn/conexao.php';       // Conexão com o banco de dados
-include 'funcao_historico.php';   // Define registrarHistorico()
+// Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
+include 'conn/conexao.php';
+include 'conn/init.php';
+// Inclui a função de histórico
+include 'funcao_historico.php';
 
 $id_psicologo = (int) $_SESSION['psicologo_id'];
 

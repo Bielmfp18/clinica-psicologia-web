@@ -24,8 +24,10 @@ unset($_SESSION['flash']);
 // Pega o ID do psicólogo logado
 $id_psico = (int) $_SESSION['psicologo_id'];
 
-// Arquivo de conexão com o banco de dados
+// Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
 include 'conn/conexao.php';
+include 'conn/init.php';
+
 
 // Filtro por status da sessão
 $status_sessao = isset($_GET['status_sessao']) ? trim($_GET['status_sessao']) : '';
@@ -297,9 +299,9 @@ $numrow = $lista->rowCount();
                   </a>
                 </td>
                 <!-- AÇÃO -->
-                <td class="action-col">
+                <td class="action-col d-flex flex-column align-items-center gap-2">
                   <?php if ($row['status_sessao'] === 'AGENDADA'): ?>
-                    <button class="realizar btn btn-primary btn-anim"
+                    <button class="realizar btn btn-primary btn-anim mb-2"
                       data-id="<?= $row['id'] ?>" data-nome="<?= htmlspecialchars($row['paciente_nome']) ?>">
                       <i class="bi bi-check2-circle"></i>
                     </button>

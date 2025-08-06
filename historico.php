@@ -15,8 +15,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Inclui conexão e função para apagar histórico
+// Inclui conexão, a função para apagar histórico e a página de erro (se necessário)
 include 'conn/conexao.php';
+include 'conn/init.php';
 include 'funcao_historico.php';
 
 // Verifica se o psicólogo está logado

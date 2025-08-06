@@ -22,8 +22,9 @@ if (!isset($_SESSION['psicologo_id'])) {
   exit;
 }
 
-// Arquivo de conexão com o banco de dados
+// Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
 include 'conn/conexao.php';
+include 'conn/init.php';
 // Inclui a função de histórico (chama sua procedure ps_historico_insert)
 include 'funcao_historico.php';
 

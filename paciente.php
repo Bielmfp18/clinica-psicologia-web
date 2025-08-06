@@ -37,8 +37,10 @@ if (!isset($_SESSION['psicologo_id'])) {
 // Pega o ID do psicólogo logado
 $id_psico = (int) $_SESSION['psicologo_id'];
 
-// Arquivo de conexão com o banco de dados
+// Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
 include 'conn/conexao.php';
+include 'conn/init.php';
+
 
 // Captura o filtro de status ("" / "1" / "0")
 $ativo = isset($_GET['ativo']) ? trim($_GET['ativo']) : '';

@@ -24,8 +24,10 @@ if (!isset($_SESSION['psicologo_id'])) {
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Inclui conexão com o banco e função de histórico
+// Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
 include 'conn/conexao.php';
+include 'conn/init.php';
+// Inclui a função de histórico
 include 'funcao_historico.php';
 
 $id_psicologo = (int) $_SESSION['psicologo_id'];

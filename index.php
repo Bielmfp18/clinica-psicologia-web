@@ -27,8 +27,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 // Recupera o ID do psicólogo se estiver logado, senão define como null
 $psicologoId = isset($_SESSION['psicologo_id']) ? (int) $_SESSION['psicologo_id'] : null;
 
-// Inicia conexão com o banco de dados (PDO)
+// Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
 include 'conn/conexao.php';
+include 'conn/init.php';
 
 // Consulta total de pacientes cadastrados
 try {

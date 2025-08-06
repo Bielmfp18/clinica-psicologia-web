@@ -16,8 +16,10 @@ if (session_status() === PHP_SESSION_NONE) {
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Inclui a conexão com o banco de dados
+// Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
 include 'conn/conexao.php';
+include 'conn/init.php';
+
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['login_admin'])) {
