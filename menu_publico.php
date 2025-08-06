@@ -185,9 +185,12 @@ if (isset($_SESSION['login_admin'])) {
     /* Links do menu */
     /* Início, Sessão e Paciente */
     .navbar-nav {
-      display: flex !important; /* Para manter o gap funcionando */
-      gap: 2rem; /* Espaço entre os próprios links */
-      padding-left: 1.5rem; /* Afasta o grupo de links do logo */
+      display: flex !important;
+      /* Para manter o gap funcionando */
+      gap: 2rem;
+      /* Espaço entre os próprios links */
+      padding-left: 1.5rem;
+      /* Afasta o grupo de links do logo */
     }
 
     .navbar .nav-link {
@@ -297,40 +300,65 @@ if (isset($_SESSION['login_admin'])) {
     }
 
     /* Responsividade para celular e tablet */
-    @media (max-width:991.98px) {
-      .navbar-collapse {
+    @media (max-width: 991.98px) {
+      .navbar-collapse.show {
         flex-direction: column;
-        padding: 2rem 1rem;
-        border-radius: 12px;
+        align-items: center;
       }
 
+      /* Empilha e centraliza os itens do menu */
       .navbar-nav {
         flex-direction: column !important;
+        align-items: center;
+        width: 100%;
+        text-align: center;
         gap: 1rem;
-        margin: 1rem 0;
+        padding: 0;
+        margin: 0;
       }
 
+      /* Botões de registro/login e avatar dentro do mesmo fluxo */
       .nav-buttons {
-        flex-direction: column !important;
-        gap: .8rem;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 1rem;
         margin-top: 1.5rem;
-        width: 100%;
+        padding: 0;
       }
 
-      .registrar-text,
-      .login-text {
+      .nav-buttons .nav-link {
+        display: flex !important;
+        /* transforma o link num flex container */
+        justify-content: center !important;
+        /* centraliza horizontalmente */
+        align-items: center;
+        /* centraliza verticalmente */
         width: 100%;
-        justify-content: center;
+        padding: 0.6rem 0;
         font-size: 14px;
-        padding: .6rem 1rem;
+        text-align: center;
+        /* fallback para navegadores sem flex */
       }
 
+
+      /* Links principais */
+ .navbar-nav .nav-link {
+  text-align: center;
+}
+
+
+      /* Centraliza o avatar */
+      .perfil-img {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto;
+      }
+
+      /* Ajuste estético do toggler */
       .navbar-toggler {
         margin-right: 1rem;
-      }
-
-      .nav-link {
-        font-size: 16px;
       }
     }
   </style>
@@ -348,150 +376,210 @@ if (isset($_SESSION['login_admin'])) {
     </div>
   <?php endif; ?>
 
+  <!-- NAVBAR -->
+ 
+<body>
+
+  <!-- ALERTA FIXO NO TOPO -->
+  <?php if ($flash): ?>
+    <div class="alert-wrapper">
+      <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0" role="alert">
+        <?= $flash['message'] /* aqui o <strong> é renderizado como HTML */ ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+      </div>
+    </div>
+  <?php endif; ?>
 
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
-    <div class="container-fluid d-flex align-items-center">
+    <div class="container-fluid px-0 d-flex align-items-center">
       <!-- LOGO -->
       <a class="navbar-brand" href="index.php">
         <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo">
       </a>
+
       <!-- TOGGLER -->
-      <button class="navbar-toggler ms-auto" type="button"
+      <button class="navbar-toggler" type="button"
         data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
+        data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar"
         aria-expanded="false"
         aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- LINKS + BOTÕES -->
-      <ul class="navbar-nav …">
-        <?php if (isset($_SESSION['psicologo_id'])): ?>
-          <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
-          <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
-          <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
-      </ul>
-    <?php endif; ?>
-    <div class="d-flex align-items-center nav-buttons" style="min-width:250px">
-      <?php if (!isset($_SESSION['login_admin'])): ?>
-        <a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#modalRegistro">
-          <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
-        </a>
-        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
-          <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
-        </a>
-      <?php else: ?>
-        <a href="perfil_ps.php" title="Meu Perfil">
-          <img src="<?= htmlspecialchars($fotoPerfilPath) ?>" class="perfil-img" alt="Perfil">
-        </a>
-      <?php endif; ?>
-    </div>
-    </div>
+      <!-- CONTEÚDO DO TOGGLER/NAVBAR -->
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <!-- LINKS PRINCIPAIS -->
+        <ul class="navbar-nav ms-auto">
+          <?php if (isset($_SESSION['psicologo_id'])): ?>
+            <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
+            <li class="nav-item"><a class="nav-link" href="sessao.php">Sessões</a></li>
+            <li class="nav-item"><a class="nav-link" href="paciente.php">Pacientes</a></li>
+          <?php endif; ?>
+        </ul>
+
+        <!-- BOTÕES DE REGISTRO / LOGIN -->
+        <div class="nav-buttons d-flex ms-auto">
+          <?php if (!isset($_SESSION['login_admin'])): ?>
+            <a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+              <span class="registrar-text"><i class="bi bi-person-plus-fill"></i> Registre-se</span>
+            </a>
+            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalLogin">
+              <span class="login-text"><i class="bi bi-person-fill"></i> Entrar</span>
+            </a>
+          <?php else: ?>
+            <a href="perfil_ps.php" title="Meu Perfil">
+              <img src="<?= htmlspecialchars($fotoPerfilPath) ?>" class="perfil-img" alt="Perfil">
+            </a>
+          <?php endif; ?>
+        </div>
+      </div>
     </div>
   </nav>
 
-  <!-- MODAL DE LOGIN -->
-  <div class="modal fade" id="modalLogin" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content border-0" style="background:url('image/tela_login4.png') center/cover no-repeat;">
-        <div class="modal-body p-4">
-          <form action="menu_publico.php" method="POST" style="max-width:400px;margin:auto;">
-            <label for="email" class="form-label" style="color:#DBA632;">Email:</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-envelope-fill text-dark"></i></span>
-              <input type="email" name="email" id="email" class="form-control" required placeholder="Digite seu email.">
-            </div>
-            <label for="senha" class="form-label" style="color:#DBA632;">Senha:</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-lock-fill text-dark"></i></span>
-              <input type="password" name="senha" id="senha" class="form-control" required placeholder="Digite sua senha.">
-            </div>
-            <label for="CRP" class="form-label" style="color:#DBA632;">CRP:</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-person-vcard text-dark"></i></span>
-              <input type="password" name="CRP" id="CRP" class="form-control" maxlength="9" pattern="\d{2}/\d{1,6}" required placeholder="Digite seu CRP.">
-            </div>
-            <script>
-              $(document).ready(() => $("#CRP").inputmask("99/999999"));
-            </script>
-            <div class="d-flex justify-content-between mt-4">
-              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn" style="background:#DBA632;color:#fff;">Entrar</button>
-            </div>
-            <p class="text-center mt-3" style="color:#333;">
-              Não possui uma conta?
-              <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color:#DBA632;">Cadastre-se</a>
-            </p>
-          </form>
-        </div>
+
+
+
+
+
+<!-- Modal de Login -->
+<div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="modalLoginLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0" style="background: url('image/tela_login4.png') center/cover no-repeat;">
+      <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
+
+        <!-- Formulário de Login -->
+        <form action="menu_publico.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 70px;">
+
+          <!-- Email -->
+          <label for="email" class="form-label" style="color: #DBA632;">Email:</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-envelope-fill text-dark"></i></span>
+            <input type="email" name="email" id="email" class="form-control" required placeholder="Digite seu email.">
+          </div>
+
+          <!-- Campo Senha -->
+          <label for="senha" style="color: #DBA632;">Senha:</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="bi bi-lock-fill text-dark" aria-hidden="true"></i>
+            </span>
+            <input type="password" name="senha" id="senha" class="form-control" required autocomplete="off" placeholder="Digite sua senha.">
+          </div>
+          <!-- Campo CRP -->
+          <label for="CRP" style="color: #DBA632;">CRP:</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="bi bi-person-vcard text-dark" aria-hidden="true"></i>
+            </span>
+            <input type="password" name="CRP" id="CRP" class="form-control" maxlength="9" pattern="\d{2}/\d{1,6}" required placeholder="Digite seu CRP.">
+          </div>
+          <!-- InputMask para CRP -->
+          <script>
+            $(document).ready(function() {
+              $("#CRP").inputmask("99/999999");
+            });
+          </script>
+
+          <!-- Botões -->
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn" style="background-color: #DBA632; color: white;">Entrar</button>
+          </div>
+
+          <br><br><br>
+
+          <!-- Link para cadastro -->
+          <p class="text-center mt-3" style="color: #333;">
+            Não possui uma conta?
+            <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color: #DBA632;">Cadastre-se</a>
+          </p>
+        </form>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- MODAL DE REGISTRO -->
-  <div class="modal fade" id="modalRegistro" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content border-0" style="background:url('image/Cadastro4.png') center/cover no-repeat;">
-        <div class="modal-body p-4">
-          <form action="cadastro.php" method="POST" enctype="multipart/form-data" style="max-width:400px;margin:auto;">
-            <label for="nome" class="form-label" style="color:#DBA632;">Nome:</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-person-fill text-dark"></i></span>
-              <input type="text" name="nome" id="nome" class="form-control" required placeholder="Digite seu nome.">
-            </div>
-            <label for="email" class="form-label" style="color:#DBA632;">Email:</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-envelope-fill text-dark"></i></span>
-              <input type="email" name="email" id="email" class="form-control" required placeholder="Digite seu email.">
-            </div>
-            <label for="senha" class="form-label" style="color:#DBA632;">Senha:</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-lock-fill text-dark"></i></span>
-              <input type="password" name="senha" id="senha" class="form-control" required placeholder="Digite sua senha.">
-            </div>
-            <label for="CRP" class="form-label" style="color:#DBA632;">CRP:</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-person-vcard text-dark"></i></span>
-              <input type="password" name="CRP" id="CRP" class="form-control" maxlength="9" pattern="\d{2}/\d{1,6}" required placeholder="Digite seu CRP.">
-            </div>
-            <script>
-              $(document).ready(() => $("#CRP").inputmask("99/999999"));
-            </script>
-            <div class="d-flex justify-content-between mt-4">
-              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn" style="background:#DBA632;color:#fff;">Cadastrar</button>
-            </div>
-            <p class="text-center mt-3" style="color:#333;">
-              Já possui uma conta?
-              <a href="#" data-bs-toggle="modal" data-bs-target="#modalLogin" data-bs-dismiss="modal" style="color:#DBA632;">Faça login</a>
-            </p>
-          </form>
-        </div>
+
+
+<!-- Modal de Registro -->
+<div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0" style="background: url('image/Cadastro4.png') center/cover no-repeat;">
+      <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
+
+        <!-- Formulário de Registro -->
+        <form action="cadastro.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 60px;">
+
+          <!-- Nome -->
+          <label for="nome" class="form-label" style="color: #DBA632;">Nome:</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-person-fill text-dark"></i></span>
+            <input type="text" name="nome" id="nome" class="form-control" required placeholder="Digite seu nome.">
+          </div>
+
+          <!-- Email -->
+          <label for="email" class="form-label" style="color: #DBA632;">Email:</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-envelope-fill text-dark"></i></span>
+            <input type="email" name="email" id="email" class="form-control" required placeholder="Digite seu email.">
+          </div>
+
+          <!-- Senha -->
+          <label for="senha" class="form-label" style="color: #DBA632;">Senha:</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-lock-fill text-dark"></i></span>
+            <input type="password" name="senha" id="senha" class="form-control" required placeholder="Digite sua senha.">
+          </div>
+
+          <!-- CRP -->
+          <label for="CRP" class="form-label" style="color: #DBA632;">CRP:</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-person-vcard text-dark"></i></span>
+            <input type="password" name="CRP" id="CRP" class="form-control" maxlength="9" pattern="\d{2}/\d{1,6}" required placeholder="Digite seu CRP.">
+          </div>
+
+          <!-- InputMask para CRP -->
+          <script>
+            $(document).ready(function() {
+              $("#CRP").inputmask("99/999999");
+            });
+          </script>
+
+          <!-- Botões -->
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn" style="background-color: #DBA632; color: white;">Cadastrar</button>
+          </div>
+
+          <!-- Link para login -->
+          <p class="text-center mt-3" style="color: #333; margin-top: 70px !important;">
+            Já possui uma conta?
+            <a href="#" data-bs-toggle="modal" data-bs-target="#modalLogin" data-bs-dismiss="modal" style="color: #DBA632;">Faça login</a>
+          </p>
+        </form>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('login') === '1') {
-        new bootstrap.Modal(document.getElementById('modalLogin')).show();
-      }
-    });
 
-    // Fecha a mensagem de alerta após 5 segundos
-    setTimeout(() => {
-      const alertEl = document.querySelector('.alert-wrapper .alert');
-      if (alertEl) {
-        bootstrap.Alert.getOrCreateInstance(alertEl).close();
-      }
-    }, 5000);
-  </script>
-</body>
+<!-- Função JS (caso queira abrir modal por script) -->
+<script>
+  function abrirModal() {
+    const modal = new bootstrap.Modal(document.getElementById('modalLogin'));
+    modal.show();
+  }
+</script>
 
-</html>
+<!-- Função JS para redirecionar o usuário da página de cadastro para o modal de login  -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === 'abrir') {
+      const loginModal = new bootstrap.Modal(document.getElementById('modalLogin'));
+      loginModal.show();
+    }
+  });
+</script>
