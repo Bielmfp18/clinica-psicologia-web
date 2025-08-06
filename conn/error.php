@@ -17,7 +17,7 @@ http_response_code(404);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <!-- Link para o ícone da aba -->
   <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
-  
+
   <style>
     /* RESET E BODY */
     * {
@@ -51,7 +51,7 @@ http_response_code(404);
     }
 
     .page-error h1 {
-      font-size: 6rem;
+      font-size: 3rem;
       font-weight: bold;
       color: #dc3545;
       margin-bottom: 0.5rem;
@@ -127,9 +127,12 @@ http_response_code(404);
 
   <div class="page-error">
 
+    <!-- Imagem da página de erro -->
+    <img src="image/MENTE_RENOVADA-LOGO-removebg-preview-removebg-preview.png" alt="Logo-Mente-Renovada" style="height: 10rem;">
+
     <!-- Código de erro e mensagens -->
-    <h1>500</h1>
-    <p><?php echo htmlspecialchars($errorMsg, ENT_QUOTES, 'UTF-8'); ?></p>
+    <h1>ERROR 500</h1>
+    <strong><p><?php echo htmlspecialchars($errorMsg, ENT_QUOTES, 'UTF-8'); ?></p></strong>
 
     <!-- Botões de ação -->
     <a href="index.php" class="btn btn-danger">

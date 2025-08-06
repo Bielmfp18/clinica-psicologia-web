@@ -4,18 +4,18 @@
 
 // Definir um tratador de exceções não capturadas
 set_exception_handler(function ($e) {
-    http_response_code(500);
-    $errorMsg = "Erro fatal: " . $e->getMessage();
-    include __DIR__ . '/conn/error.php';
-    exit;
+  http_response_code(500);
+  $errorMsg = "Erro fatal: " . $e->getMessage();
+  include __DIR__ . '/conn/error.php';
+  exit;
 });
 
 // Definir um tratador de erros do PHP
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-    http_response_code(500);
-    $errorMsg = "Erro interno: $errstr em $errfile na linha $errline";
-    include __DIR__ . '/conn/error.php';
-    exit;
+  http_response_code(500);
+  $errorMsg = "Erro interno: $errstr em $errfile na linha $errline";
+  include __DIR__ . '/conn/error.php';
+  exit;
 });
 
 // Inicia sessão para validar psicólogo logado
@@ -47,7 +47,7 @@ $ativo = isset($_GET['ativo']) ? trim($_GET['ativo']) : '';
 if ($ativo === '1') {
   // --- SOMENTE OS MEUS PACIENTES ATIVOS ---
   $sql = "
-    SELECT ç *
+    SELECT ç * //<--- Está aqui o erro de sintaxe
       FROM paciente
      WHERE ativo = 1
        AND psicologo_id = :me
@@ -98,8 +98,8 @@ $numrow = $lista->rowCount();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-   <!-- Link para o ícone da aba -->
-    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">> 
+  <!-- Link para o ícone da aba -->
+  <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
   <!-- Bootstrap 5 JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- jQuery -->
@@ -151,14 +151,17 @@ $numrow = $lista->rowCount();
 
     /* Estilo do modal de observações */
     .modal-body {
-  max-height: 60vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  white-space: normal;
-  word-break: normal;     /* respeita a divisão natural das palavras */
-  overflow-wrap: break-word; /* quebra só quando não couber na linha */
-  /* hyphens: none; */    /* opcionalmente, desliga hífens automáticos */
-}
+      max-height: 60vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      white-space: normal;
+      word-break: normal;
+      /* respeita a divisão natural das palavras */
+      overflow-wrap: break-word;
+      /* quebra só quando não couber na linha */
+      /* hyphens: none; */
+      /* opcionalmente, desliga hífens automáticos */
+    }
 
     /* Gradiente para modal de DESATIVAR (base #dc3545) */
     .modal-header-danger {
