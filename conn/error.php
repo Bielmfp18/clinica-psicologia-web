@@ -85,7 +85,7 @@ http_response_code($errorCode);
 
     <!-- Botões de navegação -->
     <?php if ($showMenuAndBack): ?>
-      <a href="index.php" class="btn btn-danger">
+      <a href="index.php" class="btn btn-danger mb-2">
         <i class="bi bi-house-door-fill"></i> Início
       </a>
       <a href="javascript:history.back()" class="btn btn-warning">
