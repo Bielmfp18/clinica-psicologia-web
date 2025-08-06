@@ -66,7 +66,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 d-flex justify-content-center">
-                        <p>&copy; 2025 Mente Renovada. Todos os direitos reservados.</p>
+                        <p style="text-align: center;">&copy; 2025 Mente Renovada. Todos os direitos reservados.</p>
                     </div>
                 </div>
             </div>
