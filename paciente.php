@@ -231,7 +231,6 @@ $numrow = $lista->rowCount();
       <form action="" method="GET" class="d-flex align-items-center gap-2 mb-0">
         <label for="ativo" class="fw-bold mb-0">STATUS</label>
         <select name="ativo" id="ativo" class="form-control" style="height: 34px; max-width:130px;">
-          <option value="" <?php if ($ativo === '') echo 'selected'; ?>>TUDO</option>
           <option value="1" <?php if ($ativo === '1') echo 'selected'; ?>>ATIVO</option>
           <option value="0" <?php if ($ativo === '0') echo 'selected'; ?>>INATIVO</option>
         </select>

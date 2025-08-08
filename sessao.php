@@ -225,7 +225,7 @@ $numrow = $lista->rowCount();
       <form action="" method="GET" class="d-flex align-items-center gap-2 mb-0">
         <label for="status_sessao" class="fw-bold mb-0">STATUS</label>
         <select name="status_sessao" id="status_sessao" class="form-select" style="max-width:150px;">
-          <option value="" <?= $status_sessao === '' ? 'selected' : '' ?>>TUDO</option>
+         
           <option value="AGENDADA" <?= $status_sessao === 'AGENDADA' ? 'selected' : '' ?>>AGENDADA</option>
           <option value="REALIZADA" <?= $status_sessao === 'REALIZADA' ? 'selected' : '' ?>>REALIZADA</option>
           <option value="CANCELADA" <?= $status_sessao === 'CANCELADA' ? 'selected' : '' ?>>CANCELADA</option>
