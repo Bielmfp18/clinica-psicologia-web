@@ -49,7 +49,7 @@ $ativo = isset($_GET['ativo']) ? trim($_GET['ativo']) : '';
 if ($ativo === '1') {
   // --- SOMENTE OS MEUS PACIENTES ATIVOS ---
   $sql = "
-    SELECT ç * //<--- Está aqui o erro de sintaxe
+    SELECT *
       FROM paciente
      WHERE ativo = 1
        AND psicologo_id = :me
