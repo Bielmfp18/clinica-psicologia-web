@@ -225,6 +225,14 @@ try {
     .row.g-4 .col-12 a {
       flex: 1;
     }
+
+     /* Responsividade para celular e tablet */
+    @media (max-width: 991.98px) {
+      .jumbotron {
+        padding: 12rem 1rem;
+      }
+    }
+    
   </style>
 </head>
 
