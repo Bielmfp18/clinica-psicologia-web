@@ -152,8 +152,9 @@ try {
     }
 
     main {
-  min-height: calc(100vh - 200px); /* Ajuste o valor conforme altura da navbar + rodapé */
-}
+      min-height: calc(100vh - 200px);
+      /* Ajuste o valor conforme altura da navbar + rodapé */
+    }
 
 
     .jumbotron {
@@ -191,7 +192,7 @@ try {
       transform-origin: center center;
     }
 
-      .card-custom::before {
+    .card-custom::before {
       content: '';
       position: absolute;
       top: 0;
@@ -257,6 +258,7 @@ try {
       display: flex;
       justify-items: center;
     }
+
     .card-custom .display-6 {
       font-weight: 700;
       font-size: clamp(1rem, 3vw, 1.9rem);
@@ -271,19 +273,55 @@ try {
       border-style: solid;
     }
 
-    /* Responsividade */
-    @media (max-width: 420px) {
+    @media (max-width: 991.98px) {
       .card-custom {
-        width: clamp(110px, 38vw, 180px);
-        padding: .6rem;
+        padding: 0.4rem;
+        overflow: hidden;
+        height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .d-flex,
+      .flex-column {
+        padding-left: 0.5rem;
+        padding-right: 1rem;
+      }
+
+      .card-custom .card-body {
+        padding: 0.5rem !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
       }
 
       .card-custom .card-body i {
         font-size: 1.4rem;
+        margin-bottom: 0.2rem;
       }
 
-      .card-custom .display-6 {
-        font-size: 1.05rem;
+      .card-custom .card-title {
+        font-size: 0.9rem;
+        margin: 0.2rem 0;
+        text-align: center;
+      }
+
+      .card-custom .display-6,
+      .card-custom .fs-2 {
+        font-size: 1rem;
+        margin: 0;
+      }
+
+      .card-custom .d-flex {
+        gap: 0.4rem;
+        flex-wrap: nowrap;
+        justify-content: center;
       }
     }
   </style>
@@ -298,18 +336,18 @@ try {
     <!-- Jumbotron de boas‑vindas -->
     <div class="jumbotron text-center"></div>
 
-<?php if (!isset($_SESSION['psicologo_id'])): ?>
-  <div class="text-center mt-4">
-    <p class="lead">Cadastre-se ou faça login para acessar sua área de trabalho.</p>
-  </div>
-<?php endif; ?>
+    <?php if (!isset($_SESSION['psicologo_id'])): ?>
+      <div class="text-center mt-4">
+        <p class="lead">Cadastre-se ou faça login para acessar sua área de trabalho.</p>
+      </div>
+    <?php endif; ?>
 
 
     <?php if (isset($_SESSION['psicologo_id'])): ?>
       <!-- Seção de resumo em cards -->
       <div class="row g-4">
         <!-- Card: Total de Pacientes -->
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3">
           <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes cadastrados">
             <div class="card border-primary h-100 shadow-sm rounded card-custom">
               <div class="card-body text-center">
@@ -321,33 +359,33 @@ try {
           </a>
         </div>
 
-  <!-- Card: Pacientes Ativos vs. Inativos -->
-<div class="col-12 col-md-6 col-lg-3">
-  <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes ativos e inativos no sistema">
-    <div class="card border-info h-100 shadow-sm rounded card-custom">
-      <div class="card-body text-center">
-        <!-- Ícones lado a lado -->
-        <div class="d-flex justify-content-center align-items-center gap-3 mb-1">
-          <i class="bi bi-person-check-fill fs-1 text-info"></i>
-          <i class="bi bi-person-fill-x fs-1 text-danger"></i>
+        <!-- Card: Pacientes Ativos vs. Inativos -->
+        <div class="col-6 col-md-6 col-lg-3">
+          <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes ativos e inativos no sistema">
+            <div class="card border-info h-100 shadow-sm rounded card-custom">
+              <div class="card-body text-center">
+                <!-- Ícones lado a lado -->
+                <div class="d-flex justify-content-center align-items-center gap-3 mb-1">
+                  <i class="bi bi-person-check-fill fs-1 text-info"></i>
+                  <i class="bi bi-person-fill-x fs-1 text-danger"></i>
+                </div>
+
+                <!-- Título -->
+                <h5 class="card-title">Ativos / Inativos</h5>
+
+                <!-- Números -->
+                <p class="display-6 mb-0">
+                  <span class="fw-bold text-success"><?= $pacientesAtivos ?></span>
+                  <span class="text-muted mx-1">/</span>
+                  <span class="fw-bold text-danger"><?= $pacientesInativos ?></span>
+                </p>
+              </div>
+            </div>
+          </a>
         </div>
 
-        <!-- Título -->
-        <h5 class="card-title">Ativos / Inativos</h5>
-
-        <!-- Números -->
-        <p class="fs-2 mb-0">
-          <span class="fw-bold text-success"><?= $pacientesAtivos ?></span>
-          <span class="text-muted mx-1">/</span>
-          <span class="fw-bold text-danger"><?= $pacientesInativos ?></span>
-        </p>
-      </div>
-    </div>
-  </a>
-</div>
-
         <!-- Card: Total de Sessões -->
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3">
           <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Suas sessões agendadas com seus pacientes">
             <div class="card border-success h-100 shadow-sm rounded card-custom">
               <div class="card-body text-center">
@@ -360,7 +398,7 @@ try {
         </div>
 
         <!-- Card: Sessões este Mês -->
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3">
           <a href="sessao.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Sessões agendadas no mês atual">
             <div class="card border-warning h-100 shadow-sm rounded card-custom">
               <div class="card-body text-center">

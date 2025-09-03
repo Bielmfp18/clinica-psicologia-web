@@ -21,13 +21,32 @@
     .hidden {
         display: none !important;
     }
-  .bi:hover {
-    text-decoration: none !important;
-    color: white !important;
-    transition: transform 0.4s ease-in-out, color 0.7s ease-in-out;
-    color: #DBA632 !important;
-    transform: scale(1.1);
+
+    .bi:hover {
+        text-decoration: none !important;
+        color: white !important;
+        transition: transform 0.4s ease-in-out, color 0.7s ease-in-out;
+        color: #DBA632 !important;
+        transform: scale(1.1);
+    }
+
+@media (max-width: 576px) {
+  footer {
+    padding: 0.5rem 0;  /* Padding menor em telas pequenas */
+    font-size: 0.75rem; /* Fonte menor para caber melhor */
+    line-height: 1.5;   /* Ajusta espaçamento para texto menor */
   }
+
+  footer img {
+    height: 80px;       /* Logo menor em telas pequenas */
+    margin-bottom: 0.3rem;
+  }
+
+  footer p, footer .small {
+    font-size: 0.7rem;
+    margin: 0.5rem 0;
+  }
+}
 </style>
 
 <html>
@@ -41,7 +60,7 @@
                 <div class="row">
                     <!-- Coluna da logo e redes sociais -->
                     <div class="col-12 d-flex justify-content-center">
-                    <img src="image/MENTE_RENOVADA-LOGO.png" alt="Imagem-rodape" height="150px">
+                        <img src="image/MENTE_RENOVADA-LOGO.png" alt="Imagem-rodape" height="150px">
                         <!-- <h2 class="mb-3"></h2> -->
                         <!-- <hr class="hidden"> -->
                         <!-- <br><br> -->
