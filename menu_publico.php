@@ -100,7 +100,7 @@ if (isset($_SESSION['login_admin'])) {
     }
 
     body {
-      padding-top: 120px;
+      padding-top: 90px;
     }
 
     /* Mensagem de aviso */
@@ -167,7 +167,7 @@ if (isset($_SESSION['login_admin'])) {
       background: rgba(255, 255, 255, 0.95);
       box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
       z-index: 1000;
-      padding: .5rem 1rem;
+      padding: .1rem 1rem;
     }
 
     /* Logo da Mente Renovada */

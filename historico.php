@@ -30,6 +30,8 @@ if (!isset($_SESSION['psicologo_id'])) {
     exit;
 }
 
+
+
 // Recupera dados do psicólogo logado
 $id_psico = $_SESSION['psicologo_id'];
 $stmt = $conn->prepare("SELECT id, nome FROM psicologo WHERE id = :id LIMIT 1");
@@ -241,6 +243,7 @@ unset($_SESSION['flash']);
 </head>
 
 <body>
+
     <!-- Menu público -->
     <?php include 'menu_publico.php'; ?>
 
@@ -345,8 +348,11 @@ unset($_SESSION['flash']);
             </div>
         </div>
     </div>
-    <!-- Rodapé -->
-    <?php include 'rodape.php'; ?>
+    <!-- //Rodapé (para exibir rodapé se houver registros) -->
+    <?php $mostrarRodape = $_SESSION['psicologo_id'] && count($registros) > 4 ?>
+    <?php if ($mostrarRodape): ?>
+        <?php include 'rodape.php'; ?>
+    <?php endif; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

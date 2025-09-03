@@ -57,6 +57,7 @@ if (in_array($status_sessao, ['AGENDADA', 'REALIZADA', 'CANCELADA'])) {
 $lista  = $conn->prepare($sql);
 $lista->execute($params);
 $numrow = $lista->rowCount();
+
 ?>
 
 <!DOCTYPE html>
@@ -561,8 +562,10 @@ $numrow = $lista->rowCount();
     });
   </script>
 
-  <!-- Rodapé -->
+<!-- // Conta total de sessões do psicólogo (para exibir rodapé se houver sessões) -->
+<?php if (isset($_SESSION['psicologo_id']) && $numrow > 4): ?>
   <?php include 'rodape.php'; ?>
+<?php endif; ?>
 
 </body>
 

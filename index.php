@@ -4,18 +4,18 @@
 
 // Definir um tratador de exceções não capturadas
 set_exception_handler(function ($e) {
-    http_response_code(500);
-    $errorMsg = "Erro fatal: " . $e->getMessage();
-    include __DIR__ . '/conn/error.php';
-    exit;
+  http_response_code(500);
+  $errorMsg = "Erro fatal: " . $e->getMessage();
+  include __DIR__ . '/conn/error.php';
+  exit;
 });
 
 // Definir um tratador de erros do PHP
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-    http_response_code(500);
-    $errorMsg = "Erro interno: $errstr em $errfile na linha $errline";
-    include __DIR__ . '/conn/error.php';
-    exit;
+  http_response_code(500);
+  $errorMsg = "Erro interno: $errstr em $errfile na linha $errline";
+  include __DIR__ . '/conn/error.php';
+  exit;
 });
 
 // Inicia sessão para recuperar o psicólogo logado
@@ -89,7 +89,7 @@ try {
 
 // Sessões AGENDADAS do mês corrente
 try {
-  if ($psicologoId !== null) {  
+  if ($psicologoId !== null) {
     $inicioMes = date('Y-m-01 00:00:00');  // primeiro dia do mês
     $fimMes    = date('Y-m-t 23:59:59');   // último dia do mês
     $stmt = $conn->prepare(
@@ -151,31 +151,47 @@ try {
       color: var(--text-dark);
     }
 
+    main {
+  min-height: calc(100vh - 200px); /* Ajuste o valor conforme altura da navbar + rodapé */
+}
+
+
     .jumbotron {
       background:
-        url('image/Renovada.png') center center / cover no-repeat,
+        url('image/Principal.png') center center / cover no-repeat,
         linear-gradient(135deg, rgba(51, 135, 182, 0.8), rgba(212, 67, 90, 0.8));
       color: #fff;
-      padding: 18rem 1.5rem;
+      padding: 6rem;
       border-radius: .75rem;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      margin-bottom: 2.5rem;
+      margin-bottom: 1.5rem;
       position: relative;
       overflow: hidden;
+      width: 60%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .card-custom {
-      border: none;
+      box-sizing: border-box;
+      /* garante paddings/bordas contados no tamanho */
+      width: clamp(140px, 100%, 260px);
+      /* largura responsiva (ajuste os valores se quiser) */
+      aspect-ratio: 4 / 3;
       border-radius: 1rem;
       background: #ffffff;
-      box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.05),
-        -8px -8px 16px rgba(255, 255, 255, 0.7);
+      box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.05), -8px -8px 16px rgba(255, 255, 255, 0.7);
       transition: transform .3s, box-shadow .3s;
       position: relative;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      transform-origin: center center;
     }
 
-    .card-custom::before {
+      .card-custom::before {
       content: '';
       position: absolute;
       top: 0;
@@ -203,13 +219,6 @@ try {
       font-weight: 700;
     }
 
-    .card-custom.border-primary,
-    .card-custom.border-success,
-    .card-custom.border-info,
-    .card-custom.border-warning {
-      border-width: 2px;
-    }
-
     .container {
       max-width: 1200px;
     }
@@ -226,13 +235,57 @@ try {
       flex: 1;
     }
 
-     /* Responsividade para celular e tablet */
-    @media (max-width: 991.98px) {
-      .jumbotron {
-        padding: 12rem 1rem;
+
+    /* corpo do card ocupa o espaço inteiro e centraliza conteúdo */
+    .card-custom .card-body {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+    }
+
+    /* ícones e textos escalam proporcionalmente com clamp */
+    .card-custom .card-body i {
+      font-size: clamp(1.2rem, 4vw, 2.6rem);
+      margin-bottom: .35rem;
+    }
+
+    .card .bi-person-check-fill {
+      display: flex;
+      justify-items: center;
+    }
+    .card-custom .display-6 {
+      font-weight: 700;
+      font-size: clamp(1rem, 3vw, 1.9rem);
+    }
+
+    /* borda colorida */
+    .card-custom.border-primary,
+    .card-custom.border-success,
+    .card-custom.border-info,
+    .card-custom.border-warning {
+      border-width: 2px;
+      border-style: solid;
+    }
+
+    /* Responsividade */
+    @media (max-width: 420px) {
+      .card-custom {
+        width: clamp(110px, 38vw, 180px);
+        padding: .6rem;
+      }
+
+      .card-custom .card-body i {
+        font-size: 1.4rem;
+      }
+
+      .card-custom .display-6 {
+        font-size: 1.05rem;
       }
     }
-    
   </style>
 </head>
 
@@ -244,6 +297,13 @@ try {
   <main class="flex-fill container py-5">
     <!-- Jumbotron de boas‑vindas -->
     <div class="jumbotron text-center"></div>
+
+<?php if (!isset($_SESSION['psicologo_id'])): ?>
+  <div class="text-center mt-4">
+    <p class="lead">Cadastre-se ou faça login para acessar sua área de trabalho.</p>
+  </div>
+<?php endif; ?>
+
 
     <?php if (isset($_SESSION['psicologo_id'])): ?>
       <!-- Seção de resumo em cards -->
@@ -261,23 +321,30 @@ try {
           </a>
         </div>
 
-        <!-- Card: Pacientes Ativos vs. Inativos -->
-        <div class="col-12 col-md-6 col-lg-3">
-          <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes ativos e inativos no sistema">
-            <div class="card border-info h-100 shadow-sm rounded card-custom">
-              <div class="card-body text-center">
-                <i class="bi bi-person-check-fill fs-1 text-info me-4"></i>
-                <i class="bi bi-person-fill-x fs-1 text-danger"></i>
-                <h5 class="card-title mt-2">Ativos / Inativos</h5>
-                <p class="fs-2 mb-0">
-                  <span class="fw-bold text-success"><?= $pacientesAtivos ?></span>
-                  <span class="text-muted mx-1">/</span>
-                  <span class="fw-bold text-danger"><?= $pacientesInativos ?></span>
-                </p>
-              </div>
-            </div>
-          </a>
+  <!-- Card: Pacientes Ativos vs. Inativos -->
+<div class="col-12 col-md-6 col-lg-3">
+  <a href="paciente.php" class="text-decoration-none" data-bs-toggle="tooltip" title="Seus pacientes ativos e inativos no sistema">
+    <div class="card border-info h-100 shadow-sm rounded card-custom">
+      <div class="card-body text-center">
+        <!-- Ícones lado a lado -->
+        <div class="d-flex justify-content-center align-items-center gap-3 mb-1">
+          <i class="bi bi-person-check-fill fs-1 text-info"></i>
+          <i class="bi bi-person-fill-x fs-1 text-danger"></i>
         </div>
+
+        <!-- Título -->
+        <h5 class="card-title">Ativos / Inativos</h5>
+
+        <!-- Números -->
+        <p class="fs-2 mb-0">
+          <span class="fw-bold text-success"><?= $pacientesAtivos ?></span>
+          <span class="text-muted mx-1">/</span>
+          <span class="fw-bold text-danger"><?= $pacientesInativos ?></span>
+        </p>
+      </div>
+    </div>
+  </a>
+</div>
 
         <!-- Card: Total de Sessões -->
         <div class="col-12 col-md-6 col-lg-3">
@@ -305,11 +372,11 @@ try {
           </a>
         </div>
       </div>
+      <!-- Rodapé -->
+      <?php include 'rodape.php'; ?>
   </main>
 <?php endif; ?>
 
-<!-- Rodapé -->
-<?php include 'rodape.php'; ?>
 
 <script>
   // Inicializa tooltips do Bootstrap

@@ -87,6 +87,8 @@ $lista->execute($params);
 
 // Número de linhas retornadas
 $numrow = $lista->rowCount();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -603,8 +605,11 @@ $numrow = $lista->rowCount();
     }
   </script>
 
-  <!-- Rodapé -->
+<!-- // Conta total de pacientes do psicólogo (para exibir rodapé se houver pacientes) -->
+<?php if (isset($_SESSION['psicologo_id']) && $numrow > 4): ?>
   <?php include 'rodape.php'; ?>
+<?php endif; ?>
+
 </body>
 
 </html>
