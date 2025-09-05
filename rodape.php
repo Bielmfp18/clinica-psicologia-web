@@ -8,7 +8,7 @@
           --container-max: 1100px;
       }
 
-      /* base */
+      /* Base */
       *,
       *::before,
       *::after {
@@ -39,7 +39,7 @@
     }
 
 
-      /* footer */
+      /* Footer */
       footer.site-footer {
           background-color: var(--footer-bg);
           color: var(--text-main);
@@ -56,7 +56,7 @@
           padding: 0 1rem;
       }
 
-      /* grid: colunas previsíveis */
+      /* Grid: colunas previsíveis */
       .footer-inner {
           display: grid;
           grid-template-columns: minmax(160px, 220px) 1fr minmax(260px, 360px);
@@ -68,7 +68,7 @@
           padding: 0 1rem;
       }
 
-      /* marca (logo + ícones) */
+      /* Marca (logo + ícones) */
       .footer-brand {
           display: flex;
           flex-direction: column;
@@ -116,13 +116,14 @@
           outline: none;
       }
 
-      /* nav central — ocupa a altura da célula e centraliza conteudo */
+      /* Nav central — ocupa a altura da célula e centraliza o conteúdo */
+      /* Sobre, Contato, Suporte */
       .footer-nav {
           display: flex;
           align-items: center;
           justify-content: center;
           height: 100%;
-          margin-left: 110px;
+          margin-left: 135px;
       }
 
       .footer-nav ul {
@@ -147,7 +148,7 @@
           text-decoration: underline;
       }
 
-      /* newsletter (direita) */
+      /* Newsletter (direita) */
       .footer-newsletter {
           display: flex;
           flex-direction: column;
@@ -201,7 +202,7 @@
           outline: 3px solid rgba(0, 0, 0, 0.08);
       }
 
-      /* endereço + copyright */
+      /* Endereço + copyright */
       .footer-address {
           max-width: var(--container-max);
           margin: 1.8rem auto 0;
@@ -224,7 +225,7 @@
           font-size: .9rem;
       }
 
-      /* small screen behaviour */
+      /* Small screen behaviour */
       @media (max-width: 1100px) {
           .footer-inner {
               grid-template-columns: minmax(160px, 200px) 1fr;
@@ -249,7 +250,7 @@
           align-items: center;
         }
 
-        /* anula margin-left do desktop apenas no responsivo */
+        /* Anula margin-left do desktop apenas no responsivo */
         .footer-nav {
           order: 3;
           margin-left: 0;
@@ -258,7 +259,7 @@
           height: auto;
         }
 
-        /* transforma os links em coluna e centraliza */
+        /* Transforma os links em coluna e centraliza */
         .footer-nav ul {
           flex-direction: column;
           gap: .5rem;
@@ -339,7 +340,7 @@
         }
       }
 
-      /* misc */
+      /* Misc */
       .visually-hidden {
           position: absolute !important;
           height: 1px;
