@@ -175,9 +175,7 @@ try {
 
     .card-custom {
       box-sizing: border-box;
-      /* garante paddings/bordas contados no tamanho */
       width: clamp(140px, 100%, 260px);
-      /* largura responsiva (ajuste os valores se quiser) */
       aspect-ratio: 4 / 3;
       border-radius: 1rem;
       background: #ffffff;
