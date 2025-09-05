@@ -46,7 +46,7 @@
           padding: 3rem 0;
           width: 100%;
           border-top: 1px solid #e9e9e9;
-          margin-top: 7rem;
+          margin-top: 12rem;
       }
 
       .container {
