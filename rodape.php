@@ -1,5 +1,5 @@
  <style>
-      :root {
+       :root {
           --footer-bg: #ffffff;
           --card-bg: #f6f7f8;
           --accent: #DBA632;
@@ -41,7 +41,7 @@
 
       /* Footer */
       footer.site-footer {
-          background-color: var(--footer-bg);
+          background-color:#87698a;
           color: var(--text-main);
           padding: 3rem 0;
           width: 100%;
@@ -51,7 +51,7 @@
 
       .container {
           width: 100%;
-          max-width: var(--container-max);
+          max-width: 200%;
           margin: 0 auto;
           padding: 0 1rem;
       }
@@ -101,7 +101,7 @@
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: rgba(0, 0, 0, 0.06);
+          background: white;
           color: var(--text-main);
           text-decoration: none;
           font-size: 1.05rem;
@@ -111,7 +111,7 @@
       .social-list a:focus,
       .social-list a:hover {
           transform: translateY(-3px);
-          background: rgba(219, 166, 50, 0.12);
+           background: white;
           color: var(--accent);
           outline: none;
       }
@@ -124,6 +124,8 @@
           justify-content: center;
           height: 100%;
           margin-left: 135px;
+          margin-top: 105px;
+          color: white;
       }
 
       .footer-nav ul {
@@ -137,18 +139,43 @@
       }
 
       .footer-nav a {
-          color: var(--text-muted);
+          color: white;
           text-decoration: none;
           font-weight: 500;
       }
 
       .footer-nav a:focus,
       .footer-nav a:hover {
-          color: var(--text-main);
+          color: white;
           text-decoration: underline;
       }
 
-      /* Newsletter (direita) */
+    
+      /* Endereço + copyright */
+      .footer-address {
+          max-width: var(--container-max);
+          margin: 1.8rem auto 0;
+          margin-left: 2rem;
+          padding: 0 1rem;
+          text-align: center;
+          color: white;
+          font-size: .95rem;
+      }
+
+      .footer-address p {
+          margin: 0;
+      }
+
+      .footer-bottom {
+          border-top: 1px solid #f0f0f0;
+          margin-top: 1.75rem;
+          padding-top: 1rem;
+          color: white;
+          text-align: center;
+          font-size: .9rem;
+      }
+
+  /* Newsletter (direita) */
       .footer-newsletter {
           display: flex;
           flex-direction: column;
@@ -200,29 +227,6 @@
 
       .newsletter-box button:focus {
           outline: 3px solid rgba(0, 0, 0, 0.08);
-      }
-
-      /* Endereço + copyright */
-      .footer-address {
-          max-width: var(--container-max);
-          margin: 1.8rem auto 0;
-          padding: 0 1rem;
-          text-align: center;
-          color: var(--text-muted);
-          font-size: .95rem;
-      }
-
-      .footer-address p {
-          margin: 0;
-      }
-
-      .footer-bottom {
-          border-top: 1px solid #f0f0f0;
-          margin-top: 1.75rem;
-          padding-top: 1rem;
-          color: var(--text-muted);
-          text-align: center;
-          font-size: .9rem;
       }
 
       /* Small screen behaviour */
@@ -368,31 +372,25 @@
                           </nav>
                       </div>
 
-                      <div class="footer-nav" aria-label="Navegação do rodapé">
-                          <ul>
-                              <li><a href="#">Sobre</a></li>
-                              <li><a href="#">Contato</a></li>
-                              <li><a href="#">Suporte</a></li>
-                          </ul>
-                      </div>
-
-                      <div class="footer-newsletter" aria-label="Assine nossa newsletter">
-                          <div class="newsletter-title">Assine nossa newsletter</div>
-                          <form class="newsletter-box" action="#" method="post" onsubmit="return false;">
-                              <label for="newsletter-email" class="visually-hidden">E-mail</label>
-                              <input id="newsletter-email" type="email" name="email" placeholder="Digite seu e-mail" required>
-                              <button type="submit">Enviar</button>
-                          </form>
-                      </div>
-
-                  </div>
-
-                  <div class="footer-address">
+                      <div class="footer-address">
                       <p>
                           Endereço: R. Gregório Ramalho, 263, 2º andar, Itaquera, São Paulo - SP, CEP 08210-430<br>
                           MENTE RENOVADA CLÍNICA DE PSICOLOGIA S.A - CNPJ: 01.234.567/0001-78
-                      </p>
+                      </p> 
+                      </div>
+
+                      <div class="footer-nav" aria-label="Assine nossa newsletter">
+                         
+                          <ul>
+                                 <li><a href="#">Sobre</a></li>
+                                 <li><a href="#">Contato</a></li>
+                                 <li><a href="#">Suporte</a></li>
+                             </ul>
+                      </div>
+
+
                   </div>
+
 
                   <div class="footer-bottom">
                       &copy; 2025 Mente Renovada. Todos os direitos reservados.
