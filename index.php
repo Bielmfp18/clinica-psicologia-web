@@ -373,7 +373,7 @@ try {
 
                 <!-- Números -->
                 <p class="display-6 mb-0">
-                  <span class="fw-bold text-success"><?= $pacientesAtivos ?></span>
+                  <span class="fw-bold text-info"><?= $pacientesAtivos ?></span>
                   <span class="text-muted mx-1">/</span>
                   <span class="fw-bold text-danger"><?= $pacientesInativos ?></span>
                 </p>
