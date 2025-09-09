@@ -408,8 +408,9 @@ try {
           </a>
         </div>
       </div>
+      <?php endif; ?>
     </main>
-    <?php endif; ?>
+    
     <!-- Rodapé -->
     <?php include 'rodape.php'; ?>
 

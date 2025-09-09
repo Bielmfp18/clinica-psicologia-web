@@ -1,403 +1,277 @@
- <style>
-       :root {
-          --footer-bg: #ffffff;
-          --card-bg: #f6f7f8;
-          --accent: #DBA632;
-          --text-muted: #585858;
-          --text-main: #000000;
-          --container-max: 1100px;
-      }
+<footer class="site-footer" role="contentinfo" aria-label="Rodapé do site">
+    <div class="container">
+        <div class="footer-inner">
+            <div class="footer-brand" aria-label="Marca e redes sociais">
+                <img src="image/MENTE_RENOVADA-LOGO-removebg-preview-removebg-preview.png" alt="Logotipo Mente Renovada">
+                <nav class="social-list" aria-label="Redes sociais">
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="mailto:programeast0206@gmail.com" aria-label="E-mail"><i class="bi bi-envelope"></i></a>
+                </nav>
+            </div>
 
-      /* Base */
-      *,
-      *::before,
-      *::after {
-          box-sizing: border-box;
-      }
+            <div class="footer-address">
+                <p>
+                    Endereço: R. Gregório Ramalho, 263, 2º andar<br>
+                    Itaquera, São Paulo - SP, CEP 08210-430<br>
+                    MENTE RENOVADA CLÍNICA DE PSICOLOGIA S.A<br>
+                    CNPJ: 01.234.567/0001-78
+                </p>
+            </div>
 
-      html,
-    body {
-        height: 100%;
-        /*Garante que o rodapé ocupe toda a altura da tela*/
+            <div class="footer-nav" aria-label="Navegação do rodapé">
+                <ul>
+                    <li><a href="#">Sobre</a></li>
+                    <li><a href="#">Contato</a></li>
+                    <li><a href="#">Suporte</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2025 Mente Renovada. Todos os direitos reservados.
+        </div>
+    </div>
+</footer>
+
+<style>
+    :root {
+        --footer-bg: #ffffff;
+        --accent: #DBA632;
+        --text-muted: #585858;
+    }
+
+
+    footer.site-footer {
+        background-color: #87698a;
+        color: white;
+        /* Corrigido para texto branco */
+        padding: 3rem 0;
+        width: 100%;
+        border-top: 1px solid #e9e9e9;
+    }
+
+    .footer-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        flex-wrap: wrap;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .footer-brand {
         display: flex;
         flex-direction: column;
+        gap: .35rem;
+        align-items: center;
+        justify-content: flex-start;
     }
 
-    main {
-        flex-grow: -1;
-        /*Faz o conteúdo do rodapé crescer e ficar embaixo da página*/
+    .footer-brand img {
+        height: 96px;
+        width: auto;
     }
 
-    footer {
-        background-color: black;
-        padding: 10px 0;
-        width: 100%;
+    .social-list {
+        display: flex;
+        gap: .6rem;
+        margin-top: .2rem;
     }
 
-    .hidden {
-        display: none !important;
+    .social-list a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        color: #333;
+        /* Cor dos ícones */
+        text-decoration: none;
+        transition: transform .15s ease;
     }
 
+    .social-list a:hover {
+        transform: translateY(-3px);
+        color: #DBA632;
+    }
 
-      /* Footer */
-      footer.site-footer {
-          background-color:#87698a;
-          color: var(--text-main);
-          padding: 3rem 0;
-          width: 100%;
-          border-top: 1px solid #e9e9e9;
-          margin-top: 12rem;
-      }
+    .footer-address {
+        text-align: center;
+        color: white;
+        font-size: .95rem;
+    }
 
-      .container {
-          width: 100%;
-          max-width: 200%;
-          margin: 0 auto;
-          padding: 0 1rem;
-      }
+    .footer-address p {
+        margin: 0;
+    }
 
-      /* Grid: colunas previsíveis */
-      .footer-inner {
-          display: grid;
-          grid-template-columns: minmax(160px, 220px) 1fr minmax(260px, 360px);
-          gap: 1.25rem;
-          align-items: center;
-          /* centraliza verticalmente cada coluna */
-          max-width: var(--container-max);
-          margin: 0 auto;
-          padding: 0 1rem;
-      }
+    .footer-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 1.1rem;
+    }
 
-      /* Marca (logo + ícones) */
-      .footer-brand {
-          display: flex;
-          flex-direction: column;
-          gap: .35rem;
-          align-items: center;
-          justify-content: flex-start;
-      }
+  .footer-nav a {
+    position: relative;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease; /* Faz a transição suave da cor */
+}
 
-      .footer-brand img {
-          height: 96px;
-          /* equilibrado visualmente */
-          width: auto;
-          max-width: 100%;
-          display: block;
-          margin: 0;
-      }
+.footer-nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 0;
+    background: #DBA632;
+    transition: width 0.3s ease;
+}
 
-      .social-list {
-          display: flex;
-          gap: .6rem;
-          align-items: center;
-          justify-content: center;
-          margin-top: .2rem;
-      }
+.footer-nav a:hover {
+    color: #DBA632; /* Muda a cor do texto no hover */
+}
 
-      .social-list a {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: white;
-          color: var(--text-main);
-          text-decoration: none;
-          font-size: 1.05rem;
-          transition: transform .15s ease, background .15s ease, color .15s ease;
-      }
+.footer-nav a:hover::after {
+    width: 100%;
+}
 
-      .social-list a:focus,
-      .social-list a:hover {
-          transform: translateY(-3px);
-           background: white;
-          color: var(--accent);
-          outline: none;
-      }
 
-      /* Nav central — ocupa a altura da célula e centraliza o conteúdo */
-      /* Sobre, Contato, Suporte */
-      .footer-nav {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100%;
-          margin-left: 135px;
-          margin-top: 105px;
-          color: white;
-      }
 
-      .footer-nav ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          gap: 1.1rem;
-          flex-wrap: wrap;
-          justify-content: center;
-      }
+    .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        /* Linha mais sutil */
+        margin-top: 1.75rem;
+        padding-top: 1rem;
+        color: white;
+        text-align: center;
+        font-size: .9rem;
+    }
 
-      .footer-nav a {
-          color: white;
-          text-decoration: none;
-          font-weight: 500;
-      }
-
-      .footer-nav a:focus,
-      .footer-nav a:hover {
-          color: white;
-          text-decoration: underline;
-      }
-
-    
-      /* Endereço + copyright */
-      .footer-address {
-          max-width: var(--container-max);
-          margin: 1.8rem auto 0;
-          margin-left: 2rem;
-          padding: 0 1rem;
-          text-align: center;
-          color: white;
-          font-size: .95rem;
-      }
-
-      .footer-address p {
-          margin: 0;
-      }
-
-      .footer-bottom {
-          border-top: 1px solid #f0f0f0;
-          margin-top: 1.75rem;
-          padding-top: 1rem;
-          color: white;
-          text-align: center;
-          font-size: .9rem;
-      }
-
-  /* Newsletter (direita) */
-      .footer-newsletter {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          /* à direita no desktop */
-          justify-content: center;
-          /* centraliza verticalmente */
-          text-align: right;
-      }
-
-      .newsletter-title {
-          font-weight: 600;
-          margin-bottom: .45rem;
-      }
-
-      .newsletter-box {
-          min-width: 230px;
-          display: flex;
-          gap: .5rem;
-          align-items: center;
-      }
-
-      .newsletter-box input {
-          padding: .6rem .75rem;
-          border-radius: 4px;
-          border: 1px solid #e6e6e6;
-          background: #ffffff;
-          color: var(--text-main);
-          outline: none;
-          flex: 1;
-          min-width: 0;
-          height: 40px;
-      }
-
-      .newsletter-box input::placeholder {
-          color: #8a8a8a;
-      }
-
-      .newsletter-box button {
-          padding: .55rem .85rem;
-          border-radius: 6px;
-          border: none;
-          background: var(--text-main);
-          color: #ffffff;
-          font-weight: 600;
-          cursor: pointer;
-          height: 40px;
-      }
-
-      .newsletter-box button:focus {
-          outline: 3px solid rgba(0, 0, 0, 0.08);
-      }
-
-      /* Small screen behaviour */
-      @media (max-width: 1100px) {
-          .footer-inner {
-              grid-template-columns: minmax(160px, 200px) 1fr;
-              gap: 1rem;
-          }
-
-          .footer-newsletter {
-              align-items: flex-start;
-              text-align: left;
-          }
-      }
-
-      /* === RESPONSIVO: telas médias (<= 900px) === */
-      @media (max-width: 900px) {
+    /* Small screen behaviour */
+    @media (max-width: 1100px) {
         .footer-inner {
-          grid-template-columns: 1fr;
-          text-align: center;
-          gap: 1rem;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 2rem;
+        }
+
+        .footer-brand,
+        .footer-address,
+        .footer-nav {
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    /* === RESPONSIVO: telas médias (<= 900px) === */
+    @media (max-width: 900px) {
+        .footer-inner {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 1rem;
         }
 
         .footer-brand {
-          align-items: center;
+            align-items: center;
         }
 
         /* Anula margin-left do desktop apenas no responsivo */
         .footer-nav {
-          order: 3;
-          margin-left: 0;
-          padding: 0 1rem;
-          justify-content: center;
-          height: auto;
+            order: 3;
+            margin-left: 0;
+            padding: 0 1rem;
+            justify-content: center;
+            height: auto;
         }
 
         /* Transforma os links em coluna e centraliza */
         .footer-nav ul {
-          flex-direction: column;
-          gap: .5rem;
-          align-items: center;
-          margin: 0;
-          padding: 0;
+            flex-direction: column;
+            gap: .5rem;
+            align-items: center;
+            margin: 0;
+            padding: 0;
         }
 
         .footer-nav li {
-          width: auto;
+            width: auto;
         }
 
         .footer-nav a {
-          display: inline-block;
-          padding: .25rem .35rem;
-          font-size: 0.98rem;
+            display: inline-block;
+            padding: .25rem .35rem;
+            font-size: 0.98rem;
         }
 
         .footer-newsletter {
-          order: 2;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
+            order: 2;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
-      }
+    }
 
-      /* === RESPONSIVO: celulares pequenos (<= 576px) === */
-      @media (max-width: 576px) {
+    /* === RESPONSIVO: celulares pequenos (<= 576px) === */
+    @media (max-width: 576px) {
         footer.site-footer {
-          padding: 2rem 0;
+            padding: 2rem 0;
         }
 
         .newsletter-box {
-          flex-direction: column;
-          gap: .5rem;
+            flex-direction: column;
+            gap: .5rem;
         }
 
         .newsletter-box button,
         .newsletter-box input {
-          width: 100%;
+            width: 100%;
         }
 
         .footer-inner {
-          padding: 0 .75rem;
+            padding: 0 .75rem;
         }
 
         .footer-brand img {
-          height: 84px;
+            height: 84px;
         }
 
         .social-list a {
-          width: 36px;
-          height: 36px;
+            width: 36px;
+            height: 36px;
         }
 
         .footer-nav {
-          margin-left: 0;
-          padding: 0;
+            margin-left: 0;
+            padding: 0;
         }
 
         .footer-nav ul {
-          gap: .6rem;
-          width: 100%;
-          flex-direction: column;
-          align-items: center;
+            gap: .6rem;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
         }
 
         .footer-nav a {
-          width: auto;
-          font-size: 0.95rem;
-          padding: .35rem .25rem;
+            width: auto;
+            font-size: 0.95rem;
+            padding: .35rem .25rem;
         }
 
         .footer-address {
-          font-size: .92rem;
-          padding: 0 .6rem;
-          line-height: 1.35;
+            font-size: .92rem;
+            padding: 0 .6rem;
+            line-height: 1.35;
         }
-      }
-
-      /* Misc */
-      .visually-hidden {
-          position: absolute !important;
-          height: 1px;
-          width: 1px;
-          overflow: hidden;
-          clip: rect(1px, 1px, 1px, 1px);
-          white-space: nowrap;
-      }
-  </style>
-  </head>
-
-  <body>
-      <main>
-    
-          <footer class="site-footer" role="contentinfo" aria-label="Rodapé do site">
-              <div class="container">
-                  <div class="footer-inner">
-
-                      <div class="footer-brand" aria-label="Marca e redes sociais">
-                          <img src="image/MENTE_RENOVADA-LOGO-removebg-preview-removebg-preview.png" alt="Logotipo Mente Renovada">
-                          <nav class="social-list" aria-label="Redes sociais">
-                              <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                              <a href="#" aria-label="GitHub"><i class="bi bi-github"></i></a>
-                              <a href="mailto:programeast0206@gmail.com" aria-label="E-mail"><i class="bi bi-envelope"></i></a>
-                          </nav>
-                      </div>
-
-                      <div class="footer-address">
-                      <p>
-                          Endereço: R. Gregório Ramalho, 263, 2º andar, Itaquera, São Paulo - SP, CEP 08210-430<br>
-                          MENTE RENOVADA CLÍNICA DE PSICOLOGIA S.A - CNPJ: 01.234.567/0001-78
-                      </p> 
-                      </div>
-
-                      <div class="footer-nav" aria-label="Assine nossa newsletter">
-                         
-                          <ul>
-                                 <li><a href="#">Sobre</a></li>
-                                 <li><a href="#">Contato</a></li>
-                                 <li><a href="#">Suporte</a></li>
-                             </ul>
-                      </div>
-
-
-                  </div>
-
-
-                  <div class="footer-bottom">
-                      &copy; 2025 Mente Renovada. Todos os direitos reservados.
-                  </div>
-              </div>
-          </footer>
-      </main>
-  </body>
-
-  </html>
+    }
+</style>
