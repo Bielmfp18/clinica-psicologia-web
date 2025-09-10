@@ -62,7 +62,7 @@ try {
             $psicologoId,
             'Ativação', // ação de ativação
             'Sessão', // entidade afetada
-            "Sessão {$nomePaciente} ativada " // descrição
+            "Sessão de {$nomePaciente} ativada " // descrição
         );
 
         // Retorna sucesso em JSON

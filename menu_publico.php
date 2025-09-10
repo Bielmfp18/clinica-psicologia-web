@@ -100,7 +100,7 @@ if (isset($_SESSION['login_admin'])) {
     }
 
     body {
-      padding-top: 90px;
+      padding-top: 120px;
     }
 
     /* Mensagem de aviso */
