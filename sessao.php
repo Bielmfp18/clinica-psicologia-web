@@ -78,7 +78,15 @@ $numrow = $lista->rowCount();
   <?php include 'css/fundo-fixo.css'; ?>
 
   <style>
-    /* estilos gerais */
+    /* Estilos gerais */
+    
+      body.fundofixo {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      padding-top: 90px;
+      z-index: 1;
+    }
+    
     .hidden {
       display: none;
     }
@@ -182,6 +190,11 @@ $numrow = $lista->rowCount();
       line-height: 1;
       opacity: .6;
     }
+
+          .historico-content {
+            margin-bottom: 90px;
+        }
+
 
     @media (max-width: 576px) {
 
@@ -562,10 +575,15 @@ $numrow = $lista->rowCount();
     });
   </script>
 
-<!-- // Conta total de sessões do psicólogo (para exibir rodapé se houver sessões) -->
-<?php if (isset($_SESSION['psicologo_id']) && $numrow > 4): ?>
-  <?php include 'rodape.php'; ?>
-<?php endif; ?>
+<!-- // Conta total de pacientes do psicólogo (para exibir rodapé se houver pacientes) -->
+  <?php if (isset($_SESSION['psicologo_id']) && $numrow > 4): ?>
+
+    <!-- Espaço extra para o rodapé não sobrepor conteúdo -->
+    <div class="container py-4 historico-content"></div>
+
+    <?php include 'rodape.php'; ?>
+    
+  <?php endif; ?>
 
 </body>
 

@@ -72,6 +72,8 @@ $stmt = $conn->prepare("
 $stmt->bindParam(':id', $usuario['id'], PDO::PARAM_INT);
 $stmt->execute();
 $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$mostrarRodape = isset($_SESSION['psicologo_id']) && !empty($registros) && count($registros) > 4;
+
 
 // Recupera e limpa o flash da sessão (alerta)
 $flash = $_SESSION['flash'] ?? null;
@@ -92,10 +94,13 @@ unset($_SESSION['flash']);
     <!-- Link para o ícone da aba -->
     <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
     <style>
-        body {
-            background-color: #f8f9fa;
-            text-align: center;
+        body.bg-light {
+            background-size: cover;
+            padding-top: 100px;
+            z-index: 1;
         }
+
+
 
         .card-historico {
             border-radius: 1rem;
@@ -150,10 +155,12 @@ unset($_SESSION['flash']);
             font-weight: 600;
         }
 
-        .table-responsive {
+       .table-responsive {
             max-height: 65vh;
             overflow-y: auto;
         }
+
+
 
         table td,
         table th {
@@ -175,6 +182,10 @@ unset($_SESSION['flash']);
         button:active {
             transform: scale(0.97);
             transition-duration: 0.2s;
+        }
+
+        .mb-220 {
+            margin-bottom: 220px !important;
         }
 
         /* Modal styling e animações */
@@ -242,10 +253,10 @@ unset($_SESSION['flash']);
     </style>
 </head>
 
-<body>
-
+<body class="bg-light">
     <!-- Menu público -->
     <?php include 'menu_publico.php'; ?>
+
 
     <!-- ALERTA FIXO NO TOPO -->
     <?php if ($flash): ?>
@@ -257,7 +268,7 @@ unset($_SESSION['flash']);
         </div>
     <?php endif; ?>
 
-    <div class="container py-4">
+    <div class="container py-4 historico-content <?php echo $mostrarRodape ? 'mb-220' : ''; ?>">
         <div class="card card-historico mx-auto" style="max-width:1000px;">
             <div class="historico-header">
                 <!-- Botão voltar -->
@@ -348,10 +359,15 @@ unset($_SESSION['flash']);
             </div>
         </div>
     </div>
+
+
     <!-- //Rodapé (para exibir rodapé se houver registros) -->
     <?php $mostrarRodape = $_SESSION['psicologo_id'] && count($registros) > 4 ?>
+
     <?php if ($mostrarRodape): ?>
+
         <?php include 'rodape.php'; ?>
+
     <?php endif; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

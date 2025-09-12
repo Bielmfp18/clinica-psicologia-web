@@ -13,13 +13,13 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-  // preparar flash de aviso
-  $_SESSION['flash'] = [
-    'type'    => 'warning',  // ou 'danger', como preferir
-    'message' => 'Faça login antes de atualizar pacientes.'
-  ];
-  header('Location: index.php');
-  exit;
+    // preparar flash de aviso
+    $_SESSION['flash'] = [
+        'type'    => 'warning',  // ou 'danger', como preferir
+        'message' => 'Faça login antes de atualizar pacientes.'
+    ];
+    header('Location: index.php');
+    exit;
 }
 
 // Inicia conexão com o banco de dados (PDO) e inclui o init.php para tratamento de erros
@@ -84,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':psemail',  $email, PDO::PARAM_STR);
         $stmt->bindParam(':pstelefone', $telefone, PDO::PARAM_STR);
         $stmt->bindParam(':psdata_nasc', $data_nasc, PDO::PARAM_STR);
-        $stmt->bindParam(':psobservacoes', $observacoes,PDO::PARAM_STR);
+        $stmt->bindParam(':psobservacoes', $observacoes, PDO::PARAM_STR);
 
 
         // Executa a atualização
@@ -142,12 +142,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-   <!-- Link para o ícone da aba -->
+    <!-- Link para o ícone da aba -->
     <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
-   <style>
+    <style>
         body.fundofixo {
             background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
             background-size: cover;
+            padding-top: 115px;
+            z-index: 1;
         }
 
         .card {

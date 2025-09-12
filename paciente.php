@@ -88,6 +88,9 @@ $lista->execute($params);
 // Número de linhas retornadas
 $numrow = $lista->rowCount();
 
+//Espaçamento do rapé para o conteúdo principal
+$mostrarRodape = isset($_SESSION['psicologo_id']) && ($numrow  > 4);
+
 
 ?>
 
@@ -113,6 +116,14 @@ $numrow = $lista->rowCount();
 
   <!-- Estilos personalizados -->
   <style>
+    body.fundofixo {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      padding-top: 85px;
+      z-index: 1;
+    }
+
+
     /* Esconde os itens de classe "hidden"*/
     .hidden {
       display: none;
@@ -211,6 +222,18 @@ $numrow = $lista->rowCount();
     .alert-dismissible .btn-close:focus {
       box-shadow: none;
     }
+
+    /* Título/Descrição (Distância) */
+    .mb-220 {
+      margin-bottom: 5px !important;
+    }
+
+    /* Rodapé (Distância) */
+   .footer-spacer {
+  height: 90px;        
+  width: 100%;
+  display: block;
+}
   </style>
 
 </head>
@@ -221,13 +244,13 @@ $numrow = $lista->rowCount();
   <?php include "menu_publico.php" ?>
 
   <!-- TÍTULO E DESCRIÇÃO-->
-  <main class="container my-4">
+  <main class="container py-4 historico-content <?php echo $mostrarRodape ? 'mb-220' : ''; ?>">
     <h1 class="text-center text-white py-2" style="background-color:#DBA632; border-radius:10px;">PACIENTES</h1>
     <p class="text-center fw-bold">Esta é a página de administração dos seus pacientes.</p>
   </main>
 
   <!-- FILTRO -->
-  <div class="container mb-4">
+  <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <!-- FORMULÁRIO DE FILTRO -->
       <form action="" method="GET" class="d-flex align-items-center gap-2 mb-0">
@@ -605,11 +628,16 @@ $numrow = $lista->rowCount();
     }
   </script>
 
-<!-- // Conta total de pacientes do psicólogo (para exibir rodapé se houver pacientes) -->
-<?php if (isset($_SESSION['psicologo_id']) && $numrow > 4): ?>
-  <?php include 'rodape.php'; ?>
-<?php endif; ?>
+  <!-- // Conta total de pacientes do psicólogo (para exibir rodapé se houver pacientes) -->
+  <?php if (isset($_SESSION['psicologo_id']) && $numrow > 4): ?>
 
+    <!-- Spacer para garantir espaço antes do footer -->
+    <div class="footer-spacer" aria-hidden="true"></div>
+
+    <!-- Rodapé -->
+    <?php include 'rodape.php'; ?>
+
+  <?php endif; ?>
 </body>
 
 </html>

@@ -164,11 +164,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    <!-- Link para o ícone da aba -->
     <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
   <style>
-    body.fundofixo {
+   body.fundofixo {
       background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
       background-size: cover;
+      padding-top: 30px;
+      z-index: 1;
     }
-
+    
     .card {
       background-color: rgba(255, 255, 255, 0.92);
       border: none;

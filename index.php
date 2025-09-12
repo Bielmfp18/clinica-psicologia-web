@@ -145,11 +145,13 @@ try {
       --text-dark: #3387b6;
     }
 
-    body {
-      font-family: 'Montserrat', sans-serif;
+    body.fundofixo {
       background-color: var(--bg-light);
       color: var(--text-dark);
+      padding-top: 90px;
+      z-index: 1;
     }
+
 
     main {
       min-height: calc(100vh - 200px);
@@ -269,6 +271,13 @@ try {
     .card-custom.border-warning {
       border-width: 2px;
       border-style: solid;
+    }
+
+    /* Rodapé (Distância) */
+    .footer-spacer {
+      height: 120px;
+      width: 100%;
+      display: block;
     }
 
     @media (max-width: 991.98px) {
@@ -408,20 +417,23 @@ try {
           </a>
         </div>
       </div>
-      <?php endif; ?>
-    </main>
-    
-    <!-- Rodapé -->
-    <?php include 'rodape.php'; ?>
+    <?php endif; ?>
+  </main>
+
+  <!-- Spacer para garantir espaço antes do footer -->
+  <div class="footer-spacer" aria-hidden="true"></div>
+
+  <!-- Rodapé -->
+  <?php include 'rodape.php'; ?>
 
 
-<script>
-  // Inicializa tooltips do Bootstrap
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.forEach(function(el) {
-    new bootstrap.Tooltip(el);
-  });
-</script>
+  <script>
+    // Inicializa tooltips do Bootstrap
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function(el) {
+      new bootstrap.Tooltip(el);
+    });
+  </script>
 </body>
 
-</html>
+</html> 

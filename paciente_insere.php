@@ -25,7 +25,7 @@ if (!isset($_SESSION['psicologo_id'])) {
 include 'conn/conexao.php';
 include 'conn/init.php';
 // Inclui a função de histórico
-include 'funcao_historico.php';   
+include 'funcao_historico.php';
 
 // Recupera o ID do psicólogo da sessão
 $id_psicologo = (int) $_SESSION['psicologo_id'];
@@ -137,6 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         body.fundofixo {
             background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
             background-size: cover;
+            padding-top: 115px;
+            z-index: 1;
         }
 
         .card {

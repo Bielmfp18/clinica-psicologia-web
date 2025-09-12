@@ -72,6 +72,12 @@ $foto = (!empty($fotoArquivo) && file_exists($caminhoImagem . $fotoArquivo))
     <!-- Link para o ícone da aba -->
     <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
     <style>
+        body.bg-light {
+            background-size: cover;
+            padding-top: 70px;
+            z-index: 1;
+        }
+
         .btn-anim {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
