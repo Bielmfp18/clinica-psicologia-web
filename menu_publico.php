@@ -174,7 +174,7 @@ if (isset($_SESSION['login_admin'])) {
     /* Para manter o gap funcionando */
     gap: 2rem;
     /* Espaço entre os próprios links */
-    padding-left: 1.5rem;
+    padding-left: 0.5rem;
     /* Afasta o grupo de links do logo */
   }
 
