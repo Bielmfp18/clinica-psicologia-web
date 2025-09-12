@@ -67,3 +67,30 @@ register_shutdown_function(function() {
     http_response_code($code);
     require __DIR__ . '/ERROR.php';
 });
+
+if (!function_exists('base64url_encode')) {
+    function base64url_encode($data) {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+    function base64url_decode($data) {
+        $pad = 4 - (strlen($data) % 4);
+        if ($pad < 4) $data .= str_repeat('=', $pad);
+        return base64_decode(strtr($data, '-_', '+/'));
+    }
+}
+
+if (!function_exists('encode_id_portable')) {
+    if (!defined('ID_XOR_KEY')) define('ID_XOR_KEY', "k3y1"); // ajuste se quiser
+    function encode_id_portable(int $id): string {
+        $bin = pack('N', $id);
+        $xored = $bin ^ ID_XOR_KEY;
+        return base64url_encode($xored);
+    }
+    function decode_id_portable(string $token) {
+        $data = base64url_decode($token);
+        if ($data === false || strlen($data) !== 4) return false;
+        $bin = $data ^ ID_XOR_KEY;
+        $arr = unpack('N', $bin);
+        return isset($arr[1]) ? (int)$arr[1] : false;
+    }
+}

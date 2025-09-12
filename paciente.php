@@ -91,7 +91,6 @@ $numrow = $lista->rowCount();
 //Espaçamento do rapé para o conteúdo principal
 $mostrarRodape = isset($_SESSION['psicologo_id']) && ($numrow  > 4);
 
-
 ?>
 
 <!DOCTYPE html>
@@ -229,11 +228,11 @@ $mostrarRodape = isset($_SESSION['psicologo_id']) && ($numrow  > 4);
     }
 
     /* Rodapé (Distância) */
-   .footer-spacer {
-  height: 90px;        
-  width: 100%;
-  display: block;
-}
+    .footer-spacer {
+      height: 90px;
+      width: 100%;
+      display: block;
+    }
   </style>
 
 </head>
@@ -354,14 +353,14 @@ $mostrarRodape = isset($_SESSION['psicologo_id']) && ($numrow  > 4);
                     —
                   <?php endif; ?>
                 </td>
-
                 <!-- Editar -->
                 <td>
-                  <a href="paciente_atualiza.php?id=<?php echo $row['id']; ?>"
-                    class="btn btn-warning btn-anim">
+                  <?php $tokenRow = encode_id_portable((int)$row['id']); ?>
+                  <a href="paciente_atualiza.php?t=<?php echo urlencode($tokenRow); ?>" class="btn btn-warning btn-anim">
                     <i class="bi bi-pencil-square"></i>
                   </a>
                 </td>
+
 
                 <!-- Ação -->
                 <td class="action-col">

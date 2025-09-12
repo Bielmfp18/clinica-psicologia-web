@@ -30,21 +30,49 @@ include 'conn/init.php';
 // Inclui a função de histórico
 include 'funcao_historico.php';
 
-$id_psicologo = (int) $_SESSION['psicologo_id'];
-
-// Verifica se o ID da sessão foi informado via GET
-if (!isset($_GET['id'])) {
-  die('ID da sessão não informado.');
+if (!isset($_GET['t'])) {
+  die('Token não fornecido.');
 }
-$id = (int) $_GET['id'];
 
+$id_sessao = decode_id_portable($_GET['t']);
 
-// Busca dados da sessão existente
+// Pega o ID do psicólogo logado (padronizo variável $psicologoId)
+$psicologoId = (int) $_SESSION['psicologo_id'];
+
+// Aceita token 't' (preferível) ou id numérico antigo (compatível)
+// Se a URL vier com ?id=... vamos encaminhar para ?t=... (opcional, mas bom para migração)
+if (isset($_GET['id']) && empty($_GET['t'])) {
+  $idFallback = (int) $_GET['id'];
+  // redireciona para URL com token — evita abrir a página com ?id=...
+  header('Location: sessao_atualiza.php?t=' . urlencode(encode_id_portable($idFallback)));
+  exit;
+}
+
+// agora processa token / fallback
+$token = $_GET['t'] ?? null;
+
+if (!empty($token)) {
+  // veio token -> decodifica
+  $id = decode_id_portable($token);
+  if ($id === false) {
+    echo "Token inválido.";
+    exit;
+  }
+} elseif (isset($_GET['id'])) {
+  // (este bloco raramente é executado porque redirecionamos acima)
+  $id = (int) $_GET['id'];
+  $token = encode_id_portable($id);
+} else {
+  echo "Token ou id da sessão não informado.";
+  exit;
+}
+
+// Busca dados da sessão existente (corrigido para tabela sessao)
 try {
-  $sql     = "SELECT * FROM sessao WHERE id = :id AND psicologo_id = :psid";
-  $stmt    = $conn->prepare($sql);
+  $sql = "SELECT * FROM sessao WHERE id = :id AND psicologo_id = :psicologo_id";
+  $stmt = $conn->prepare($sql);
   $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-  $stmt->bindParam(':psid', $id_psicologo, PDO::PARAM_INT);
+  $stmt->bindParam(':psicologo_id', $psicologoId, PDO::PARAM_INT);
   $stmt->execute();
   $sessao = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$sessao) {
@@ -54,22 +82,48 @@ try {
   die('Erro ao buscar sessão: ' . $e->getMessage());
 }
 
-// Carrega lista de pacientes ativos para seleção
-$sql_pac = $conn->prepare("
-  SELECT id, nome
-    FROM paciente
-   WHERE psicologo_id = :psid
-     AND ativo = 1
-ORDER BY nome
-");
-$sql_pac->bindParam(':psid', $id_psicologo, PDO::PARAM_INT);
-$sql_pac->execute();
-$pacientes = $sql_pac->fetchAll(PDO::FETCH_ASSOC);
-
+// Carrega lista de pacientes ativos para seleção (mantive seu SELECT)
+try {
+  $sql_pac = $conn->prepare("
+    SELECT id, nome
+      FROM paciente
+     WHERE psicologo_id = :psid
+       AND ativo = 1
+  ORDER BY nome
+  ");
+  $sql_pac->bindParam(':psid', $psicologoId, PDO::PARAM_INT);
+  $sql_pac->execute();
+  $pacientes = $sql_pac->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  // Em caso de erro, define $pacientes como array vazio para não quebrar o template
+  $pacientes = [];
+}
 
 // Se veio via POST, processa atualização
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Esperamos receber o token 't' no formulário (hidden)
+  if (!isset($_POST['t'])) {
+    $_SESSION['flash'] = [
+      'type' => 'danger',
+      'message' => 'Dados incompletos (token ausente).'
+    ];
+    header('Location: sessao.php');
+    exit;
+  }
+
+  $postToken = $_POST['t'];
+  $postId = decode_id_portable($postToken);
+  if ($postId === false) {
+    $_SESSION['flash'] = [
+      'type' => 'danger',
+      'message' => 'Token inválido.'
+    ];
+    header('Location: sessao.php');
+    exit;
+  }
+
   // Recebe dados do formulário
+  $idSessao         = (int) $postId; // id da sessão (decodificado)
   $paciente_id      = (int) ($_POST['paciente_id'] ?? 0);
   $anotacoes        = $_POST['anotacoes'] ?? '';
   $data_hora        = $_POST['data_hora_sessao'] ?? '';
@@ -88,35 +142,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               :psstatus
            )";
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':psid',               $id,               PDO::PARAM_INT);
-    $stmt->bindParam(':pspsicologo_id',     $id_psicologo,     PDO::PARAM_INT);
-    $stmt->bindParam(':pspaciente_id',      $paciente_id,      PDO::PARAM_INT);
-    $stmt->bindParam(':psanotacoes',        $anotacoes,        PDO::PARAM_STR);
-    $stmt->bindParam(':psdata_hora',        $data_hora,        PDO::PARAM_STR);
+    $stmt->bindParam(':psid', $idSessao, PDO::PARAM_INT);
+    $stmt->bindParam(':pspsicologo_id', $psicologoId, PDO::PARAM_INT);
+    $stmt->bindParam(':pspaciente_id', $paciente_id,  PDO::PARAM_INT);
+    $stmt->bindParam(':psanotacoes', $anotacoes, PDO::PARAM_STR);
+    $stmt->bindParam(':psdata_hora', $data_hora,  PDO::PARAM_STR);
     $stmt->bindParam(':psdata_atualizacao', $data_atualizacao, PDO::PARAM_STR);
-    $stmt->bindParam(':psstatus',           $status,           PDO::PARAM_STR);
+    $stmt->bindParam(':psstatus',  $status,  PDO::PARAM_STR);
 
     if ($stmt->execute()) {
       // 2) Fecha o cursor da procedure para liberar o PDO
       $stmt->closeCursor();
 
-      // 3) Recupera nome do paciente para histórico
+      // 3) Recupera nome do paciente para histórico (garantir que existe)
       $stmtInfo = $conn->prepare("
         SELECT p.nome AS nomePaciente
           FROM sessao s
           JOIN paciente p ON s.paciente_id = p.id
          WHERE s.id = :id
       ");
-      $stmtInfo->bindValue(':id', $id, PDO::PARAM_INT);
+      $stmtInfo->bindValue(':id', $idSessao, PDO::PARAM_INT);
       $stmtInfo->execute();
       $info = $stmtInfo->fetch(PDO::FETCH_ASSOC);
-      $nomePaciente = $info['nomePaciente'] ?? "(ID {$id})";
+      $nomePaciente = $info['nomePaciente'] ?? "(ID {$idSessao})";
       $stmtInfo->closeCursor();
 
       // 4) Registra no histórico
       registrarHistorico(
         $conn,
-        $id_psicologo,
+        $psicologoId,
         'Atualização',
         'Sessão',
         "Sessão de {$nomePaciente} atualizada"
@@ -131,20 +185,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
 
-    // Se não executou, define flash de erro e volta ao formulário
+    // Se não executou, define flash de erro e volta ao formulário (com token)
     $_SESSION['flash'] = [
       'type'    => 'danger',
       'message' => 'Erro ao tentar atualizar a sessão!'
     ];
-    header("Location: sessao_atualiza.php?id={$id}");
+    header('Location: sessao_atualiza.php?t=' . urlencode(encode_id_portable($idSessao)));
     exit;
   } catch (PDOException $e) {
-    // Flash de erro e redireciona de volta ao formulário
+    // Flash de erro e redireciona de volta ao formulário (com token)
     $_SESSION['flash'] = [
       'type'    => 'danger',
       'message' => 'Erro ao atualizar sessão: ' . addslashes($e->getMessage())
     ];
-    header("Location: sessao_atualiza.php?id={$id}");
+    header('Location: sessao_atualiza.php?t=' . urlencode(encode_id_portable($idSessao)));
     exit;
   }
 }
@@ -161,16 +215,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-   <!-- Link para o ícone da aba -->
-    <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
+  <!-- Link para o ícone da aba -->
+  <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
   <style>
-   body.fundofixo {
+    body.fundofixo {
       background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
       background-size: cover;
       padding-top: 50px;
       z-index: 1;
     }
-    
+
     .card {
       background-color: rgba(255, 255, 255, 0.92);
       border: none;
@@ -229,9 +283,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <div class="card p-4">
         <form method="POST">
+          <input type="hidden" name="t" value="<?= htmlspecialchars($_GET['t'] ?? '') ?>">
           <input type="hidden" name="id" value="<?= $sessao['id'] ?>">
-          <input type="hidden" name="psicologo_id" value="<?= $id_psicologo ?>">
+          <input type="hidden" name="psicologo_id" value="<?= $psicologoId ?>">
           <input type="hidden" name="status_sessao" value="<?= $sessao['status_sessao'] ?>">
+
 
           <div class="mb-4">
             <label for="paciente_id" class="form-label">Paciente:</label>

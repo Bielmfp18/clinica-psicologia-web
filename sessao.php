@@ -308,7 +308,8 @@ $numrow = $lista->rowCount();
                 </td>
                 <!-- EDITAR -->
                 <td>
-                  <a href="sessao_atualiza.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-anim">
+                  <?php $tokenSessao = encode_id_portable((int)$row['id']); ?>
+                   <a href="sessao_atualiza.php?t=<?= urlencode($tokenSessao) ?>" class="btn btn-warning btn-anim"> 
                     <i class="bi bi-pencil-square"></i>
                   </a>
                 </td>

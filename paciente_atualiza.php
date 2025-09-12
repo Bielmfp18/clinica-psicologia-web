@@ -32,18 +32,33 @@ include 'funcao_historico.php';
 $psicologoId = (int) $_SESSION['psicologo_id'];
 
 // Verifica se o ID do paciente foi informado via GET
-if (!isset($_GET['id'])) {
-    echo "ID do paciente não informado.";
+// Aceita token 't' (preferível) ou id numérico antigo (compatível)
+$token = $_GET['t'] ?? null;
+
+if (!empty($token)) {
+    // veio token -> decodifica
+    $id = decode_id_portable($token);
+    if ($id === false) {
+        echo "Token inválido.";
+        exit;
+    }
+} elseif (isset($_GET['id'])) {
+    // fallback: veio id numérico (compatibilidade)
+    $id = (int) $_GET['id'];
+    // Opcional: gera token para uso no formulário
+    $token = encode_id_portable($id);
+} else {
+    echo "Token ou id do paciente não informado.";
     exit;
 }
-// Pega o id para o funcionamento correto do SELECT na tabela paciente
-$id = (int) $_GET['id'];
+
 
 try {
     // Busca os dados do paciente no banco de dados
-    $sql = "SELECT * FROM paciente WHERE id = :id";
+    $sql = "SELECT * FROM paciente WHERE id = :id AND psicologo_id = :psicologo_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->bindParam(':psicologo_id', $psicologoId, PDO::PARAM_INT);
     $stmt->execute();
     $paciente = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$paciente) {
@@ -54,14 +69,35 @@ try {
     echo "Erro ao buscar o Paciente: " . $e->getMessage();
     exit;
 }
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Dados do paciente enviados pelo formulário
-    $id           = (int) $_POST['id'];
-    $nome         = $_POST['nome'];
-    $email        = $_POST['email'];
-    $telefone     = $_POST['telefone'];
-    $data_nasc    = $_POST['data_nasc'];
+    // Verifica token enviado (em vez de id cru)
+    if (!isset($_POST['t'])) {
+        $_SESSION['flash'] = [
+            'type' => 'danger',
+            'message' => 'Dados incompletos (token ausente).'
+        ];
+        header('Location: paciente.php');
+        exit;
+    }
+
+    // Decodifica token para obter o id real
+    $postToken = $_POST['t'];
+    $decodedId = decode_id_portable($postToken);
+    if ($decodedId === false) {
+        $_SESSION['flash'] = [
+            'type' => 'danger',
+            'message' => 'Token inválido.'
+        ];
+        header('Location: paciente.php');
+        exit;
+    }
+
+    // Usa o id decodificado
+    $id           = (int) $decodedId;
+    $nome         = trim($_POST['nome'] ?? '');
+    $email        = trim($_POST['email'] ?? '');
+    $telefone     = trim($_POST['telefone'] ?? '');
+    $data_nasc    = $_POST['data_nasc'] ?? null;
     $observacoes  = $_POST['observacoes'] ?? '';
 
     try {
@@ -86,40 +122,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':psdata_nasc', $data_nasc, PDO::PARAM_STR);
         $stmt->bindParam(':psobservacoes', $observacoes, PDO::PARAM_STR);
 
-
         // Executa a atualização
         if ($stmt->execute()) {
-            // Limpa cursor para próxima operação
             $stmt->closeCursor();
 
             // Registra no histórico de operações
             registrarHistorico(
                 $conn,
                 $psicologoId,
-                'Atualização', // ação de atualização
-                'Paciente', // entidade afetada
-                "Paciente atualizado: {$nome} " // descrição detalhada
+                'Atualização',
+                'Paciente',
+                "Paciente atualizado: {$nome}"
             );
 
-            // Flash de sucesso para ser exibida na página (fora de qualquer modal)
             $_SESSION['flash'] = [
                 'type'    => 'warning',
-                'message' => "Paciente <strong>{$nome}</strong> atualizado com sucesso!"
+                'message' => "Paciente <strong>" . htmlspecialchars($nome) . "</strong> atualizado com sucesso!"
             ];
-            // Redireciona para index passando ?login=1 para abrir o modal de login
             header('Location: paciente.php');
             exit;
         } else {
-            // Flash de erro para ser exibida na página
             $_SESSION['flash'] = [
                 'type'    => 'danger',
-                'message' => 'Erro ao inserir o paciente.'
+                'message' => 'Erro ao atualizar o paciente.'
             ];
             header('Location: paciente.php');
             exit;
         }
     } catch (PDOException $e) {
-        // Em caso de exceção, também usamos flash de erro
         $_SESSION['flash'] = [
             'type'    => 'danger',
             'message' => 'Erro no servidor: ' . $e->getMessage()
@@ -127,7 +157,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header('Location: paciente.php');
         exit;
     }
-    exit;
 }
 ?>
 
@@ -212,7 +241,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="card p-4">
                 <form method="POST" id="form_insere_paciente">
                     <!-- Campo oculto para enviar o ID do paciente -->
-                    <input type="hidden" name="id" value="<?php echo $paciente['id']; ?>">
+                    <input type="hidden" name="t" value="<?php echo htmlspecialchars(encode_id_portable((int)$paciente['id'])); ?>">
+
 
                     <!-- Nome -->
                     <div class="mb-4">
