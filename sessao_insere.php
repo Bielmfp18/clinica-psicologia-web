@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     body.fundofixo {
       background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
       background-size: cover;
-      padding-top: 50px;
+      padding-top: 30px;
       z-index: 1;
     }
 
