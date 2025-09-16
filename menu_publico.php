@@ -286,22 +286,24 @@ if (isset($_SESSION['login_admin'])) {
 
   /* Responsividade para celular e tablet */
   @media (max-width: 991.98px) {
-  .navbar-collapse.show { 
-    padding-bottom: 1.6rem;   /* Garante espaço extra para o avatar 'sair' sem sobrepor conteúdo */
-  }
+    .navbar-collapse.show {
+      padding-bottom: 1.6rem;
+      /* Garante espaço extra para o avatar 'sair' sem sobrepor conteúdo */
+    }
 
-  .navbar-collapse.show .perfil-wrap {
-    /* Mantém o wrapper normal, sem impacto no fluxo */
-    position: relative;
-  }
+    .navbar-collapse.show .perfil-wrap {
+      /* Mantém o wrapper normal, sem impacto no fluxo */
+      position: relative;
+    }
 
-  .navbar-collapse.show .perfil-img {
-    transform: translateY(10px);  
-    /* Centralização e aparência */
-    display: block;
-    margin: 0 auto;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.16);
-  }
+    .navbar-collapse.show .perfil-img {
+      transform: translateY(10px);
+      /* Centralização e aparência */
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+    }
+
     /* Empilha e centraliza os itens do menu */
     .navbar-nav {
       flex-direction: column !important;
@@ -476,13 +478,19 @@ if (isset($_SESSION['login_admin'])) {
             <button type="submit" class="btn" style="background-color: #DBA632; color: white;">Entrar</button>
           </div>
 
-          <br><br><br>
 
-          <!-- Link para cadastro -->
+          <br>
+          <!-- Link para Cadastro -->
           <p class="text-center mt-3" style="color: #333;">
             Não possui uma conta?
             <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color: #DBA632;">Cadastre-se</a>
           </p>
+
+          <!-- Link para Esqueceu a senha -->
+          <p class="text-center mt-3" style="color: #333;">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color: #DBA632;">Esqueceu a senha?</a>
+          </p>
+          <br>
         </form>
       </div>
     </div>
@@ -494,7 +502,7 @@ if (isset($_SESSION['login_admin'])) {
 <!-- Modal de Registro -->
 <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0" style="background: url('image/Cadastro4.png') center/cover no-repeat;">
+    <div class="modal-content border-0" style="background: url('image/Cadastro6.png') center/cover no-repeat;">
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Registro -->
@@ -541,12 +549,17 @@ if (isset($_SESSION['login_admin'])) {
             <button type="submit" class="btn" style="background-color: #DBA632; color: white;">Cadastrar</button>
           </div>
 
-          <!-- Link para login -->
-          <p class="text-center mt-3" style="color: #333; margin-top: 70px !important;">
-            Já possui uma conta?
-            <a href="#" data-bs-toggle="modal" data-bs-target="#modalLogin" data-bs-dismiss="modal" style="color: #DBA632;">Faça login</a>
+          <br>
+          <!-- Link para Login -->
+          <p class="text-center mt-3" style="color: #333;">Já possui uma conta?
+            <a href="#" data-bs-toggle="modal" data-bs-target="#modalLogin" data-bs-dismiss="modal" style="color: #DBA632;">Faça Login</a>
           </p>
-        </form>
+
+          <!-- Link para Esqueceu a senha -->
+          <p class="text-center mt-3" style="color: #333;">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color: #DBA632;">Esqueceu a senha?</a>
+          </p>
+          <br>
       </div>
     </div>
   </div>
