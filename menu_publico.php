@@ -554,6 +554,7 @@ if (isset($_SESSION['login_admin'])) {
             <a href="#" data-bs-toggle="modal" data-bs-target="#modalLogin" data-bs-dismiss="modal" style="color: #DBA632;">Faça Login</a>
           </p>
           <br>
+          </form>
       </div>
     </div>
   </div>
