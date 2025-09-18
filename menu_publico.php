@@ -478,7 +478,6 @@ if (isset($_SESSION['login_admin'])) {
             <button type="submit" class="btn" style="background-color: #DBA632; color: white;">Entrar</button>
           </div>
 
-
           <br>
           <!-- Link para Cadastro -->
           <p class="text-center mt-3" style="color: #333;">
@@ -553,11 +552,6 @@ if (isset($_SESSION['login_admin'])) {
           <!-- Link para Login -->
           <p class="text-center mt-3" style="color: #333;">Já possui uma conta?
             <a href="#" data-bs-toggle="modal" data-bs-target="#modalLogin" data-bs-dismiss="modal" style="color: #DBA632;">Faça Login</a>
-          </p>
-
-          <!-- Link para Esqueceu a senha -->
-          <p class="text-center mt-3" style="color: #333;">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color: #DBA632;">Esqueceu a senha?</a>
           </p>
           <br>
       </div>
