@@ -32,12 +32,12 @@ if (isset($_POST['email'], $_POST['senha'], $_POST['CRP'])) {
   $stmt->execute();
   $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (
+  if (
     $resultado
     && (int)$resultado['ativo'] === 1
     && password_verify($senha, $resultado['senha'])
     && password_verify($CRP,   $resultado['CRP'])
-) {
+  ) {
 
     // Login OK: grava sessão e flash de sucesso.
     $_SESSION['login_admin']  = $email;
@@ -438,7 +438,7 @@ if (isset($_SESSION['login_admin'])) {
 <!-- Modal de Login -->
 <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="modalLoginLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0" style="background: url('image/tela_login4.png') center/cover no-repeat;">
+    <div class="modal-content border-0" style="background: url('image/Login.png') center/cover no-repeat;">
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Login -->
@@ -489,8 +489,9 @@ if (isset($_SESSION['login_admin'])) {
 
           <!-- Link para Esqueceu a senha -->
           <p class="text-center mt-3" style="color: #333;">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color: #DBA632;">Esqueceu a senha?</a>
+            <a href="forgot_password.php" style="color: #DBA632;">Esqueceu a senha?</a>
           </p>
+
           <br>
         </form>
       </div>
@@ -556,7 +557,7 @@ if (isset($_SESSION['login_admin'])) {
             <a href="#" data-bs-toggle="modal" data-bs-target="#modalLogin" data-bs-dismiss="modal" style="color: #DBA632;">Faça Login</a>
           </p>
           <br>
-          </form>
+        </form>
       </div>
     </div>
   </div>

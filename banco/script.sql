@@ -17,6 +17,12 @@ data_atualizacao datetime null,
 ativo tinyint not null DEFAULT 1
 );
 
+ALTER TABLE psicologo
+  ADD COLUMN verification_code_hash VARCHAR(255) NULL,
+  ADD COLUMN verification_expires DATETIME NULL,
+  ADD COLUMN verification_attempts INT NOT NULL DEFAULT 0,
+  ADD COLUMN verification_sent_at DATETIME NULL;
+
 -- Tabela de Paciente
 
 Create table paciente (
@@ -58,6 +64,19 @@ data_atualizacao datetime null,
 status_sessao ENUM('AGENDADA','CANCELADA','REALIZADA') not null,
 FOREIGN KEY (psicologo_id) REFERENCES psicologo(id),
 FOREIGN KEY (paciente_id) REFERENCES paciente(id)
+);
+
+
+-- Tabela de Tokens para recuperação de senha
+
+CREATE TABLE password_resets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  psicologo_id INT NOT NULL,
+  token_hash VARCHAR(128) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  used TINYINT(1) DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (psicologo_id) REFERENCES psicologo(id) ON DELETE CASCADE
 );
 
 -----------------------------------------
