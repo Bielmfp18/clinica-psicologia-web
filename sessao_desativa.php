@@ -14,7 +14,7 @@ session_start();
 if (!isset($_SESSION['psicologo_id'])) {
   // preparar flash de aviso
   $_SESSION['flash'] = [
-    'type'    => 'warning',  // ou 'danger', como preferir
+    'type'    => 'warning',  // ou 'danger', como preferir.
     'message' => 'Faça login antes de desativar sessões'
   ];
   header('Location: index.php');

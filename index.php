@@ -428,7 +428,7 @@ try {
 
 
   <script>
-    // Inicializa tooltips do Bootstrap
+    // Inicializa tooltips do Bootstrap.
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function(el) {
       new bootstrap.Tooltip(el);

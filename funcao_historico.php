@@ -44,7 +44,7 @@ function registrarHistorico(PDO $conn, int $psicologoId, string $acao, string $e
     $stmt->bindValue(':pstipo_entidade', $entidade, PDO::PARAM_STR);
     $stmt->execute();
 
-    // A procedure já retorna o registro inserido em um SELECT
+    // A procedure já retorna o registro inserido em um SELECT.
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 

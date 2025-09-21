@@ -99,7 +99,7 @@ try {
   $pacientes = [];
 }
 
-// Se veio via POST, processa atualização
+// Se veio via POST, processa atualização.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Esperamos receber o token 't' no formulário (hidden)
   if (!isset($_POST['t'])) {

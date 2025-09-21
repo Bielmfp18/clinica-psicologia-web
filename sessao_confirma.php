@@ -12,7 +12,7 @@ error_reporting(E_ALL);
 session_name('Mente_Renovada');
 session_start();
 
-// Verifica se o psicólogo está logado
+// Verifica se o psicólogo está logado.
 if (!isset($_SESSION['psicologo_id'])) {
   // preparar flash de aviso
   $_SESSION['flash'] = [

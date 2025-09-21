@@ -35,7 +35,7 @@ if (!isset($_GET['id'])) {
 $id = (int) $_GET['id'];
 
 try {
-    // Chama procedure para ativar a sessão
+    // Chama procedure para ativar a sessão.
     $sql = "CALL ps_sessao_enable(:sessao_id)";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':sessao_id', $id, PDO::PARAM_INT);

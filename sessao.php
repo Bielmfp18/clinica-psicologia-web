@@ -449,7 +449,7 @@ $numrow = $lista->rowCount();
     });
 
     // ----------------------------------------------------------------
-    // Função auxiliar para mudar header dos modais
+    // Função auxiliar para mudar header dos modais.
     // ----------------------------------------------------------------
     function setHeaderClass(modalId, cls) {
       const hdr = document.querySelector(modalId + ' .modal-header');

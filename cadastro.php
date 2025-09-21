@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             exit;
         }
     } catch (PDOException $e) { 
-        // Em caso de exceção, também usamos flash de erro
+        // Em caso de exceção, também usamos flash de erro.
         $_SESSION['flash'] = [
           'type'    => 'danger',
           'message' => 'Erro no servidor: ' . $e->getMessage()

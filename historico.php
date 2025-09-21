@@ -361,7 +361,7 @@ unset($_SESSION['flash']);
     </div>
 
 
-    <!-- //Rodapé (para exibir rodapé se houver registros) -->
+    <!-- //Rodapé (para exibir rodapé se houver registros). -->
     <?php $mostrarRodape = $_SESSION['psicologo_id'] && count($registros) > 4 ?>
 
     <?php if ($mostrarRodape): ?>

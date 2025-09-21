@@ -152,7 +152,7 @@
                 align-items: center;
             }
     
-            /* Anula margin-left do desktop apenas no responsivo */
+            /* Anula margin-left do desktop apenas no responsivo. */
             .footer-nav {
                 order: 3;
                 margin-left: 0;

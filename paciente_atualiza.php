@@ -36,7 +36,7 @@ $psicologoId = (int) $_SESSION['psicologo_id'];
 $token = $_GET['t'] ?? null;
 
 if (!empty($token)) {
-    // veio token -> decodifica
+    // veio token -> decodifica.
     $id = decode_id_portable($token);
     if ($id === false) {
         echo "Token inválido.";

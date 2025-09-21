@@ -13,7 +13,7 @@ error_reporting(E_ALL);
 session_name('Mente_Renovada');
 session_start();
 
-// sessão expirada → JSON de erro
+// sessão expirada → JSON de erro.
 if (!isset($_SESSION['psicologo_id'])) {
     http_response_code(401);
     echo json_encode([

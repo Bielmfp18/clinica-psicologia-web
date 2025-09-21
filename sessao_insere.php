@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           </div>
 
-          <!-- Data e Hora da Sessão -->
+          <!-- Data e Hora da Sessão. -->
           <div class="mb-4">
             <label for="data_hora_sessao" class="form-label">Data e Hora:</label>
             <div class="input-group">

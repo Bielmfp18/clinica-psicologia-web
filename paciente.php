@@ -415,7 +415,7 @@ $mostrarRodape = isset($_SESSION['psicologo_id']) && ($numrow  > 4);
   </div>
 
 
-  <!-- Modal de Desativar/Ativar (Bootstrap 5) -->
+  <!-- Modal de Desativar/Ativar (Bootstrap 5). -->
   <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">

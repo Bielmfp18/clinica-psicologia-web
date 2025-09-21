@@ -12,7 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Garante que só usuários logados possam alterar o perfil
+// Garante que só usuários logados possam alterar o perfil.
 if (!isset($_SESSION['login_admin'])) {
     $_SESSION['flash'] = [
         'type'    => 'warning',

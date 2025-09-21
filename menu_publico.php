@@ -37,7 +37,7 @@ if (isset($_POST['email'], $_POST['senha'], $_POST['CRP'])) {
     && password_verify($senha, $resultado['senha'])
     && password_verify($CRP,   $resultado['CRP'])
   ) {
-    // Login OK: grava sessão e flash de sucesso
+    // Login OK: grava sessão e flash de sucesso.
     $_SESSION['login_admin']  = $email;
     $_SESSION['psicologo_id'] = (int)$resultado['id'];
     $_SESSION['flash'] = [

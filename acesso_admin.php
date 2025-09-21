@@ -3,7 +3,7 @@
 
 if (!isset($_SESSION['login_admin'])) {// Verifica se a sessão de login do admin não está definida
     session_start();
-header('login.php'); //Redireciona para a página de login
+header('login.php'); //Redireciona para a página de login.
 exit(); 
 }
 

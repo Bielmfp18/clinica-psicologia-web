@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <main class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="col-12 col-sm-10 col-md-6 col-lg-5">
 
-            <!-- Cabeçalho com botão e título -->
+            <!-- Cabeçalho com botão e título. -->
             <div class="position-relative mb-4">
                 <a href="paciente.php" class="btn btn-voltar position-absolute start-0 top-50 translate-middle-y">
                     <i class="bi bi-arrow-left text-white"></i>
