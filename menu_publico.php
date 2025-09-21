@@ -32,11 +32,13 @@ if (isset($_POST['email'], $_POST['senha'], $_POST['CRP'])) {
   $stmt->execute();
   $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if (
+if (
     $resultado
+    && (int)$resultado['ativo'] === 1
     && password_verify($senha, $resultado['senha'])
     && password_verify($CRP,   $resultado['CRP'])
-  ) {
+) {
+
     // Login OK: grava sessão e flash de sucesso.
     $_SESSION['login_admin']  = $email;
     $_SESSION['psicologo_id'] = (int)$resultado['id'];
@@ -505,7 +507,7 @@ if (isset($_SESSION['login_admin'])) {
       <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
         <!-- Formulário de Registro -->
-        <form action="cadastro.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 60px;">
+        <form action="cadastro_confirm.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 60px;">
 
           <!-- Nome -->
           <label for="nome" class="form-label" style="color: #DBA632;">Nome:</label>

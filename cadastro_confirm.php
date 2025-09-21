@@ -1,10 +1,11 @@
 <?php
-// cadastro_confirm.php
+// CADASTRO CONFIRM
+
 session_name('Mente_Renovada');
 session_start();
 
 require 'conn/conexao.php'; // sua conexão PDO
-require 'send_mail.php'; // função que envia e-mail (ver abaixo)
+require 'send_email.php'; // função que envia e-mail (ver abaixo)
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
@@ -90,7 +91,7 @@ try {
     }
 
     // 4) Redireciona para a página de inserir código
-    $_SESSION['flash'] = ['type'=>'success','message'=>'Cadastro salvo. Um código foi enviado ao seu e-mail.'];
+    $_SESSION['flash'] = ['type'=>'success','message'=>'Um código foi enviado ao seu e-mail.'];
     header('Location: verificar_email.php?email=' . urlencode($email));
     exit;
 
@@ -99,3 +100,5 @@ try {
     header('Location: index.php?Cadastro=1');
     exit;
 }
+
+
