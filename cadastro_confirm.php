@@ -91,7 +91,7 @@ try {
     }
 
     // 4) Redireciona para a página de inserir código
-    $_SESSION['flash'] = ['type'=>'success','message'=>'Um código foi enviado ao seu e-mail.'];
+    $_SESSION['flash'] = ['type'=>'success','message'=>'Código de verificação enviado ao seu e-mail.'];
     header('Location: verificar_email.php?email=' . urlencode($email));
     exit;
 
