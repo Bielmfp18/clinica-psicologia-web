@@ -1,11 +1,5 @@
 <?php
 // VERIFY LOGIN
-// Versão corrigida + comentários do autor. Mantive a estrutura HTML/CSS original,
-// adicionei a criação de um token persistente (cookie "login_token") ao confirmar o token
-// enviado por e-mail, tratamento compatível com esquema antigo/novo (coluna token_type opcional),
-// e uso seguro do cookie (httponly / secure / samesite). Também há comentários explicativos
-// para você entender cada passo — não removi os seus comentários originais, só acrescentei
-// os necessários para o novo fluxo.
 
 session_name('Mente_Renovada');
 session_start();
