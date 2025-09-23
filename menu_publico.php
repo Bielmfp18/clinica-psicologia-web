@@ -1,13 +1,18 @@
 <?php
 // MENU PÚBLICO 
 
-
 ///////////////////////////////// LOGIN DO PSICÓLOGO /////////////////////////////////////////
 
 // Inicia a sessão e inclui a conexão
-include "conn/conexao.php";
+require_once __DIR__ . '/conn/conexao.php'; // espera prover $conn (PDO)
 
-// Verifica se a sessão já foi iniciada, se não, inicia com o nome 'Mente_Renovada'
+// Funções utilitárias (helpers.php)
+require_once __DIR__ . '/helpers.php';
+
+// Autoload / wrapper de envio de email (send_email.php)
+require_once __DIR__ . '/send_email.php';
+
+// Agora cuida da sessão 
 if (session_status() === PHP_SESSION_NONE) {
   session_name('Mente_Renovada');
   session_start();
@@ -18,42 +23,206 @@ $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
 // Se o formulário de login foi enviado
-if (isset($_POST['email'], $_POST['senha'], $_POST['CRP'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['senha'], $_POST['CRP'])) {
 
   // Captura e sanitiza
   $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
   $senha = trim($_POST['senha']);
   $CRP   = trim($_POST['CRP']);
 
-  // Busca o psicólogo
-  $sql  = "SELECT * FROM psicologo WHERE email = :email LIMIT 1";
-  $stmt = $conn->prepare($sql);
-  $stmt->bindParam(":email", $email);
-  $stmt->execute();
-  $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+  try {
+    // Busca o psicólogo
+    $sql  = "SELECT * FROM psicologo WHERE email = :email LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(":email", $email);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if (
-    $resultado
-    && (int)$resultado['ativo'] === 1
-    && password_verify($senha, $resultado['senha'])
-    && password_verify($CRP,   $resultado['CRP'])
-  ) {
+    if (
+      $resultado
+      && (int)$resultado['ativo'] === 1
+      && password_verify($senha, $resultado['senha'])
+      && password_verify($CRP,   $resultado['CRP'])
+    ) {
 
-    // Login OK: grava sessão e flash de sucesso.
-    $_SESSION['login_admin']  = $email;
-    $_SESSION['psicologo_id'] = (int)$resultado['id'];
-    $_SESSION['flash'] = [
-      'type'    => 'success',
-      'message' => 'Login realizado com sucesso!'
-    ];
-    header('Location: index.php');
-    exit;
-  } else {
-    // Login falhou: flash de erro e abre o modal de login
-    $_SESSION['flash'] = [
-      'type'    => 'danger',
-      'message' => 'Email, senha ou CRP inválidos. Tente novamente.'
-    ];
+      // --- INÍCIO: fluxo de verificação por token (substitui a criação direta da sessão) ---
+
+      $psicologo_id = (int) $resultado['id'];
+
+      // ---------- DETECTA se a coluna token_type existe (compatibilidade) ----------
+      // Se existir, vamos usar token_type = 'confirmation' / 'persistent' para separar responsabilidades.
+      $q = $conn->prepare("
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+          AND table_name = 'login_tokens'
+          AND column_name = 'token_type'
+        LIMIT 1
+      ");
+      $q->execute();
+      $has_token_type = $q->fetchColumn() !== false;
+
+      // 1) checar cookie existente (token persistente)
+      $cookieToken = $_COOKIE['login_token'] ?? null;
+      $cookie_valid = false;
+
+      if ($cookieToken) {
+        $hash = token_hash($cookieToken);
+
+        // busca token — se token_type existe, retornará também token_type
+        $selSql = "
+          SELECT id, expires_at, used" . ($has_token_type ? ", token_type" : "") . "
+          FROM login_tokens
+          WHERE psicologo_id = :pid AND token_hash = :h
+          LIMIT 1
+        ";
+        $sel = $conn->prepare($selSql);
+        $sel->bindParam(':pid', $psicologo_id, PDO::PARAM_INT);
+        $sel->bindParam(':h', $hash);
+        $sel->execute();
+        $rowToken = $sel->fetch(PDO::FETCH_ASSOC);
+
+        if ($rowToken && (int)$rowToken['used'] === 0 && strtotime($rowToken['expires_at']) > time()) {
+          if ($has_token_type) {
+            // exige token_type = 'persistent' para considerar cookie válido
+            if (isset($rowToken['token_type']) && $rowToken['token_type'] === 'persistent') {
+              $cookie_valid = true;
+            }
+          } else {
+            // sem token_type, aceita qualquer token válido (compatibilidade retroativa)
+            $cookie_valid = true;
+          }
+        }
+      }
+
+      if ($cookie_valid) {
+        // cookie válido -> cria sessão normalmente
+        $_SESSION['login_admin']  = $email;
+        $_SESSION['psicologo_id'] = $psicologo_id;
+        $_SESSION['flash'] = [
+          'type'    => 'success',
+          'message' => 'Login realizado com sucesso!.'
+        ];
+        header('Location: index.php');
+        exit;
+      }
+
+      // se chegou aqui -> cookie ausente/inválido => gerar token de CONFIRMAÇÃO e enviar e-mail
+
+      $token = generate_token(16); // gera 32 chars hex (supondo implementação em helpers)
+      $hash  = token_hash($token);
+      $expires_at = end_of_day_datetime(); // formato 'Y-m-d H:i:s' (sua helper: expira à meia-noite)
+
+      // ---------- INVALIDAÇÃO CONSERVADORA ----------
+      // NÃO invalidamos tokens persistentes. Se token_type existir, invalidamos apenas tokens 'confirmation'.
+      if ($has_token_type) {
+        $upd = $conn->prepare("UPDATE login_tokens SET used = 1 WHERE psicologo_id = :pid AND token_type = 'confirmation' AND used = 0");
+        $upd->bindParam(':pid', $psicologo_id, PDO::PARAM_INT);
+        $upd->execute();
+      } else {
+        // Sem token_type: optamos por NÃO invalidar tokens automaticamente para não quebrar tokens persistentes antigos.
+        // Se desejar um comportamento diferente (ex: invalidar tokens expirados) ajuste aqui.
+      }
+
+      // ---------- Inserir novo token de CONFIRMAÇÃO ----------
+      if ($has_token_type) {
+        $ins = $conn->prepare("
+          INSERT INTO login_tokens (psicologo_id, token_hash, expires_at, token_type, used)
+          VALUES (:pid, :h, :e, 'confirmation', 0)
+        ");
+        $ins->bindParam(':pid', $psicologo_id, PDO::PARAM_INT);
+        $ins->bindParam(':h', $hash);
+        $ins->bindParam(':e', $expires_at);
+        $ins->execute();
+      } else {
+        // tabela antiga sem token_type
+        $ins = $conn->prepare("
+          INSERT INTO login_tokens (psicologo_id, token_hash, expires_at, used)
+          VALUES (:pid, :h, :e, 0)
+        ");
+        $ins->bindParam(':pid', $psicologo_id, PDO::PARAM_INT);
+        $ins->bindParam(':h', $hash);
+        $ins->bindParam(':e', $expires_at);
+        $ins->execute();
+      }
+
+      // Montar link de verificação (robusto para subpastas como /clinica-psicologia-web)
+      $scheme = (
+        (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+      ) ? 'https' : 'http';
+
+      $host = $_SERVER['HTTP_HOST']; // ex: "localhost" ou "localhost:8000"
+
+      // pega a pasta onde o script atual está; ex: "/clinica-psicologia-web"
+      $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
+      // normaliza casos em que dirname retorna "." ou "/"
+      if ($basePath === '.' || $basePath === '/' || $basePath === '\\') {
+        $basePath = '';
+      }
+
+      // monta o caminho final (sem duplicar barras)
+      $verifyLink = $scheme . '://' . $host . $basePath . '/verify_login.php'
+        . '?t=' . urlencode($token)
+        . '&u=' . urlencode($psicologo_id);
+
+      // -----------------------
+      // Preparar e-mail (DEFINIÇÃO ANTES DO ENVIO)
+      // -----------------------
+
+      // Nome do destinatário (segurança: fallback vazio)
+      $toName = $resultado['nome'] ?? '';
+
+      // Assunto do e-mail
+      $subject = 'Confirme seu login - Mente Renovada';
+
+      // Corpo HTML do e-mail (escape para evitar injeção)
+      $htmlBody = "<p>Olá " . htmlspecialchars($toName) . ",</p>"
+        . "<p>Detectamos seu acesso. Para confirmar seu login hoje, clique no link abaixo (válido até meia-noite):</p>"
+        . "<p><a href=\"" . htmlspecialchars($verifyLink) . "\" target=\"_blank\" rel=\"noopener\">Confirmar meu login</a></p>"
+        . "<p>Link direto (copiar/colar):<br><small>" . htmlspecialchars($verifyLink) . "</small></p>"
+        . "<p>Se preferir, copie e cole este código no formulário de verificação: <strong>" . htmlspecialchars($token) . "</strong></p>"
+        . "<p>Se não foi você, ignore este e-mail.</p>";
+
+      // Corpo texto (fallback) — útil para clientes que não renderizam HTML ou para logs
+      $plainBody = "Olá {$toName},\n\n"
+        . "Para confirmar seu login hoje, acesse este link (válido até meia-noite):\n"
+        . "{$verifyLink}\n\n"
+        . "Ou cole este código no formulário: {$token}\n\n"
+        . "Se não foi você, ignore.";
+
+      // Observação: verifique a assinatura da sua função send_verification_email em send_email.php.
+      // Aqui eu chamo com 4 parâmetros (toEmail, toName, subject, htmlBody) — se sua função aceitar plainBody, adicione.
+      $sent = send_verification_email($email, $toName, $subject, $htmlBody);
+
+      // Se o seu wrapper retornar false/true conforme sucesso, usaremos isso para o flash
+      if ($sent) {
+        $_SESSION['flash'] = [
+          'type' => 'info',
+          'message' => 'Enviamos um e-mail com um código/link para confirmar seu login. Verifique sua caixa de entrada.'
+        ];
+      } else {
+        // Sugestão: registre o erro em log para diagnosticar (ex.: error_log ou um arquivo)
+        error_log("Falha ao enviar e-mail de verificação para {$email}");
+        $_SESSION['flash'] = [
+          'type' => 'warning',
+          'message' => 'Não foi possível enviar o e-mail de confirmação. Tente novamente ou contate o suporte.'
+        ];
+      }
+
+      // redireciona para a página de verificação (lá o usuário pode colar o token ou usar o link)
+      header('Location: verify_login.php?sent=1&u=' . $psicologo_id);
+      exit;
+    } else {
+      // credenciais inválidas (mensagem genérica)
+      $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Credenciais inválidas ou conta inativa.'];
+      header('Location: index.php?login=1');
+      exit;
+    }
+  } catch (Exception $e) {
+    error_log("menu_publico login error: " . $e->getMessage());
+    $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Erro interno. Tente novamente.'];
     header('Location: index.php?login=1');
     exit;
   }
@@ -79,9 +248,11 @@ if (isset($_SESSION['login_admin'])) {
   $fotoPerfilPath = (!empty($arquivo) && file_exists($diretorio . $arquivo))
     ? $diretorio . $arquivo
     : $diretorio . 'default.png';
+} else {
+  $fotoPerfilPath = 'image/default.png';
 }
 ?>
-
+<!-- ===================== HTML / NAVBAR / MODALS abaixo (seu código original) ===================== -->
 <style>
   /* ======== CSS ======== */
   html,
@@ -364,20 +535,15 @@ if (isset($_SESSION['login_admin'])) {
   }
 </style>
 
-
-
-
 <!-- ALERTA FIXO NO TOPO -->
 <?php if ($flash): ?>
   <div class="alert-wrapper">
-    <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show mb-0" role="alert">
+    <div class="alert alert-<?= htmlspecialchars($flash['type']) ?> alert-dismissible fade show mb-0" role="alert">
       <?= $flash['message'] /* aqui o <strong> é renderizado como HTML */ ?>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
   </div>
 <?php endif; ?>
-
-
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
@@ -385,7 +551,6 @@ if (isset($_SESSION['login_admin'])) {
     <a class="navbar-brand" href="index.php">
       <img src="image/MENTE_RENOVADA-LOGO.png" alt="Logo">
     </a>
-
 
     <!-- TOGGLER -->
     <button class="navbar-toggler" type="button"
@@ -429,11 +594,6 @@ if (isset($_SESSION['login_admin'])) {
     </div>
   </div>
 </nav>
-
-
-
-
-
 
 <!-- Modal de Login -->
 <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="modalLoginLabel" aria-hidden="true">
@@ -499,8 +659,6 @@ if (isset($_SESSION['login_admin'])) {
   </div>
 </div>
 
-
-
 <!-- Modal de Registro -->
 <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -563,7 +721,6 @@ if (isset($_SESSION['login_admin'])) {
   </div>
 </div>
 
-
 <!-- Função JS para abrir o modal por script -->
 <script>
   function abrirModal() {
@@ -582,3 +739,6 @@ if (isset($_SESSION['login_admin'])) {
     }
   });
 </script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

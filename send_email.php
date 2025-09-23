@@ -3,7 +3,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php'; // ajuste conforme sua estrutura
+require 'vendor/autoload.php'; 
 
 function send_verification_email(string $toEmail, string $toName, string $subject, string $htmlBody): bool
 {

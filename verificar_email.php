@@ -1,6 +1,5 @@
 <?php
-// VERIFICAR EMAIL
-
+// VERIFICAR EMAIL 
 session_name('Mente_Renovada');
 session_start();
 
@@ -19,9 +18,9 @@ unset($_SESSION['flash']);
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-
-    <!-- Bootstrap (CDN) -->
+    <!-- Bootstrap CSS + icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- favicon -->
     <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
@@ -29,150 +28,142 @@ unset($_SESSION['flash']);
     <style>
         :root {
             --accent: #DBA632;
-            --bg: #f3f6f9;
-            --panel: #ffffff;
-            --muted: #9aa3ad;
+            --bg: #f4f7f9;
+            /* mesmo bg da página de verificação */
+            --panel: #fff;
+            --muted: #6c757d;
             --text: #333;
-            --card-radius: 14px;
-            --card-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
-            --mn-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-                "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
-                "Segoe UI Emoji", "Segoe UI Symbol";
+            --card-radius: 12px;
+            --card-shadow: 0 10px 30px rgba(31, 41, 55, 0.06);
+            --mn-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
         }
 
-        /* Base */
         html,
         body {
+            height: 100%;
+            margin: 0;
             font-family: var(--mn-font-family);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            background: var(--bg);
+            color: var(--text);
         }
 
-        /* Corpo com background e centralização */
-        body.mn-bg {
+        .wrap {
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            /* centra vertical */
             justify-content: center;
-            /* centra horizontal */
-            min-height: 100vh;
-            padding: 20px;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
+            padding: 24px;
+            box-sizing: border-box;
         }
 
-        /* Card */
         .mn-card {
-            width: calc(100% - 40px);
-            max-width: 440px;
-            margin: auto;
+            width: 100%;
+            max-width: 540px;
             background: var(--panel);
             border-radius: var(--card-radius);
             box-shadow: var(--card-shadow);
-            padding: 22px;
+            padding: 26px;
             border: 1px solid rgba(0, 0, 0, 0.04);
             box-sizing: border-box;
         }
 
-        /* Logo */
-        .mn-logo {
+        .logo-wrap {
             display: flex;
             justify-content: center;
             margin-bottom: 8px;
         }
 
-        .mn-logo img {
-            height: 94px;
+        .logo-wrap img {
+            width: 160px;
+            height: auto;
             object-fit: contain;
         }
 
-        /* Título e subtítulo */
-        .mn-card h5 {
-            margin: 0 0 6px 0;
+        /* título dourado centralizado — reduzido conforme pedido */
+        .auth-title {
+            text-align: center;
             font-weight: 700;
+            color: var(--accent);
             font-size: 1.15rem;
-            color: var(--text);
+            /* reduzido */
+            margin-bottom: 6px;
+        }
+
+        /* subtítulo/mensagem em caixa azul (igual à primeira imagem) */
+        .info-box {
+            background: #e6fbff;
+            border-left: 4px solid #b6f0ff;
+            padding: .85rem 1rem;
+            border-radius: 6px;
+            color: #0b5b63;
+            margin-bottom: 1rem;
+            font-size: 0.98rem;
+            line-height: 1.45;
+            text-align: center;
         }
 
         .mn-sub {
+            text-align: center;
             color: var(--muted);
             margin-bottom: 12px;
             font-size: 0.95rem;
         }
 
-        .center {
+        .flash {
+            margin-bottom: 12px;
+        }
+
+        .input-group .form-control {
+            border-left: none;
+        }
+
+        .input-group .input-group-text {
+            background: #fff;
+            border-right: none;
+            border-radius: .375rem 0 0 .375rem;
+        }
+
+        .form-text {
+            color: var(--muted);
+        }
+
+        .btn-mn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            width: 100%;
+            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+            transition: background .16s ease, transform .08s ease, box-shadow .18s ease;
             text-align: center;
         }
 
-        /* Flash boxes (mapeamento de tipos) */
-        .flash-box {
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-            font-size: 0.95rem;
-            border: 1px solid transparent;
-            box-sizing: border-box;
-        }
-
-        .flash-success {
-            background: #e6f3ea;
-            color: #08602b;
-            border-color: rgba(11, 107, 58, 0.08);
-        }
-
-        .flash-danger {
-            background: #fdecea;
-            color: #8a130f;
-            border-color: rgba(138, 19, 15, 0.08);
-        }
-
-        .flash-info {
-            background: #e8f0ff;
-            color: #10356b;
-            border-color: rgba(16, 53, 107, 0.06);
-        }
-
-        .flash-warning {
-            background: #fff7e6;
-            color: #7a5200;
-            border-color: rgba(219, 166, 50, 0.08);
-        }
-
-        /* Inputs e botões */
-        .mn-input {
-            width: 100%;
-            padding: 11px 12px;
-            border-radius: 10px;
-            border: 1px solid #e6e9ee;
-            background: linear-gradient(180deg, #fff, #fbfdff);
-            font-size: 0.95rem;
-            color: var(--text);
+        .btn-mn:hover,
+        .btn-mn:focus {
+            background: #c6932b;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(16, 24, 40, 0.08);
             outline: none;
-            transition: all .14s;
-            box-sizing: border-box;
         }
 
-        .mn-input:focus {
-            border-color: rgba(219, 166, 50, 0.9);
-            box-shadow: 0 6px 20px rgba(219, 166, 50, 0.08);
-        }
-
-        .mn-small {
-            font-size: 0.88rem;
-            color: var(--muted);
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        /* Link reenviar (com underline animado) */
         .mn-resend {
             position: relative;
-            color: #333;
+            color: var(--text);
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.92rem;
-            transition: color .3s ease;
+            font-size: .95rem;
+            transition: color .28s ease;
+            display: inline-block;
+            padding-bottom: 4px;
         }
 
         .mn-resend::after {
@@ -181,11 +172,10 @@ unset($_SESSION['flash']);
             left: 50%;
             bottom: -2px;
             transform: translateX(-50%) scaleX(0);
-            transform-origin: center;
             width: 100%;
             height: 2px;
             background: var(--accent);
-            transition: transform .3s ease;
+            transition: transform .28s ease;
         }
 
         .mn-resend:hover {
@@ -196,386 +186,83 @@ unset($_SESSION['flash']);
             transform: translateX(-50%) scaleX(1);
         }
 
-        .mn-resend:active {
-            transform: scale(0.95);
-            transition: transform 120ms ease;
-        }
-
-        /* Botão Confirmar (com estilo marcante) */
-        .btn-mn {
-            --g1: #fff;
-            --g2: #fff;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 18px;
-            border-radius: 999px;
-            font-weight: 700;
-            cursor: pointer;
-            position: relative;
-            z-index: 0;
-            color: var(--g1);
-            background: linear-gradient(#DBA632, #DBA632) padding-box,
-                linear-gradient(90deg, var(--g1), var(--g2)) border-box;
-            border: 2px solid transparent;
-            box-shadow: 0 4px 12px rgba(219, 166, 50, 0.08);
-            transition: color .18s ease, transform .12s ease, box-shadow .18s ease, background .18s ease;
-        }
-
-        .btn-mn .btn-icon {
-            width: 18px;
-            height: 18px;
-            display: inline-block;
-            flex: 0 0 18px;
-            fill: currentColor;
-            opacity: 0.95;
-        }
-
-        .btn-mn:hover,
-        .btn-mn:focus {
-            color: #DBA632;
-            background: linear-gradient(90deg, var(--g1), var(--g2));
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(219, 166, 50, 0.5);
-            border-color: #DBA632;
-        }
-
-        .btn-mn:active {
-            transform: translateY(0);
-            box-shadow: 0 6px 14px rgba(219, 166, 50, 0.12);
-        }
-
-        /* Área de ações (link + botão) */
         .mn-actions {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 12px;
-        }
-
-        /* 1) unifica card e contorno (mesmo visual do send_reset) */
-        body.mn-bg .mn-card {
-            padding: 32px;
-            /* igual ao send_reset */
-            max-width: 520px;
-            /* unifica largura */
-            border-radius: 12px;
-            /* igualar radius */
-            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
-            /* mesma sombra */
-            border: 1px solid rgba(0, 0, 0, 0.04);
-        }
-
-        /* 2) logo com mesma altura */
-        body.mn-bg .mn-logo img {
-            height: 92px;
-            object-fit: contain;
-        }
-
-        /* 3) título do verify com mesmo visual do send_reset (override inline se houver) */
-        body.mn-bg #verifTitle,
-        body.mn-bg .mn-card h5 {
-            color: var(--accent) !important;
-            /* força cor do tema */
-            font-weight: 700;
-            font-size: 1.5rem;
-            text-align: center;
-            margin: 0 0 12px 0;
-            line-height: 1.15;
-        }
-
-        /* 4) subtítulo / texto explicativo igual ao p.lead */
-        body.mn-bg .mn-sub {
-            text-align: center;
-            color: var(--muted);
-            margin-bottom: 18px;
-            line-height: 1.45;
-            font-size: 0.97rem;
-        }
-
-        /* 5) inputs: harmoniza .mn-input e .form-control para o mesmo visual */
-        body.mn-bg .mn-card .mn-input,
-        body.mn-bg .mn-card .form-control {
-            padding: 11px 12px;
-            border-radius: 8px;
-            border: 1px solid #e6e9ee;
-            background: linear-gradient(180deg, #fff, #fbfdff);
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-
-        /* foco idêntico */
-        body.mn-bg .mn-card .mn-input:focus,
-        body.mn-bg .mn-card .form-control:focus {
-            border-color: rgba(219, 166, 50, 0.9);
-            box-shadow: 0 6px 20px rgba(219, 166, 50, 0.08);
-            outline: none;
-        }
-
-        /* 6) deixa o botão .btn-mn igual ao .btn-custom (retangular, full-width) */
-        body.mn-bg .mn-card .btn-mn {
-            display: block;
-            width: 100%;
-            padding: 11px 14px;
-            border-radius: 8px !important;
-            background-color: var(--accent) !important;
-            color: #fff !important;
-            border: none !important;
-            font-weight: 700;
-            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
-            text-align: center;
-            transition: background-color .16s ease, transform .08s ease;
-        }
-
-        body.mn-bg .mn-card .btn-mn:hover {
-            background-color: #c6932b !important;
-            transform: translateY(-1px);
-        }
-
-        /* 7) link reenviar - mesma animação / underline */
-        body.mn-bg .mn-card .mn-resend,
-        body.mn-bg .mn-resend {
-            display: inline-block;
-            position: relative;
-            color: #333;
-            text-decoration: none;
-            font-weight: 600;
-            padding-bottom: 4px;
-        }
-
-        body.mn-bg .mn-card .mn-resend::after,
-        body.mn-bg .mn-resend::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            bottom: 0;
-            transform: translateX(-50%) scaleX(0);
-            width: 100%;
-            height: 2px;
-            background: var(--accent);
-            transition: transform .28s ease;
-        }
-
-        body.mn-bg .mn-resend:hover,
-        body.mn-bg .mn-card .mn-resend:hover {
-            color: var(--accent);
-        }
-
-        body.mn-bg .mn-resend:hover::after,
-        body.mn-bg .mn-card .mn-resend:hover::after {
-            transform: translateX(-50%) scaleX(1);
-        }
-
-        /* 8) pequenas responsividades para igualar comportamento */
-        @media (max-width: 576px) {
-            body.mn-bg .mn-card {
-                padding: 20px;
-                border-radius: 10px;
-            }
-
-            body.mn-bg .mn-logo img {
-                height: 74px;
-            }
-
-            body.mn-bg #verifTitle,
-            body.mn-bg .mn-card h5 {
-                font-size: 1.3rem;
-            }
-
-            body.mn-bg .mn-card .btn-mn {
-                padding: 10px;
-            }
+            align-items: center;
         }
 
         @media (max-width: 480px) {
-            body.mn-bg .mn-card {
-                margin: 18px;
-                padding: 16px;
-                border-radius: 12px;
-            }
-
-            body.mn-bg .mn-logo img {
-                height: 48px;
-            }
-
-            body.mn-bg .mn-actions {
-                flex-direction: column-reverse;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            body.mn-bg .mn-card .btn-mn {
-                width: 100%;
-                padding: 12px;
-                border-radius: 10px;
-            }
-
-            body.mn-bg .mn-resend {
-                display: block;
-                width: 100%;
-                text-align: center;
-                margin-bottom: 8px;
-            }
-        }
-
-        body.mn-bg .mn-actions {
-            display: flex;
-            flex-direction: column;
-            /* empilha os elementos */
-            align-items: center;
-            /* centraliza horizontalmente */
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        /* garante que o botão ocupe a largura total do card (como no send_reset) */
-        body.mn-bg .mn-actions .btn-mn {
-            order: 1;
-            /* aparece primeiro */
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* o link fica abaixo e centralizado; ocupa só o tamanho do texto */
-        body.mn-bg .mn-actions .mn-resend {
-            order: 2;
-            /* aparece depois do botão */
-            display: inline-block;
-            margin: 0;
-            /* centralização é feita por align-items: center no container */
-            text-align: center;
-            width: auto;
-            padding-top: 4px;
-        }
-
-        body.mn-bg .mn-card .btn-mn {
-            display: block;
-            width: 100%;
-            padding: 11px 14px;
-            border-radius: 8px !important;
-            background: var(--accent) !important;
-            /* cor sólida */
-            color: #fff !important;
-            border: none !important;
-            font-weight: 700;
-            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
-            text-align: center;
-            transition: background-color .16s ease, transform .08s ease;
-        }
-
-        body.mn-bg .mn-card .btn-mn:hover {
-            background: #c6932b !important;
-            /* tom mais escuro */
-            transform: translateY(-1px);
-        }
-
-        /* Responsividade */
-        @media (max-width:480px) {
-
-            body.mn-bg .mn-actions {
-                gap: 10px;
-            }
-
-            body.mn-bg .mn-actions .btn-mn {
-                padding: 12px;
-                border-radius: 10px;
-            }
-
-            body.mn-bg .mn-actions .mn-resend {
-                width: auto;
-            }
-
             .mn-card {
-                margin: 18px;
-                padding: 16px;
-                border-radius: 12px;
+                padding: 18px;
             }
 
-            .mn-logo img {
-                height: 48px;
+            .logo-wrap img {
+                width: 120px;
             }
 
-            .mn-actions {
-                flex-direction: column-reverse;
-                align-items: stretch;
-                gap: 10px;
+            .auth-title {
+                font-size: 1.05rem;
             }
 
-            .btn-mn {
-                width: 100%;
-                justify-content: center;
-                padding: 12px;
-                border-radius: 10px;
-            }
-        }
-
-        /* Ajustes extras */
-        .mn-card .flash-box {
-            font-weight: 600;
-        }
-
-        .mn-flash {
-            display: none !important;
-        }
-
-        @media (max-width:480px) {
-            .mn-resend {
-                display: block;
-                width: 100%;
-                text-align: center;
-                font-weight: 600;
-            }
-
-            .btn-mn {
-                width: 100%;
-                padding: 12px;
-                border-radius: 10px;
-            }
+            /* reduzido no mobile também */
         }
     </style>
 </head>
 
-<body class="mn-bg">
-    <div class="mn-card" role="main" aria-labelledby="verifTitle">
-        <div class="mn-logo">
-            <img src="image/MENTE_RENOVADA-LOGO.png" alt="Mente Renovada">
-        </div>
+<body>
+    <div class="wrap">
+        <main class="mn-card" role="main" aria-labelledby="verifTitle">
 
-        <div class="center">
-            <h5 id="verifTitle" style="color: #DBA632;">Confirme seu e-mail</h5>
-            <p class="mn-sub">Enviamos um código de 6 dígitos para: <strong><?= htmlspecialchars($email) ?></strong></p>
-        </div>
-
-        <br>
-
-        <!-- Renderiza flash com base no tipo -->
-        <?php if (!empty($flash)):
-            $type = $flash['type'] ?? 'info';
-            $map = ['success' => 'flash-success', 'danger' => 'flash-danger', 'info' => 'flash-info', 'warning' => 'flash-warning'];
-            $cls = $map[$type] ?? 'flash-info';
-        ?>
-            <div class="flash-box <?= $cls ?>"><?= htmlspecialchars($flash['message']) ?></div>
-        <?php endif; ?>
-
-        <form action="verificar_handler.php" method="POST" novalidate>
-            <input type="hidden" name="email" value="<?= htmlspecialchars($email) ?>">
-
-            <div class="mb-2">
-                <label for="codigo" class="mn-small">Código de verificação</label>
-                <input id="codigo" name="codigo" class="form-control mn-input" maxlength="6" pattern="\d{6}" placeholder="Ex.: 123456" required>
+            <div class="logo-wrap">
+                <img src="image/MENTE_RENOVADA-LOGO.png" alt="Mente Renovada">
             </div>
 
-            <div class="mn-actions">
-                <a class="mn-resend" id="resend-link" href="reenviar_codigo.php?email=<?= urlencode($email) ?>">Reenviar código</a>
-                <button type="submit" class="btn-mn">Confirmar</button>
+            <!-- usei h5 (tamanho menor) -->
+            <h5 id="verifTitle" class="auth-title">Confirme seu e-mail</h5>
+
+            <br>
+
+            <div class="info-box" role="status" aria-live="polite">
+                Enviamos um e-mail com um link e um código. Verifique seu e-mail e clique no link ou cole o código abaixo.
             </div>
-        </form>
+
+            <br>
+
+            <?php if (!empty($flash)):
+                $type = $flash['type'] ?? 'info';
+                $map = ['success' => 'alert-success', 'danger' => 'alert-danger', 'info' => 'alert-info', 'warning' => 'alert-warning'];
+                $cls = $map[$type] ?? 'alert-info';
+            ?>
+                <div class="alert <?= $cls ?> flash" role="alert"><?= htmlspecialchars($flash['message']) ?></div>
+            <?php endif; ?>
+
+            <form action="verificar_handler.php" method="POST" class="mt-2" novalidate>
+                <input type="hidden" name="email" value="<?= htmlspecialchars($email) ?>">
+
+                <div class="mb-3">
+                    <label for="codigo" class="form-label fw-semibold">Código de verificação</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                        <input id="codigo" name="codigo" type="text" class="form-control" maxlength="6" pattern="\d{6}" placeholder="Ex.: 123456" autocomplete="one-time-code" required>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="mn-actions">
+                    <button type="submit" class="btn-mn">Confirmar</button>
+                    <a href="index.php" class="mn-resend">Voltar ao login</a>
+                </div>
+            </form>
+
+        </main>
     </div>
 
     <script>
-        // Animação visual curta no clique do link "Reenviar código"
+        // clique visual no reenviar
         document.addEventListener('DOMContentLoaded', function() {
             const resend = document.getElementById('resend-link');
             if (!resend) return;
