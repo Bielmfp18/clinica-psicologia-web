@@ -79,7 +79,7 @@ CREATE TABLE password_resets (
   FOREIGN KEY (psicologo_id) REFERENCES psicologo(id) ON DELETE CASCADE
 );
 
--- Tabela de Tokens para verificação de login
+-- Tabela de Tokens para verificação de login.
 
 CREATE TABLE login_tokens (
   id INT AUTO_INCREMENT PRIMARY KEY,
