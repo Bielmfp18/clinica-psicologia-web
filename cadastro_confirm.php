@@ -69,6 +69,18 @@ try {
     $upd->bindParam(':email', $email);
     $upd->execute();
 
+    // 3) Envia e-mail com o código (usando PHPMailer)
+    $subject = "Código de verificação - Mente Renovada";
+    $body = "
+      Olá {$nome},<br><br>
+      Obrigado por se cadastrar no sistema Mente Renovada.<br>
+      Seu código de verificação é: <b>{$codigo}</b><br>
+      Este código expira em 15 minutos.<br><br>
+      Caso não tenha solicitado, ignore esta mensagem.<br><br>
+      Atenciosamente,<br>
+      Equipe Mente Renovada
+    ";
+
     $sent = send_verification_email($email, $nome, $subject, $body);
 
     if (!$sent) {

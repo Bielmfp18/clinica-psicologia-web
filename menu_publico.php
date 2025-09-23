@@ -666,7 +666,7 @@ if (isset($_SESSION['login_admin'])) {
     <!-- Modal de Registro -->
     <div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0" style="background: url('image/Cadastro6.png') center/cover no-repeat;">
+        <div class="modal-content border-0" style="background: url('image/Cadastro.png') center/cover no-repeat;">
           <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
             <!-- Formulário de Registro -->
