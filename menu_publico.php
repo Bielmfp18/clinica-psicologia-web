@@ -655,6 +655,12 @@ if (isset($_SESSION['login_admin'])) {
                 Não possui uma conta?
                 <a href="#" data-bs-toggle="modal" data-bs-target="#modalRegistro" data-bs-dismiss="modal" style="color: #DBA632;">Cadastre-se</a>
               </p>
+
+              <!-- Link para Esqueceu a senha -->
+              <p class="text-center mt-3" style="color: #333;">
+                <a href="forgot_password.php" style="color: #DBA632;">Esqueceu a senha?</a>
+              </p>
+
             </form>
           </div>
         </div>
@@ -670,7 +676,7 @@ if (isset($_SESSION['login_admin'])) {
           <div class="modal-body p-0 d-flex flex-column align-items-center justify-content-center" style="padding: 2rem;">
 
             <!-- Formulário de Registro -->
-                  <form action="cadastro_confirm.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 60px;">
+            <form action="cadastro_confirm.php" method="POST" enctype="multipart/form-data" style="width: 90%; max-width: 400px; margin-top: 60px;">
 
               <!-- Nome -->
               <label for="nome" class="form-label" style="color: #DBA632;">Nome:</label>
