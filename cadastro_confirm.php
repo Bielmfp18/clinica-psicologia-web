@@ -29,8 +29,7 @@ $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 $CRPHash   = password_hash($CRP, PASSWORD_DEFAULT);
 
 try {
-    // 1) Insere o psicólogo com ativo = 0
-    // Se tiver a procedure que aceita psativo, passe 0; caso contrário insira diretamente.
+    // Insere o psicólogo com ativo = 0
     $sql = "CALL ps_psicologo_insert(:psnome, :psemail, :pssenha, :psCRP, :psativo)";
     $stmt = $conn->prepare($sql);
     $ativo = 0; // importante: criar inativo até confirmar

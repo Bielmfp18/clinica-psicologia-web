@@ -1,5 +1,5 @@
 <?php
-// reset_password.php
+// RESET PASSWORD
 include "conn/conexao.php";
 
 if (!isset($_GET['token'])) {

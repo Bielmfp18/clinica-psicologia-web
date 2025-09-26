@@ -1,5 +1,6 @@
 <?php
-// senha_redefinir.php
+// SENHA REDEFINIR
+
 session_name('Mente_Renovada');
 session_start();
 include "conn/conexao.php";

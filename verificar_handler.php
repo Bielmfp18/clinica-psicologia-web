@@ -1,5 +1,6 @@
 <?php
-// VERIFICAR HANDLER (corrigido)
+// VERIFICAR HANDLER 
+
 session_name('Mente_Renovada');
 session_start();
 require 'conn/conexao.php';

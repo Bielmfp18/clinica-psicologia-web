@@ -1,4 +1,6 @@
 <?php
+//REENVIAR CÓDIGO 
+
 session_name('Mente_Renovada');
 session_start();
 require 'conn/conexao.php';

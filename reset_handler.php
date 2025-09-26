@@ -1,5 +1,6 @@
 <?php
-// reset_handler.php - robusto com logging e suporte PDO / mysqli
+// RESET HANDLER
+
 session_name('Mente_Renovada');
 session_start();
 

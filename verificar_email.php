@@ -1,5 +1,6 @@
 <?php
 // VERIFICAR EMAIL 
+
 session_name('Mente_Renovada');
 session_start();
 
