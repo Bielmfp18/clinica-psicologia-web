@@ -29,7 +29,8 @@ $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 $CRPHash   = password_hash($CRP, PASSWORD_DEFAULT);
 
 try {
-    // Insere o psicólogo com ativo = 0
+    // 1) Insere o psicólogo com ativo = 0
+    // Se tiver a procedure que aceita psativo, passe 0; caso contrário insira diretamente.
     $sql = "CALL ps_psicologo_insert(:psnome, :psemail, :pssenha, :psCRP, :psativo)";
     $stmt = $conn->prepare($sql);
     $ativo = 0; // importante: criar inativo até confirmar
@@ -90,8 +91,8 @@ try {
     }
 
     // 4) Redireciona para a página de inserir código
-    $_SESSION['flash'] = ['type'=>'success','message'=>'Código de verificação enviado ao seu e-mail.'];
-    header('Location: verificar_email.php?email=' . urlencode($email));
+    $_SESSION['flash'] = ['type'=>'success','message'=>'Um código foi enviado ao seu e-mail.'];
+    header('Location: verify_email.php?email=' . urlencode($email));
     exit;
 
 } catch (Exception $e) {

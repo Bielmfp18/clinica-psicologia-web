@@ -224,11 +224,10 @@ unset($_SESSION['flash']);
             <!-- usei h5 (tamanho menor) -->
             <h5 id="verifTitle" class="auth-title">Confirme seu e-mail</h5>
 
-            <br>
 
-            <div class="info-box" role="status" aria-live="polite">
+            <!-- <div class="info-box" role="status" aria-live="polite">
                 Enviamos um e-mail com um link e um código. Verifique seu e-mail e clique no link ou cole o código abaixo.
-            </div>
+            </div> -->
 
             <br>
 

@@ -4,7 +4,93 @@ session_name('Mente_Renovada');
 session_start();
 
 require 'conn/conexao.php'; // sua conexão (pode ser $pdo ou $conn, este arquivo apenas exibe o form)
+require_once __DIR__ . '/helpers.php';     // funcoes: generate_token, token_hash, days_from_now_datetime, esc, etc
+require_once __DIR__ . '/send_email.php';  // wrapper com PHPMailer
 date_default_timezone_set('America/Sao_Paulo');
+
+// -------------------------------------------------
+// LÓGICA: quando o formulário for enviado (POST) -> criar token e enviar e-mail
+// Mantive seus comentários e estrutura; adicionei TRY/CATCH e PRG (redirect after POST).
+// -------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+
+    // validação básica
+    if (empty($email)) {
+        // Mantemos a mesma forma de flash que seu layout já espera
+        $_SESSION['flash'] = ['status' => 'err', 'message' => 'Informe um e-mail válido.'];
+        header('Location: forgot_password.php');
+        exit;
+    }
+
+    try {
+        // busca o psicólogo (não revelar se existe ou não)
+        $sel = $conn->prepare("SELECT id, nome FROM psicologo WHERE email = :email LIMIT 1");
+        $sel->bindParam(':email', $email);
+        $sel->execute();
+        $row = $sel->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $psid = (int)$row['id'];
+            $nome = $row['nome'] ?? '';
+
+            // gera token raw e hash (armazenar hash)
+            $token = generate_token(16); // ex: 32 chars hex
+            $hash  = token_hash($token);
+            $expires_at = days_from_now_datetime(1); // 1 dia de validade
+
+            // insere no password_resets (tabela criada no seu script SQL)
+            $ins = $conn->prepare("INSERT INTO password_resets (psicologo_id, token_hash, expires_at, used, created_at) VALUES (:pid, :h, :e, 0, NOW())");
+            $ins->bindParam(':pid', $psid, PDO::PARAM_INT);
+            $ins->bindParam(':h', $hash);
+            $ins->bindParam(':e', $expires_at);
+            $ins->execute();
+
+            // monta link robusto para reset_password.php
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'];
+            $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+            if ($basePath === '.' || $basePath === '/' || $basePath === '\\') {
+                $basePath = '';
+            }
+            $resetLink = $scheme . '://' . $host . $basePath . '/reset_password.php?t=' . urlencode($token) . '&u=' . urlencode($psid);
+
+            // corpo do e-mail (HTML e plain)
+            $subject = 'Redefinição de senha - Mente Renovada';
+            $html = "<p>Olá " . esc($nome) . ",</p>"
+                  . "<p>Recebemos uma solicitação para redefinir sua senha. Clique no link abaixo para escolher uma nova senha (válido 24 horas):</p>"
+                  . "<p><a href=\"" . esc($resetLink) . "\">Redefinir minha senha</a></p>"
+                  . "<p>Se preferir, copie/cole este código: <strong>" . esc($token) . "</strong></p>"
+                  . "<p>Se você não solicitou, ignore este e-mail.</p>";
+
+            $plain = "Olá {$nome},\n\n"
+                   . "Recebemos uma solicitação para redefinir sua senha. Acesse o link abaixo (válido 24h):\n"
+                   . "{$resetLink}\n\n"
+                   . "Código: {$token}\n\n"
+                   . "Se você não solicitou, ignore.";
+
+            // envia e-mail (wrapper PHPMailer)
+            $sent = send_verification_email($email, $nome, $subject, $html, $plain);
+
+            // mesmo se o envio falhar, por segurança não revelamos ao usuário se conta existe.
+            // Indicamos sucesso para o fluxo (mensagem genérica).
+            $_SESSION['flash'] = ['status' => 'ok'];
+            header('Location: forgot_password.php?status=ok');
+            exit;
+        } else {
+            // não encontrou conta -> não revelamos; comporta-se igualmente
+            $_SESSION['flash'] = ['status' => 'ok'];
+            header('Location: forgot_password.php?status=ok');
+            exit;
+        }
+    } catch (Exception $e) {
+        // registra erro para diagnostico e retorna mensagem genérica
+        error_log("forgot_password error: " . $e->getMessage());
+        $_SESSION['flash'] = ['status' => 'ok']; // evitar vazar info; informe o usuário que enviamos se existir
+        header('Location: forgot_password.php?status=ok');
+        exit;
+    }
+}
 
 // Recupera flashes se houver (compatível com implementações anteriores)
 $status_ok = false;
@@ -233,7 +319,7 @@ if (isset($_GET['status']) && $_GET['status'] === 'ok') {
 
                 <br>
 
-                <form action="send_reset.php" method="POST" novalidate>
+                <form action="forgot_password.php" method="POST" novalidate>
                     <div class="mb-3">
                         <label for="forgot_email" class="form-label fw-semibold">Seu email</label>
                         <div class="input-group">
