@@ -1,95 +1,139 @@
 <?php
-// SESSÃO ATIVA
+// SESSAO_ATIVA - retorna JSON limpo
 
-// Exibe erros para depuração
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Limpa buffers anteriores (evita warnings no output JSON)
+while (ob_get_level()) ob_end_clean();
 
-// Inicia sessão para validar psicólogo logado
+// Cabeçalhos JSON
+header('Content-Type: application/json; charset=utf-8');
+
+// Sessão
 session_name('Mente_Renovada');
 session_start();
 
-// Verifica se o psicólogo está logado
+// Verifica login
 if (!isset($_SESSION['psicologo_id'])) {
-  // preparar flash de aviso
-  $_SESSION['flash'] = [
-    'type'    => 'warning',  // ou 'danger', como preferir
-    'message' => 'Faça login antes de ativar sessões.'
-  ];
-  header('Location: index.php');
-  exit;
-}
-
-// Inclui conexão com o banco e função de histórico
-include 'conn/conexao.php';
-include 'funcao_historico.php';
-
-// ID do psicólogo logado
-$psicologoId = (int) $_SESSION['psicologo_id'];
-
-// Verifica se o ID da sessão foi informado via GET
-if (!isset($_GET['id'])) {
-    die("ID da sessão não informado.");
-}
-$id = (int) $_GET['id'];
-
-try {
-    // Chama procedure para ativar a sessão.
-    $sql = "CALL ps_sessao_enable(:sessao_id)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':sessao_id', $id, PDO::PARAM_INT);
-
-    if ($stmt->execute()) {
-        $stmt->closeCursor();
-
-        // Recupera nome do paciente e data/hora da sessão
-        $stmtInfo = $conn->prepare(
-            "SELECT  p.nome AS nomePaciente FROM sessao s 
-        JOIN paciente p ON s.paciente_id = p.id WHERE s.id = :id"
-        );
-        $stmtInfo->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmtInfo->execute();
-        $info = $stmtInfo->fetch(PDO::FETCH_ASSOC);
-
-        // Se não encontrou, define valores padrão
-        $nomePaciente   = $info['nomePaciente']   ?? "ID {$id}";
-        $dataHoraSessao = $info['dataHoraSessao'] ?? date('Y-m-d H:i:s');
-
-        // Registra no histórico com nome e data/hora da sessão
-        registrarHistorico(
-            $conn,
-            $psicologoId,
-            'Ativação', // ação de ativação
-            'Sessão', // entidade afetada
-            "Sessão de {$nomePaciente} ativada " // descrição
-        );
-
-        // Retorna sucesso em JSON
-        echo json_encode([
-            'success' => true,
-            'id'      => $id,
-            'message' => 'Sessão ativada com sucesso!'
-        ]);
-        exit;
-    } else {
-        // Erro ao executar a ativação
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Erro ao tentar ativar a sessão!'
-        ]);
-        exit;
-    }
-} catch (PDOException $e) {
-    // Em caso de exceção, devolve JSON de erro
-    http_response_code(500);
+    http_response_code(401);
     echo json_encode([
         'success' => false,
-        'message' => 'Erro ao ativar a sessão: ' . addslashes($e->getMessage())
+        'message' => 'Sessão expirada. Faça login novamente.'
     ]);
     exit;
 }
 
-?>
+include 'conn/conexao.php';
+include 'funcao_historico.php';
 
+$psicologoId = (int) $_SESSION['psicologo_id'];
+
+// Valida ID recebido
+$id = null;
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = (int) $_GET['id'];
+} elseif (isset($_POST['id']) && is_numeric($_POST['id'])) {
+    $id = (int) $_POST['id'];
+}
+
+if ($id === null) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'ID da sessão não informado ou inválido.'
+    ]);
+    exit;
+}
+
+try {
+    // Garante que $conn é um PDO
+    if (!($conn instanceof PDO)) {
+        throw new Exception('Conexão PDO inválida. Verifique conn/conexao.php.');
+    }
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // 1️⃣ Ativa a sessão via procedure
+    $stmt = $conn->prepare("CALL ps_sessao_enable(:sessao_id)");
+    $stmt->bindValue(':sessao_id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $stmt->closeCursor();
+
+    // 2️⃣ Busca informações da sessão e paciente
+    $stmtInfo = $conn->prepare("
+        SELECT 
+            s.paciente_id, 
+            s.data_hora_sessao, 
+            p.nome AS nomePaciente, 
+            p.ativo AS paciente_ativo
+        FROM sessao s
+        JOIN paciente p ON s.paciente_id = p.id
+        WHERE s.id = :id
+        LIMIT 1
+    ");
+    $stmtInfo->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmtInfo->execute();
+    $info = $stmtInfo->fetch(PDO::FETCH_ASSOC);
+
+    if (!$info) {
+        http_response_code(404);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Sessão não encontrada.'
+        ]);
+        exit;
+    }
+
+    $nomePaciente   = $info['nomePaciente'] ?? "ID {$id}";
+    $dataHoraSessao = $info['data_hora_sessao'] ?? null;
+    $pacienteId     = isset($info['paciente_id']) ? (int)$info['paciente_id'] : null;
+    $pacienteAtivo  = isset($info['paciente_ativo']) ? (int)$info['paciente_ativo'] : 1;
+
+    // 3️⃣ Reativa paciente se estiver inativo
+    $pacienteReativado = false;
+    if ($pacienteId !== null && $pacienteAtivo === 0) {
+        $stmtAct = $conn->prepare("CALL ps_paciente_enable(:pid)");
+        $stmtAct->bindValue(':pid', $pacienteId, PDO::PARAM_INT);
+        $stmtAct->execute();
+        $stmtAct->closeCursor();
+        $pacienteReativado = true;
+
+        // Registra histórico de reativação do paciente
+        registrarHistorico(
+            $conn,
+            $psicologoId,
+            'Ativação',
+            "Paciente ativado: {$nomePaciente}",
+            'Paciente'
+        );
+    }
+
+    // 4️⃣ Registra histórico da ativação da sessão
+    $descSess = "Sessão de {$nomePaciente} ativada";
+    if ($dataHoraSessao) {
+        $descSess .= " — agendada para " . date('d/m/Y H:i', strtotime($dataHoraSessao));
+    }
+
+    registrarHistorico(
+        $conn,
+        $psicologoId,
+        'Ativação',
+        $descSess,
+        'Sessão'
+    );
+
+    // 5️⃣ Retorna JSON de sucesso
+    echo json_encode([
+        'success' => true,
+        'id' => $id,
+        'message' => 'Sessão ativada com sucesso!',
+        'paciente_reativado' => $pacienteReativado,
+        'paciente_id' => $pacienteId
+    ]);
+    exit;
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro ao ativar a sessão: ' . $e->getMessage()
+    ]);
+    exit;
+}

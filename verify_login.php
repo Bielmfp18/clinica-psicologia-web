@@ -345,6 +345,58 @@ if ($token && $psicologo_id) {
             text-align: center;
         }
 
+        .input-group.invalid .input-group-text {
+            background: #fff5f5;
+            color: #a94442;
+            border-color: #dc3545;
+        }
+
+        .input-group.invalid .form-control,
+        .form-control.input-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 .12rem rgba(220, 53, 69, 0.12);
+        }
+
+        /* mensagem de erro (inicia oculta) */
+        .mn-token-error {
+            color: #a94442;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* ativa */
+        .mn-token-error.active {
+            display: block;
+        }
+
+        /* animação sutil para chamar atenção no submit inválido */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            50% {
+                transform: translateX(6px);
+            }
+
+            75% {
+                transform: translateX(-4px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .input-group.invalid.shake {
+            animation: shake .36s ease-in-out;
+        }
+
         @media (max-width: 480px) {
             .card-auth {
                 padding: 18px;
@@ -463,6 +515,120 @@ if ($token && $psicologo_id) {
             }
         })();
     </script>
+
+    <script>
+(function(){
+  // localiza o form e o campo token
+  const form = document.querySelector('form[method="POST"]') || document.querySelector('form');
+  const tokenInput = document.getElementById('token');
+
+  if (!form || !tokenInput) return; // nada a fazer
+
+  // cria/garante elemento de mensagem de erro logo após o input-group
+  function ensureErrorElement() {
+    let wrapper = tokenInput.closest('.input-group') || tokenInput.parentElement;
+    let err = wrapper.parentElement.querySelector('.mn-token-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'mn-token-error';
+      err.setAttribute('aria-live', 'polite');
+      err.textContent = 'Token inválido. Cole o token recebido por e-mail (hex, mínimo 6 caracteres).';
+      wrapper.insertAdjacentElement('afterend', err);
+    }
+    return err;
+  }
+
+  // valida token: hex entre 6 e 256 chars (mesma regra do servidor)
+  function isValidToken(value) {
+    if (!value) return false;
+    return /^[0-9a-fA-F]{6,256}$/.test(value.trim());
+  }
+
+  // atualiza estado visual
+  function setValidityState(isValid) {
+    const inputGroup = tokenInput.closest('.input-group');
+    const err = ensureErrorElement();
+    if (isValid) {
+      if (inputGroup) inputGroup.classList.remove('invalid', 'shake');
+      tokenInput.classList.remove('input-invalid');
+      err.classList.remove('active');
+      tokenInput.setAttribute('aria-invalid', 'false');
+    } else {
+      if (inputGroup) inputGroup.classList.add('invalid');
+      tokenInput.classList.add('input-invalid');
+      err.classList.add('active');
+      tokenInput.setAttribute('aria-invalid', 'true');
+    }
+  }
+
+  // valida em tempo real (input)
+  tokenInput.addEventListener('input', function() {
+    const v = tokenInput.value;
+    // se vazio, não mostrar erro imediato (mostra só no blur/submit)
+    if (v.trim() === '') {
+      setValidityState(true);
+      return;
+    }
+    setValidityState(isValidToken(v));
+  });
+
+  // ao sair do campo
+  tokenInput.addEventListener('blur', function() {
+    setValidityState(isValidToken(tokenInput.value));
+  });
+
+  // intercepta submit e previne envio quando inválido
+  form.addEventListener('submit', function(ev) {
+    const ok = isValidToken(tokenInput.value);
+    if (!ok) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      // anima shake
+      const inputGroup = tokenInput.closest('.input-group');
+      if (inputGroup) {
+        inputGroup.classList.add('shake');
+        setTimeout(() => inputGroup.classList.remove('shake'), 420);
+      }
+
+      setValidityState(false);
+      tokenInput.focus();
+      return false;
+    }
+    // se válido, permite submit normalmente
+    return true;
+  });
+
+  // se o usuário colou um link com ?t=, extrai automaticamente (já tinha algo semelhante; reforçamos)
+  (function fillFromQSorValue() {
+    // se já existir token em querystring, preenche
+    const urlParams = new URLSearchParams(window.location.search);
+    const tParam = urlParams.get('t') || urlParams.get('token');
+    if (tParam && !tokenInput.value.trim()) {
+      tokenInput.value = tParam;
+      setValidityState(isValidToken(tokenInput.value));
+      return;
+    }
+    // se o campo contém uma URL (colada), tenta extrair t=
+    const val = tokenInput.value.trim();
+    if (val) {
+      const match = val.match(/[?&]t=([0-9a-fA-F]+)/);
+      if (match && match[1]) {
+        tokenInput.value = match[1];
+        setValidityState(isValidToken(tokenInput.value));
+      } else {
+        // tenta converter URL completa
+        try {
+          const u = new URL(val);
+          const tp = u.searchParams.get('t') || u.searchParams.get('token');
+          if (tp) tokenInput.value = tp;
+        } catch(e) { /* não é URL */ }
+      }
+    }
+  })();
+
+})();
+</script>
 
 </body>
 

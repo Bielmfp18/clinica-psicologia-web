@@ -58,16 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // corpo do e-mail (HTML e plain)
             $subject = 'Redefinição de senha - Mente Renovada';
             $html = "<p>Olá " . esc($nome) . ",</p>"
-                  . "<p>Recebemos uma solicitação para redefinir sua senha. Clique no link abaixo para escolher uma nova senha (válido 24 horas):</p>"
-                  . "<p><a href=\"" . esc($resetLink) . "\">Redefinir minha senha</a></p>"
-                  . "<p>Se preferir, copie/cole este código: <strong>" . esc($token) . "</strong></p>"
-                  . "<p>Se você não solicitou, ignore este e-mail.</p>";
+                . "<p>Recebemos uma solicitação para redefinir sua senha. Clique no link abaixo para escolher uma nova senha (válido 24 horas):</p>"
+                . "<p><a href=\"" . esc($resetLink) . "\">Redefinir minha senha</a></p>"
+                . "<p>Se preferir, copie/cole este código: <strong>" . esc($token) . "</strong></p>"
+                . "<p>Se você não solicitou, ignore este e-mail.</p>";
 
             $plain = "Olá {$nome},\n\n"
-                   . "Recebemos uma solicitação para redefinir sua senha. Acesse o link abaixo (válido 24h):\n"
-                   . "{$resetLink}\n\n"
-                   . "Código: {$token}\n\n"
-                   . "Se você não solicitou, ignore.";
+                . "Recebemos uma solicitação para redefinir sua senha. Acesse o link abaixo (válido 24h):\n"
+                . "{$resetLink}\n\n"
+                . "Código: {$token}\n\n"
+                . "Se você não solicitou, ignore.";
 
             // envia e-mail (wrapper PHPMailer)
             $sent = send_verification_email($email, $nome, $subject, $html, $plain);
@@ -280,6 +280,58 @@ if (isset($_GET['status']) && $_GET['status'] === 'ok') {
             transform: translateX(-50%) scaleX(1);
         }
 
+        .input-group.invalid .input-group-text {
+            background: #fff5f5;
+            color: #a94442;
+            border-color: #dc3545;
+        }
+
+        .input-group.invalid .form-control,
+        .form-control.input-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 .12rem rgba(220, 53, 69, 0.12);
+        }
+
+        /* mensagem de erro */
+        .mn-email-error {
+            color: #a94442;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* quando ativa */
+        .mn-email-error.active {
+            display: block;
+        }
+
+        /* animação sutil para chamar atenção no submit inválido */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            50% {
+                transform: translateX(6px);
+            }
+
+            75% {
+                transform: translateX(-4px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .input-group.invalid.shake {
+            animation: shake .36s ease-in-out;
+        }
+
         @media (max-width: 480px) {
             .mn-card {
                 padding: 18px;
@@ -343,6 +395,103 @@ if (isset($_GET['status']) && $_GET['status'] === 'ok') {
 
     <!-- Bootstrap JS (bundle inclui Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+(function(){
+  // seletores (ajuste caso seu id seja diferente)
+  const form = document.querySelector('form[action="forgot_password.php"], form[action="./forgot_password.php"], form[action="forgot_password.php"]') || document.querySelector('form');
+  const emailInput = document.getElementById('forgot_email');
+
+  if (!form || !emailInput) return; // nada a fazer se não encontrou
+
+  // função de validação de email (boa prática, não perfeita)
+  function isValidEmail(email) {
+    if (!email || typeof email !== 'string') return false;
+    // regex robusta e prática para validação básica
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    return re.test(email.trim());
+  }
+
+  // garante que exista elemento de mensagem de erro logo após o grupo
+  function ensureErrorElement() {
+    // procura próximo irmão com classe .mn-email-error
+    let err = emailInput.parentElement.parentElement.querySelector('.mn-email-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'mn-email-error';
+      err.setAttribute('aria-live', 'polite');
+      err.textContent = 'Formato de e-mail inválido.';
+      // insere após o input-group
+      const wrapper = emailInput.closest('.input-group') || emailInput.parentElement;
+      wrapper.insertAdjacentElement('afterend', err);
+    }
+    return err;
+  }
+
+  // atualiza o estado visual de acordo com validade
+  function setValidityState(isValid) {
+    const inputGroup = emailInput.closest('.input-group');
+    const err = ensureErrorElement();
+
+    if (isValid) {
+      if (inputGroup) inputGroup.classList.remove('invalid', 'shake');
+      emailInput.classList.remove('input-invalid');
+      err.classList.remove('active');
+      emailInput.setAttribute('aria-invalid', 'false');
+    } else {
+      if (inputGroup) inputGroup.classList.add('invalid');
+      emailInput.classList.add('input-invalid');
+      err.classList.add('active');
+      emailInput.setAttribute('aria-invalid', 'true');
+    }
+  }
+
+  // valida em tempo real (a cada input)
+  emailInput.addEventListener('input', function() {
+    const ok = isValidEmail(emailInput.value);
+    // se campo vazio não mostrar erro imediatamente — só ao blur/submit
+    if (emailInput.value.trim() === '') {
+      setValidityState(true);
+      // esconde mensagem se existir
+      const e = emailInput.closest('.input-group')?.parentElement?.querySelector('.mn-email-error');
+      if (e) e.classList.remove('active');
+      return;
+    }
+    setValidityState(ok);
+  });
+
+  // valida no blur (quando sai do campo)
+  emailInput.addEventListener('blur', function() {
+    const ok = isValidEmail(emailInput.value);
+    setValidityState(ok);
+  });
+
+  // intercepta submit para prevenir envio quando inválido
+  form.addEventListener('submit', function(ev) {
+    const ok = isValidEmail(emailInput.value);
+    if (!ok) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      // aplica shake para chamar atenção
+      const inputGroup = emailInput.closest('.input-group');
+      if (inputGroup) {
+        inputGroup.classList.add('shake');
+        // remove a classe após a animação para permitir reaplicar
+        setTimeout(() => inputGroup.classList.remove('shake'), 400);
+      }
+
+      setValidityState(false);
+      // foca o campo problemático
+      emailInput.focus();
+      return false;
+    }
+
+    // se ok, permite submit (mantendo seu comportamento PRG)
+    return true;
+  });
+})();
+</script>
 </body>
 
 </html>

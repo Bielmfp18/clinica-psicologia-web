@@ -540,7 +540,7 @@ $numrow = $lista->rowCount();
         .fail(() => alert('Erro ao comunicar com o servidor.'));
     });
 
-    // Confirmar ativação
+    // Confirmar ativação (handler atualizado)
     $(document).on('click', '.confirm-activate', function() {
       const btn = $(this);
       const id = btn.data('id');
@@ -548,20 +548,54 @@ $numrow = $lista->rowCount();
       const tr = $('tr[data-id="' + id + '"]');
       const statusTd = tr.find('.status-col');
       const actionTd = tr.find('.action-col');
-      bootstrap.Modal.getInstance($('#activateModal')).hide();
+      const modalInstance = bootstrap.Modal.getInstance($('#activateModal'));
+      if (modalInstance) modalInstance.hide();
 
-      $.getJSON(url)
-        .done(res => {
-          if (!res.success) return alert(res.message);
-          statusTd.html('<span class="badge bg-warning">Agendada</span>');
-          actionTd.html(`
-            <button class="realizar btn btn-primary btn-anim" data-id="${id}" data-nome="${tr.find('td').eq(1).text()}"><i class="bi bi-check2-circle"></i></button>
-            <button class="delete btn btn-danger btn-anim" data-id="${id}" data-nome="${tr.find('td').eq(1).text()}"><i class="bi bi-x-lg"></i></button>
-          `);
-          const $a = $(`<div class="alert alert-success alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">${res.message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`).appendTo('body');
-          $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
-        })
-        .fail(() => alert('Erro ao comunicar com o servidor.'));
+      $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'json',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        timeout: 8000
+      })
+      .done(function(res) {
+        if (!res || !res.success) {
+          return alert(res && res.message ? res.message : 'Erro desconhecido ao ativar a sessão.');
+        }
+        // atualiza UI
+        statusTd.html('<span class="badge bg-warning">Agendada</span>');
+        actionTd.html(`
+          <button class="realizar btn btn-primary btn-anim" data-id="${id}" data-nome="${tr.find('td').eq(1).text()}"><i class="bi bi-check2-circle"></i></button>
+          <button class="delete btn btn-danger btn-anim" data-id="${id}" data-nome="${tr.find('td').eq(1).text()}"><i class="bi bi-x-lg"></i></button>
+        `);
+        const $a = $(`<div class="alert alert-success alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">${res.message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`).appendTo('body');
+        $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+      })
+      .fail(function(jqXHR) {
+        // tenta parsear JSON "sujo" (quando o servidor voltou com warnings/HTML)
+        try {
+          const parsed = JSON.parse(jqXHR.responseText || '{}');
+          if (parsed && parsed.success) {
+            statusTd.html('<span class="badge bg-warning">Agendada</span>');
+            actionTd.html(`
+              <button class="realizar btn btn-primary btn-anim" data-id="${id}" data-nome="${tr.find('td').eq(1).text()}"><i class="bi bi-check2-circle"></i></button>
+              <button class="delete btn btn-danger btn-anim" data-id="${id}" data-nome="${tr.find('td').eq(1).text()}"><i class="bi bi-x-lg"></i></button>
+            `);
+            const $a = $(`<div class="alert alert-success alert-dismissible position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index:1050; display:none;">${parsed.message || 'Sessão ativada com sucesso!'}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`).appendTo('body');
+            $a.fadeIn(300).delay(1800).fadeOut(300, () => $a.remove());
+            return;
+          }
+        } catch(e) { /* não foi JSON */ }
+
+        // caso contrário mostra erro (tenta pegar mensagem do servidor)
+        let msg = 'Erro ao comunicar com o servidor.';
+        try {
+          const r = JSON.parse(jqXHR.responseText || '{}');
+          if (r && r.message) msg = r.message;
+        } catch(e) {}
+        alert(msg);
+        console.error('Erro ativar sessão:', jqXHR.status, jqXHR.responseText);
+      });
     });
 
     // ----------------------------------------------------------------

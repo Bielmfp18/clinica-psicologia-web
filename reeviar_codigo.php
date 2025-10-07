@@ -31,7 +31,7 @@ try {
         $diff = (new DateTime())->getTimestamp() - $last->getTimestamp();
         if ($diff < 60) {
             $_SESSION['flash'] = ['type'=>'danger','message'=>'Aguarde antes de reenviar o código (1 minuto).'];
-            header('Location: verificar_email.php?email=' . urlencode($email));
+            header('Location: verify_email.php?email=' . urlencode($email));
             exit;
         }
     }
@@ -54,11 +54,11 @@ try {
     send_verification_email($email, $row['nome'], $subject, $body);
 
     $_SESSION['flash'] = ['type'=>'success','message'=>'Código reenviado para seu e-mail.'];
-    header('Location: verificar_email.php?email=' . urlencode($email));
+    header('Location: verify_email.php?email=' . urlencode($email));
     exit;
 
 } catch (Exception $e) {
     $_SESSION['flash'] = ['type'=>'danger','message'=>'Erro ao reenviar: ' . $e->getMessage()];
-    header('Location: verificar_email.php?email=' . urlencode($email));
+    header('Location: verify_email.php?email=' . urlencode($email));
     exit;
 }

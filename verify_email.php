@@ -195,6 +195,59 @@ unset($_SESSION['flash']);
             align-items: center;
         }
 
+        .input-group.invalid .input-group-text {
+            background: #fff5f5;
+            color: #a94442;
+            border-color: #dc3545;
+        }
+
+        .input-group.invalid .form-control,
+        .form-control.input-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 .12rem rgba(220, 53, 69, 0.12);
+        }
+
+        /* mensagem de erro */
+        .mn-code-error {
+            color: #a94442;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* ativa */
+        .mn-code-error.active {
+            display: block;
+        }
+
+        /* animação sutil para erro */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            50% {
+                transform: translateX(6px);
+            }
+
+            75% {
+                transform: translateX(-4px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .input-group.invalid.shake {
+            animation: shake .36s ease-in-out;
+        }
+
+
         @media (max-width: 480px) {
             .mn-card {
                 padding: 18px;
@@ -221,7 +274,7 @@ unset($_SESSION['flash']);
                 <img src="image/MENTE_RENOVADA-LOGO.png" alt="Mente Renovada">
             </div>
 
-            <!-- usei h5 (tamanho menor) -->
+
             <h5 id="verifTitle" class="auth-title">Confirme seu e-mail</h5>
 
 
@@ -260,6 +313,7 @@ unset($_SESSION['flash']);
 
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         // clique visual no reenviar
@@ -274,7 +328,87 @@ unset($_SESSION['flash']);
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+(function(){
+  const form = document.querySelector('form[action="verificar_handler.php"], form[action="./verificar_handler.php"]') || document.querySelector('form');
+  const codeInput = document.getElementById('codigo');
+
+  if (!form || !codeInput) return;
+
+  // Cria/garante elemento de mensagem de erro
+  function ensureErrorElement() {
+    let err = codeInput.parentElement.parentElement.querySelector('.mn-code-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'mn-code-error';
+      err.setAttribute('aria-live', 'polite');
+      err.textContent = 'Digite um código válido de 6 números.';
+      const wrapper = codeInput.closest('.input-group') || codeInput.parentElement;
+      wrapper.insertAdjacentElement('afterend', err);
+    }
+    return err;
+  }
+
+  // Validação: precisa ter 6 dígitos numéricos
+  function isValidCode(value) {
+    return /^\d{6}$/.test(value.trim());
+  }
+
+  function setValidityState(isValid) {
+    const inputGroup = codeInput.closest('.input-group');
+    const err = ensureErrorElement();
+
+    if (isValid) {
+      if (inputGroup) inputGroup.classList.remove('invalid', 'shake');
+      codeInput.classList.remove('input-invalid');
+      err.classList.remove('active');
+      codeInput.setAttribute('aria-invalid', 'false');
+    } else {
+      if (inputGroup) inputGroup.classList.add('invalid');
+      codeInput.classList.add('input-invalid');
+      err.classList.add('active');
+      codeInput.setAttribute('aria-invalid', 'true');
+    }
+  }
+
+  // Ao digitar
+  codeInput.addEventListener('input', function() {
+    const val = codeInput.value;
+    // Se vazio, limpa erro
+    if (val.trim() === '') {
+      setValidityState(true);
+      return;
+    }
+    setValidityState(isValidCode(val));
+  });
+
+  // Ao sair do campo
+  codeInput.addEventListener('blur', function() {
+    const ok = isValidCode(codeInput.value);
+    setValidityState(ok);
+  });
+
+  // Ao enviar o formulário
+  form.addEventListener('submit', function(ev) {
+    const ok = isValidCode(codeInput.value);
+    if (!ok) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const inputGroup = codeInput.closest('.input-group');
+      if (inputGroup) {
+        inputGroup.classList.add('shake');
+        setTimeout(() => inputGroup.classList.remove('shake'), 400);
+      }
+      setValidityState(false);
+      codeInput.focus();
+      return false;
+    }
+    return true;
+  });
+})();
+</script>
+
+
 </body>
 
 </html>
