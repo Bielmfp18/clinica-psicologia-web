@@ -379,7 +379,7 @@ $numrow = $lista->rowCount();
         </div>
         <div class="modal-body text-center">
           Deseja mesmo <strong class="action-text">CANCELAR</strong> esta sessão de
-          <strong><span class="nome"></span></strong>?
+          <strong><br><span class="nome"></span></strong>?
         </div>
         <div class="modal-footer justify-content-center gap-2">
           <button class="confirm-delete btn btn-danger btn-anim" type="button" data-id="">
@@ -421,7 +421,7 @@ $numrow = $lista->rowCount();
     <div class="modal-dialog modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title text-white mx-auto">Anotações da sessão de <strong><span class="modal-paciente-nome"></span></strong></h5>
+          <h5 class="modal-title text-white text-center mx-auto"><strong>	ANOTAÇÕES DA SESSÃO </strong><br><span class="modal-paciente-nome"></span></h5>
         </div>
         <div class="modal-body">
           <p class="modal-anotacoes text-center"></p>

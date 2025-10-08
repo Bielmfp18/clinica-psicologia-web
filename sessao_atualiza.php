@@ -172,8 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn,
         $psicologoId,
         'Atualização',
-        'Sessão',
-        "Sessão de {$nomePaciente} atualizada"
+        "Sessão de {$nomePaciente} atualizada",
+        'Sessão'
       );
 
       // 5) Prepara flash de sucesso e redireciona para a lista

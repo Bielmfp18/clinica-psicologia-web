@@ -131,8 +131,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $conn,
                 $psicologoId,
                 'Atualização',
-                'Paciente',
-                "Paciente atualizado: {$nome}"
+                "Paciente atualizado: {$nome}",
+                'Paciente'
             );
 
             $_SESSION['flash'] = [

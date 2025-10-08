@@ -1,32 +1,39 @@
 <?php
-// funcao_historico.php — registro correto no histórico (assinatura e binding ajustados)
+// funcao_historico.php
+// Funções para registrar e apagar histórico (versão padronizada e tolerante).
 
 /**
- * Registra uma ação no histórico (chama a procedure ps_historico_insert).
+ * Registra uma ação no histórico.
  *
- * Assinatura esperada pelos chamadores do seu projeto:
+ * Assinatura usada no projeto:
  *   registrarHistorico($conn, $psicologoId, $acao, $descricao, $tipo [, $dataHora]);
  *
- * @param PDO    $conn         Conexão PDO.
- * @param int    $psicologoId  ID do psicólogo logado.
- * @param string $acao         Ação curta (ex: 'Ativação', 'Desativação', 'Confirmação').
- * @param string $descricao    Descrição livre (pode ser longa).
- * @param string $tipo         Tipo de entidade (ex: 'Paciente', 'Sessão') — campo curto.
- * @param string $dataHora     Timestamp 'Y-m-d H:i:s' opcional (se nulo usa agora).
- * @return array|bool          Array com o registro retornado pela procedure ou true.
- * @throws Exception se houver erro de DB.
+ * @param PDO    $conn
+ * @param int    $psicologoId
+ * @param string $acao
+ * @param string $descricao
+ * @param string $tipo
+ * @param string|null $dataHora  formato 'Y-m-d H:i:s' (opcional)
+ * @return array|array<string,mixed>  resultado retornado pela procedure ou ['success'=>true]
+ * @throws PDOException
  */
 function registrarHistorico(PDO $conn, int $psicologoId, string $acao, string $descricao, string $tipo, string $dataHora = null)
 {
-    // limite do campo tipo_entidade no DB (de acordo com seu schema atual)
-    $TIPO_MAX = 50;
+    // Fallback para mb_* se necessário
+    if (!function_exists('mb_strlen')) {
+        function mb_strlen($s) { return strlen($s); }
+        function mb_substr($s, $start, $len = null) {
+            return $len === null ? substr($s, $start) : substr($s, $start, $len);
+        }
+    }
 
-    // normaliza inputs
+    $TIPO_MAX = 100;
+
     $acao = trim($acao);
     $descricao = trim($descricao);
     $tipo = trim($tipo);
 
-    // garante data/hora
+    // Data/hora padrão (fuso de São Paulo)
     if ($dataHora === null) {
         try {
             $dt = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
@@ -36,12 +43,10 @@ function registrarHistorico(PDO $conn, int $psicologoId, string $acao, string $d
         }
     }
 
-    // evita enviar tipo maior que o campo (trunca silenciosamente; se preferir lance exceção)
     if (mb_strlen($tipo) > $TIPO_MAX) {
         $tipo = mb_substr($tipo, 0, $TIPO_MAX);
     }
 
-    // Chama a procedure com a ordem correta: psicologo_id, acao, descricao, data_hora, tipo_entidade
     $sql = "CALL ps_historico_insert(:pspsicologo_id, :psacao, :psdescricao, :psdata_hora, :pstipo_entidade)";
     $stmt = $conn->prepare($sql);
     $stmt->bindValue(':pspsicologo_id', $psicologoId, PDO::PARAM_INT);
@@ -50,19 +55,20 @@ function registrarHistorico(PDO $conn, int $psicologoId, string $acao, string $d
     $stmt->bindValue(':psdata_hora', $dataHora, PDO::PARAM_STR);
     $stmt->bindValue(':pstipo_entidade', $tipo, PDO::PARAM_STR);
 
-    $stmt->execute();
-
-    // A procedure seleciona o registro inserido; buscamos e retornamos (se houver)
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // fechar cursor para permitir próximos CALLs
-    $stmt->closeCursor();
-
-    return $result ?: true;
+    try {
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result ?: ['success' => true];
+    } catch (PDOException $e) {
+        // Loga e relança para o caller decidir (pode trocar por return false se preferir)
+        error_log('Falha ao gravar historico: ' . $e->getMessage());
+        throw $e;
+    }
 }
 
 /**
- * Remove um registro do histórico (chama a procedure ps_historico_delete).
+ * Apaga um registro do histórico usando procedure ps_historico_delete(:id)
  */
 function apagarHistorico(PDO $conn, int $historicoId): void
 {

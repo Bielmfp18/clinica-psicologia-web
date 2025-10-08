@@ -1,8 +1,6 @@
 <?php
 // SESSÃO CONFIRMA
 
-// SESSÃO CONFIRMA
-
 // Exibe erros para depuração
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -75,8 +73,8 @@ try {
             $conn,
             $psicologoId,
             'Confirmação',    // ação de confirmação
-            'Sessão',         // entidade afetada
-            "Sessão de {$nomePaciente} confirmada" // descrição detalhada
+            "Sessão de {$nomePaciente} confirmada", // descrição detalhada
+            'Sessão'         // entidade afetada
         );
 
         // Retorna sucesso em JSON

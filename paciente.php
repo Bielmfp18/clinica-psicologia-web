@@ -258,7 +258,9 @@ $mostrarRodape = isset($_SESSION['psicologo_id']) && ($numrow  > 4);
           <option value="1" <?php if ($ativo === '1') echo 'selected'; ?>>ATIVO</option>
           <option value="0" <?php if ($ativo === '0') echo 'selected'; ?>>INATIVO</option>
         </select>
-        <button type="submit" class="btn text-light btn-anim" style="background-color:#DBA632;">FILTRAR</button>
+        <button type="submit" class="btn text-light btn-anim" style="background-color:#DBA632;">
+          FILTRAR
+        </button>
       </form>
 
       <!-- BOTÃO ADICIONAR -->
@@ -396,8 +398,8 @@ $mostrarRodape = isset($_SESSION['psicologo_id']) && ($numrow  > 4);
       <div class="modal-content">
         <!-- Cabeçalho em gradiente azul, título branco -->
         <div class="modal-header modal-header-info">
-          <h5 class="modal-title text-white mx-auto">
-            Observações de <strong><span id="obsNome"></span></strong>
+          <h5 class="modal-title text-white text-center mx-auto">
+            <strong>OBSERVAÇÕES DO PACIENTE</strong> <br> <span id="obsNome"></span>
           </h5>
         </div>
         <div class="modal-body bg-light text-center" id="obsTexto" style="max-height: 60vh; overflow-y: auto;"></div>

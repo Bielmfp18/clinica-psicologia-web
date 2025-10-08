@@ -107,9 +107,6 @@ try {
 
     // 4️⃣ Registra histórico da ativação da sessão
     $descSess = "Sessão de {$nomePaciente} ativada";
-    if ($dataHoraSessao) {
-        $descSess .= " — agendada para " . date('d/m/Y H:i', strtotime($dataHoraSessao));
-    }
 
     registrarHistorico(
         $conn,

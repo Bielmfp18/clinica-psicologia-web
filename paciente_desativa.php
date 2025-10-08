@@ -70,10 +70,10 @@ try {
         foreach ($sessoes as $s) {
             $sessId = (int)$s['id'];
             $dataHora = $s['data_hora_sessao'] ?? null;
-            $desc = "Sessão (ID: {$sessId}) de {$nomePaciente} desativada";
-            if ($dataHora) {
-                $desc .= " — agendada para " . date('d/m/Y H:i', strtotime($dataHora));
-            }
+            $desc = "Sessão de {$nomePaciente} desativada";
+            // if ($dataHora) {
+            //     $desc .= " — agendada para " . date('d/m/Y H:i', strtotime($dataHora));
+            // }
 
             // ajuste se sua função tiver assinatura diferente
             registrarHistorico($conn, $psicologoId, 'Desativação', $desc, 'Sessão');

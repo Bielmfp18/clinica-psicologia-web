@@ -12,13 +12,13 @@ session_start();
 
 // Verifica se o psicólogo está logado
 if (!isset($_SESSION['psicologo_id'])) {
-  // preparar flash de aviso
-  $_SESSION['flash'] = [
-    'type'    => 'warning',  // ou 'danger', como preferir.
-    'message' => 'Faça login antes de desativar sessões'
-  ];
-  header('Location: index.php');
-  exit;
+    // preparar flash de aviso
+    $_SESSION['flash'] = [
+        'type'    => 'warning',  // ou 'danger', como preferir.
+        'message' => 'Faça login antes de desativar sessões'
+    ];
+    header('Location: index.php');
+    exit;
 }
 
 // Inclui conexão com o banco e função de histórico
@@ -58,15 +58,17 @@ try {
         $dataHoraSessao = $info['dataHoraSessao'] ?? date('Y-m-d H:i:s');
 
         // Registra no histórico com nome e data/hora
+        // corrigido — ordem correta: acao, descricao, tipo
         registrarHistorico(
             $conn,
             $psicologoId,
-            'Desativação', // ação de desativação
-            'Sessão', // entidade afetada
-            "Sessão de {$nomePaciente} desativada" // descrição
+            'Desativação',
+            "Sessão de {$nomePaciente} desativada",
+            'Sessão'
         );
 
-       // Retorna sucesso em JSON
+
+        // Retorna sucesso em JSON
         echo json_encode([
             'success' => true,
             'id'      => $id,
@@ -91,5 +93,3 @@ try {
     ]);
     exit;
 }
-
-?> 

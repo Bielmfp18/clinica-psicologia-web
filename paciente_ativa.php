@@ -96,10 +96,7 @@ try {
 
             // registra histórico da sessão reativada
             $dataHora = $ultima['data_hora_sessao'] ?? null;
-            $descSess = "Sessão (ID: {$sessId}) reativada (AGENDADA) para o paciente {$nome}";
-            if ($dataHora) {
-                $descSess .= " — agendada para " . date('d/m/Y H:i', strtotime($dataHora));
-            }
+            $descSess = "Sessão reativada para o paciente {$nome}";
 
             // registrar histórico da sessão
             registrarHistorico(
