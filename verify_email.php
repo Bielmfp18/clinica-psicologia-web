@@ -1,5 +1,5 @@
 <?php
-// VERIFICAR EMAIL 
+// VERIFICAR EMAIL
 
 session_name('Mente_Renovada');
 session_start();
@@ -7,6 +7,9 @@ session_start();
 $email = filter_var($_GET['email'] ?? '', FILTER_SANITIZE_EMAIL);
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
+
+// cria url de reenviar (ajuste o nome do handler se necessário)
+$resendHref = !empty($email) ? 'reenviar_codigo.php?email=' . urlencode($email) : 'index.php';
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -30,7 +33,6 @@ unset($_SESSION['flash']);
         :root {
             --accent: #DBA632;
             --bg: #f4f7f9;
-            /* mesmo bg da página de verificação */
             --panel: #fff;
             --muted: #6c757d;
             --text: #333;
@@ -65,95 +67,10 @@ unset($_SESSION['flash']);
             background: var(--panel);
             border-radius: var(--card-radius);
             box-shadow: var(--card-shadow);
-            padding: 26px;
+            padding: 36px 26px 34px 26px;
             border: 1px solid rgba(0, 0, 0, 0.04);
             box-sizing: border-box;
-        }
-
-        .logo-wrap {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 8px;
-        }
-
-        .logo-wrap img {
-            width: 160px;
-            height: auto;
-            object-fit: contain;
-        }
-
-        /* título dourado centralizado — reduzido conforme pedido */
-        .auth-title {
-            text-align: center;
-            font-weight: 700;
-            color: var(--accent);
-            font-size: 1.15rem;
-            /* reduzido */
-            margin-bottom: 6px;
-        }
-
-        /* subtítulo/mensagem em caixa azul (igual à primeira imagem) */
-        .info-box {
-            background: #e6fbff;
-            border-left: 4px solid #b6f0ff;
-            padding: .85rem 1rem;
-            border-radius: 6px;
-            color: #0b5b63;
-            margin-bottom: 1rem;
-            font-size: 0.98rem;
-            line-height: 1.45;
-            text-align: center;
-        }
-
-        .mn-sub {
-            text-align: center;
-            color: var(--muted);
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-        }
-
-        .flash {
-            margin-bottom: 12px;
-        }
-
-        .input-group .form-control {
-            border-left: none;
-        }
-
-        .input-group .input-group-text {
-            background: #fff;
-            border-right: none;
-            border-radius: .375rem 0 0 .375rem;
-        }
-
-        .form-text {
-            color: var(--muted);
-        }
-
-        .btn-mn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 11px 14px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #fff;
-            background: var(--accent);
-            border: none;
-            width: 100%;
-            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
-            transition: background .16s ease, transform .08s ease, box-shadow .18s ease;
-            text-align: center;
-        }
-
-        .btn-mn:hover,
-        .btn-mn:focus {
-            background: #c6932b;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(16, 24, 40, 0.08);
-            outline: none;
+            position: relative;
         }
 
         .mn-resend {
@@ -195,19 +112,119 @@ unset($_SESSION['flash']);
             align-items: center;
         }
 
-        .input-group.invalid .input-group-text {
-            background: #fff5f5;
-            color: #a94442;
-            border-color: #dc3545;
+        .btn-anim {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .input-group.invalid .form-control,
-        .form-control.input-invalid {
-            border-color: #dc3545 !important;
-            box-shadow: 0 0 0 .12rem rgba(220, 53, 69, 0.12);
+        .btn-anim:hover {
+            transform: scale(1.07);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* mensagem de erro */
+        .btn-anim:active {
+            transform: scale(0.97);
+        }
+
+
+        .logo-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 6px 0 8px 0;
+        }
+
+        .logo-wrap img {
+            width: 120px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .auth-title {
+            text-align: center;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.15rem;
+            margin-bottom: 6px;
+        }
+
+        .flash {
+            margin-bottom: 12px;
+        }
+
+        .input-group .form-control {
+            border-left: none;
+        }
+
+        .input-group .input-group-text {
+            background: #fff;
+            border-right: none;
+            border-radius: .375rem 0 0 .375rem;
+        }
+
+        .btn-mn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            width: 100%;
+            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+            transition: background .16s ease, transform .08s ease, box-shadow .18s ease;
+            text-align: center;
+        }
+
+        .btn-mn:hover,
+        .btn-mn:focus {
+            background: #c6932b;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(16, 24, 40, 0.08);
+            outline: none;
+        }
+
+        /* Reenviar centralizado — usamos botão outline para combinar com seu exemplo */
+        .btn-resend-center {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--accent);
+            background: transparent;
+            border: 1px solid rgba(13, 110, 253, 0.08);
+            cursor: pointer;
+            transition: background .12s ease, transform .08s ease, opacity .12s ease;
+            margin-top: 18px;
+        }
+
+        .btn-resend-center i {
+            font-size: 1.05rem;
+        }
+
+        .btn-resend-center:hover {
+            background: rgba(13, 110, 253, 0.04);
+            transform: translateY(-1px);
+        }
+
+        .btn-resend-center:disabled {
+            opacity: .6;
+            cursor: default;
+            transform: none;
+        }
+
+        .status-msg {
+            font-size: 0.95rem;
+            color: var(--muted);
+            margin-top: 12px;
+            text-align: center;
+            min-height: 20px;
+        }
+
         .mn-code-error {
             color: #a94442;
             font-size: 0.9rem;
@@ -215,31 +232,29 @@ unset($_SESSION['flash']);
             display: none;
         }
 
-        /* ativa */
         .mn-code-error.active {
             display: block;
         }
 
-        /* animação sutil para erro */
         @keyframes shake {
             0% {
-                transform: translateX(0);
+                transform: translateX(0)
             }
 
             25% {
-                transform: translateX(-6px);
+                transform: translateX(-6px)
             }
 
             50% {
-                transform: translateX(6px);
+                transform: translateX(6px)
             }
 
             75% {
-                transform: translateX(-4px);
+                transform: translateX(-4px)
             }
 
             100% {
-                transform: translateX(0);
+                transform: translateX(0)
             }
         }
 
@@ -247,21 +262,14 @@ unset($_SESSION['flash']);
             animation: shake .36s ease-in-out;
         }
 
-
-        @media (max-width: 480px) {
-            .mn-card {
-                padding: 18px;
-            }
-
+        @media (max-width:480px) {
             .logo-wrap img {
-                width: 120px;
+                width: 100px
             }
 
-            .auth-title {
-                font-size: 1.05rem;
+            .mn-card {
+                padding: 28px 14px
             }
-
-            /* reduzido no mobile também */
         }
     </style>
 </head>
@@ -270,17 +278,19 @@ unset($_SESSION['flash']);
     <div class="wrap">
         <main class="mn-card" role="main" aria-labelledby="verifTitle">
 
+            <!-- botão voltar no canto superior esquerdo (igual ao seu exemplo) -->
+            <a href="index.php"
+                class="btn btn-outline-primary position-absolute top-0 start-0 m-3 btn-anim"
+                title="Voltar ao login"
+                id="back-btn">
+                <i class="bi bi-arrow-left-short"></i>
+            </a>
+
             <div class="logo-wrap">
                 <img src="image/MENTE_RENOVADA-LOGO.png" alt="Mente Renovada">
             </div>
 
-
             <h5 id="verifTitle" class="auth-title">Confirme seu e-mail</h5>
-
-
-            <!-- <div class="info-box" role="status" aria-live="polite">
-                Enviamos um e-mail com um link e um código. Verifique seu e-mail e clique no link ou cole o código abaixo.
-            </div> -->
 
             <br>
 
@@ -294,7 +304,6 @@ unset($_SESSION['flash']);
 
             <form action="verificar_handler.php" method="POST" class="mt-2" novalidate>
                 <input type="hidden" name="email" value="<?= htmlspecialchars($email) ?>">
-
                 <div class="mb-3">
                     <label for="codigo" class="form-label fw-semibold">Código de verificação</label>
                     <div class="input-group">
@@ -307,108 +316,202 @@ unset($_SESSION['flash']);
 
                 <div class="mn-actions">
                     <button type="submit" class="btn-mn">Confirmar</button>
-                    <a href="index.php" class="mn-resend">Voltar ao login</a>
-                </div>
-            </form>
 
-        </main>
+                    <br>
+                
+                    <!-- Alteração mínima: adicionado id, data-href e span interno com id resend-text (mantendo classe mn-resend para não alterar estilo) -->
+                    <a href="<?= htmlspecialchars($resendHref) ?>"
+                        id="resend-btn"
+                        class="mn-resend"
+                        role="button"
+                        aria-disabled="false"
+                        data-href="<?= htmlspecialchars($resendHref) ?>">
+                        <span id="resend-text">Reenviar Código</span>
+                    </a>
+                </div>
     </div>
+    </form>
+    </main>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // clique visual no reenviar
-        document.addEventListener('DOMContentLoaded', function() {
-            const resend = document.getElementById('resend-link');
-            if (!resend) return;
-            resend.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                this.style.transition = 'transform 120ms ease';
-                setTimeout(() => this.style.transform = '', 120);
-            });
+        // mostra erros JS na área de status (ajuda a debugar se algo quebrar)
+        window.addEventListener('error', function(ev) {
+            const status = document.getElementById('status-area');
+            if (status) status.textContent = 'Erro JS: ' + (ev.message || 'ver console');
+            console.error('Erro JS capturado:', ev.error || ev.message, ev);
+        });
+        window.addEventListener('unhandledrejection', function(ev) {
+            const status = document.getElementById('status-area');
+            if (status) status.textContent = 'Promise rejeitada: ver console';
+            console.error('Promise rejeitada:', ev.reason);
         });
     </script>
 
     <script>
-(function(){
-  const form = document.querySelector('form[action="verificar_handler.php"], form[action="./verificar_handler.php"]') || document.querySelector('form');
-  const codeInput = document.getElementById('codigo');
+        (function() {
+            try {
+                const resendBtn = document.getElementById('resend-btn');
+                const resendText = document.getElementById('resend-text');
+                const statusArea = document.getElementById('status-area');
 
-  if (!form || !codeInput) return;
+                if (!resendBtn) return;
 
-  // Cria/garante elemento de mensagem de erro
-  function ensureErrorElement() {
-    let err = codeInput.parentElement.parentElement.querySelector('.mn-code-error');
-    if (!err) {
-      err = document.createElement('div');
-      err.className = 'mn-code-error';
-      err.setAttribute('aria-live', 'polite');
-      err.textContent = 'Digite um código válido de 6 números.';
-      const wrapper = codeInput.closest('.input-group') || codeInput.parentElement;
-      wrapper.insertAdjacentElement('afterend', err);
-    }
-    return err;
-  }
+                const COOLDOWN = 60; // segundos
 
-  // Validação: precisa ter 6 dígitos numéricos
-  function isValidCode(value) {
-    return /^\d{6}$/.test(value.trim());
-  }
+                function startCooldown(seconds) {
+                    let remaining = seconds;
+                    // para elementos que não suportam disabled nativamente (ex: <a>), usamos aria-disabled + classe
+                    try {
+                        resendBtn.disabled = true;
+                    } catch (e) {}
+                    resendBtn.classList.add('disabled');
+                    resendBtn.setAttribute('aria-disabled', 'true');
+                    updateResendText(remaining);
+                    const timer = setInterval(() => {
+                        remaining -= 1;
+                        if (remaining <= 0) {
+                            clearInterval(timer);
+                            resetResendButton();
+                            if (statusArea) statusArea.textContent = '';
+                            return;
+                        }
+                        updateResendText(remaining);
+                    }, 1000);
+                }
 
-  function setValidityState(isValid) {
-    const inputGroup = codeInput.closest('.input-group');
-    const err = ensureErrorElement();
+                function updateResendText(sec) {
+                    if (resendText) {
+                        resendText.textContent = `Reenviar (${sec}s)`;
+                    } else {
+                        resendBtn.textContent = `Reenviar (${sec}s)`;
+                    }
+                }
 
-    if (isValid) {
-      if (inputGroup) inputGroup.classList.remove('invalid', 'shake');
-      codeInput.classList.remove('input-invalid');
-      err.classList.remove('active');
-      codeInput.setAttribute('aria-invalid', 'false');
-    } else {
-      if (inputGroup) inputGroup.classList.add('invalid');
-      codeInput.classList.add('input-invalid');
-      err.classList.add('active');
-      codeInput.setAttribute('aria-invalid', 'true');
-    }
-  }
+                function resetResendButton() {
+                    try {
+                        resendBtn.disabled = false;
+                    } catch (e) {}
+                    resendBtn.classList.remove('disabled');
+                    resendBtn.setAttribute('aria-disabled', 'false');
+                    if (resendText) resendText.textContent = 'Reenviar Código';
+                }
 
-  // Ao digitar
-  codeInput.addEventListener('input', function() {
-    const val = codeInput.value;
-    // Se vazio, limpa erro
-    if (val.trim() === '') {
-      setValidityState(true);
-      return;
-    }
-    setValidityState(isValidCode(val));
-  });
+                resendBtn.addEventListener('click', function(ev) {
+                    try {
+                        ev.preventDefault(); // prevenir comportamento padrão do link para controlar o fluxo
+                        const href = this.dataset.href;
+                        if (!href) {
+                            if (statusArea) statusArea.textContent = 'Link de reenviar ausente.';
+                            return;
+                        }
 
-  // Ao sair do campo
-  codeInput.addEventListener('blur', function() {
-    const ok = isValidCode(codeInput.value);
-    setValidityState(ok);
-  });
+                        // animação rápida de clique
+                        this.style.transform = 'scale(0.98)';
+                        this.style.transition = 'transform 120ms ease';
+                        setTimeout(() => this.style.transform = '', 120);
 
-  // Ao enviar o formulário
-  form.addEventListener('submit', function(ev) {
-    const ok = isValidCode(codeInput.value);
-    if (!ok) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      const inputGroup = codeInput.closest('.input-group');
-      if (inputGroup) {
-        inputGroup.classList.add('shake');
-        setTimeout(() => inputGroup.classList.remove('shake'), 400);
-      }
-      setValidityState(false);
-      codeInput.focus();
-      return false;
-    }
-    return true;
-  });
-})();
-</script>
+                        if (statusArea) statusArea.textContent = 'Tentando reenviar o código...';
+                        startCooldown(COOLDOWN);
 
+                        // redireciona para o seu handler que fará o envio e setará o flash
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 250);
+                    } catch (err) {
+                        console.error('Erro no click do resendBtn:', err);
+                        if (statusArea) statusArea.textContent = 'Erro ao reenviar (ver console).';
+                    }
+                });
 
+                // opção: se você calcular remaining no servidor (verification_sent_at),
+                // pode injetar um valor PHP e chamar startCooldown(serverRemaining) aqui.
+            } catch (err) {
+                console.error('Erro no script de reenviar:', err);
+                const s = document.getElementById('status-area');
+                if (s) s.textContent = 'Erro (reenviar): ' + err.message;
+            }
+        })();
+    </script>
+
+    <script>
+        (function() {
+            try {
+                const form = document.querySelector('form[action="verificar_handler.php"], form[action="./verificar_handler.php"]') || document.querySelector('form');
+                const codeInput = document.getElementById('codigo');
+                if (!form || !codeInput) return;
+
+                function ensureErrorElement() {
+                    let err = codeInput.parentElement.parentElement.querySelector('.mn-code-error');
+                    if (!err) {
+                        err = document.createElement('div');
+                        err.className = 'mn-code-error';
+                        err.setAttribute('aria-live', 'polite');
+                        err.textContent = 'Digite um código válido de 6 números.';
+                        const wrapper = codeInput.closest('.input-group') || codeInput.parentElement;
+                        wrapper.insertAdjacentElement('afterend', err);
+                    }
+                    return err;
+                }
+
+                function isValidCode(value) {
+                    return /^\d{6}$/.test(value.trim());
+                }
+
+                function setValidityState(isValid) {
+                    const inputGroup = codeInput.closest('.input-group');
+                    const err = ensureErrorElement();
+                    if (isValid) {
+                        if (inputGroup) inputGroup.classList.remove('invalid', 'shake');
+                        codeInput.classList.remove('input-invalid');
+                        err.classList.remove('active');
+                        codeInput.setAttribute('aria-invalid', 'false');
+                    } else {
+                        if (inputGroup) inputGroup.classList.add('invalid');
+                        codeInput.classList.add('input-invalid');
+                        err.classList.add('active');
+                        codeInput.setAttribute('aria-invalid', 'true');
+                    }
+                }
+
+                codeInput.addEventListener('input', function() {
+                    const val = codeInput.value;
+                    if (val.trim() === '') {
+                        setValidityState(true);
+                        return;
+                    }
+                    setValidityState(isValidCode(val));
+                });
+
+                codeInput.addEventListener('blur', function() {
+                    setValidityState(isValidCode(codeInput.value));
+                });
+
+                form.addEventListener('submit', function(ev) {
+                    const ok = isValidCode(codeInput.value);
+                    if (!ok) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        const inputGroup = codeInput.closest('.input-group');
+                        if (inputGroup) {
+                            inputGroup.classList.add('shake');
+                            setTimeout(() => inputGroup.classList.remove('shake'), 400);
+                        }
+                        setValidityState(false);
+                        codeInput.focus();
+                        return false;
+                    }
+                    return true;
+                });
+            } catch (err) {
+                console.error('Erro no bloco de validação:', err);
+                const s = document.getElementById('status-area');
+                if (s) s.textContent = 'Erro (validação): ' + err.message;
+            }
+        })();
+    </script>
 </body>
 
 </html>

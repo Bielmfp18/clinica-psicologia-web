@@ -12,6 +12,12 @@ $psicologo_id = isset($_GET['u']) ? (int)$_GET['u'] : (int)($_POST['u'] ?? 0);
 $token = $_GET['t'] ?? $_POST['token'] ?? null;
 $flash = null;
 
+// ----------------------- ADIÇÃO: link de reenviar (mantém comportamento se não houver id) -----------------------
+// cria url de reenviar (ajuste o nome do handler se necessário)
+$resendHref = !empty($psicologo_id) ? 'reenviar_codigo.php?u=' . urlencode($psicologo_id) : 'reenviar_codigo.php';
+/* Se preferir que ele retorne ao index quando não houver id, troque a string acima por 'index.php' */
+// ---------------------------------------------------------------------------------------------------------------
+
 // Tempo padrão para token persistente (ajuste se quiser outro TTL)
 $PERSISTENT_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 dias
 
@@ -202,6 +208,7 @@ if ($token && $psicologo_id) {
             padding: 26px;
             border: 1px solid rgba(0, 0, 0, 0.04);
             box-sizing: border-box;
+            position: relative;
         }
 
         .logo-wrap {
@@ -327,7 +334,6 @@ if ($token && $psicologo_id) {
             align-items: center;
         }
 
-        /* Título e subtítulo */
         .mn-card h5 {
             margin: 0 0 6px 0;
             font-weight: 700;
@@ -357,7 +363,15 @@ if ($token && $psicologo_id) {
             box-shadow: 0 0 0 .12rem rgba(220, 53, 69, 0.12);
         }
 
-        /* mensagem de erro (inicia oculta) */
+        /* mensagem de status usada pelo JS (reenviar) */
+        .status-msg {
+            font-size: 0.95rem;
+            color: var(--muted);
+            margin-top: 12px;
+            text-align: center;
+            min-height: 20px;
+        }
+
         .mn-token-error {
             color: #a94442;
             font-size: 0.9rem;
@@ -365,12 +379,10 @@ if ($token && $psicologo_id) {
             display: none;
         }
 
-        /* ativa */
         .mn-token-error.active {
             display: block;
         }
 
-        /* animação sutil para chamar atenção no submit inválido */
         @keyframes shake {
             0% {
                 transform: translateX(0);
@@ -415,6 +427,14 @@ if ($token && $psicologo_id) {
 
         <div class="card-auth">
 
+            <!-- botão voltar no canto superior esquerdo (igual ao seu exemplo) -->
+            <a href="index.php"
+                class="btn btn-outline-primary position-absolute top-0 start-0 m-3 btn-anim"
+                title="Voltar ao login"
+                id="back-btn">
+                <i class="bi bi-arrow-left-short"></i>
+            </a>
+
             <div class="logo-wrap">
                 <img src="image/MENTE_RENOVADA-LOGO.png" alt="Mente Renovada">
             </div>
@@ -425,7 +445,7 @@ if ($token && $psicologo_id) {
                 <br>
 
                 <?php if (isset($_GET['sent'])): ?>
-                    <div class="info-box">
+                    <div class="info-box text-center">
                         Enviamos um e-mail com um link e um código. Verifique seu e-mail e clique no link ou cole o código abaixo.
                     </div>
                 <?php endif; ?>
@@ -464,12 +484,110 @@ if ($token && $psicologo_id) {
                     <!-- Botão principal com estilo/uniformidade -->
                     <button type="submit" class="btn-mn">Confirmar</button>
 
-                    <!-- Link de voltar (mesmo estilo/anim) -->
-                    <a href="index.php" class="mn-resend">Voltar ao login</a>
+                    <br>
+                    <!-- Alteração mínima: adicionado id, data-href e span interno com id resend-text (mantendo classe mn-resend para não alterar estilo) -->
+                    <a href="<?= htmlspecialchars($resendHref) ?>"
+                        id="resend-btn"
+                        class="mn-resend"
+                        role="button"
+                        aria-disabled="false"
+                        data-href="<?= htmlspecialchars($resendHref) ?>">
+                        <span id="resend-text">Reenviar Código</span>
+                    </a>
+
+                    <!-- área de status  -->
+                    <div id="status-area" class="status-msg" aria-live="polite"></div>
                 </div>
-            </form>
         </div>
+        </form>
     </div>
+    </div>
+
+    <script>
+        (function() {
+            try {
+                const resendBtn = document.getElementById('resend-btn');
+                const resendText = document.getElementById('resend-text');
+                const statusArea = document.getElementById('status-area');
+
+                if (!resendBtn) return;
+
+                const COOLDOWN = 60; // segundos
+
+                function startCooldown(seconds) {
+                    let remaining = seconds;
+                    // para elementos que não suportam disabled nativamente (ex: <a>), usamos aria-disabled + classe
+                    try {
+                        resendBtn.disabled = true;
+                    } catch (e) {}
+                    resendBtn.classList.add('disabled');
+                    resendBtn.setAttribute('aria-disabled', 'true');
+                    updateResendText(remaining);
+                    const timer = setInterval(() => {
+                        remaining -= 1;
+                        if (remaining <= 0) {
+                            clearInterval(timer);
+                            resetResendButton();
+                            if (statusArea) statusArea.textContent = '';
+                            return;
+                        }
+                        updateResendText(remaining);
+                    }, 1000);
+                }
+
+                function updateResendText(sec) {
+                    if (resendText) {
+                        resendText.textContent = `Reenviar (${sec}s)`;
+                    } else {
+                        resendBtn.textContent = `Reenviar (${sec}s)`;
+                    }
+                }
+
+                function resetResendButton() {
+                    try {
+                        resendBtn.disabled = false;
+                    } catch (e) {}
+                    resendBtn.classList.remove('disabled');
+                    resendBtn.setAttribute('aria-disabled', 'false');
+                    if (resendText) resendText.textContent = 'Reenviar Código';
+                }
+
+                resendBtn.addEventListener('click', function(ev) {
+                    try {
+                        ev.preventDefault(); // prevenir comportamento padrão do link para controlar o fluxo
+                        const href = this.dataset.href;
+                        if (!href) {
+                            if (statusArea) statusArea.textContent = 'Link de reenviar ausente.';
+                            return;
+                        }
+
+                        // animação rápida de clique
+                        this.style.transform = 'scale(0.98)';
+                        this.style.transition = 'transform 120ms ease';
+                        setTimeout(() => this.style.transform = '', 120);
+
+                        if (statusArea) statusArea.textContent = 'Tentando reenviar o código...';
+                        startCooldown(COOLDOWN);
+
+                        // redireciona para o seu handler que fará o envio e setará o flash
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 250);
+                    } catch (err) {
+                        console.error('Erro no click do resendBtn:', err);
+                        if (statusArea) statusArea.textContent = 'Erro ao reenviar (ver console).';
+                    }
+                });
+
+                // opção: se você calcular remaining no servidor (verification_sent_at),
+                // pode injetar um valor PHP e chamar startCooldown(serverRemaining) aqui.
+            } catch (err) {
+                console.error('Erro no script de reenviar:', err);
+                const s = document.getElementById('status-area');
+                if (s) s.textContent = 'Erro (reenviar): ' + err.message;
+            }
+        })();
+    </script>
 
     <script>
         // Se o usuário colar o link completo (com ?t=...), extrai automaticamente o token t= e coloca no campo.
@@ -517,118 +635,119 @@ if ($token && $psicologo_id) {
     </script>
 
     <script>
-(function(){
-  // localiza o form e o campo token
-  const form = document.querySelector('form[method="POST"]') || document.querySelector('form');
-  const tokenInput = document.getElementById('token');
+        (function() {
+            // localiza o form e o campo token
+            const form = document.querySelector('form[method="POST"]') || document.querySelector('form');
+            const tokenInput = document.getElementById('token');
 
-  if (!form || !tokenInput) return; // nada a fazer
+            if (!form || !tokenInput) return; // nada a fazer
 
-  // cria/garante elemento de mensagem de erro logo após o input-group
-  function ensureErrorElement() {
-    let wrapper = tokenInput.closest('.input-group') || tokenInput.parentElement;
-    let err = wrapper.parentElement.querySelector('.mn-token-error');
-    if (!err) {
-      err = document.createElement('div');
-      err.className = 'mn-token-error';
-      err.setAttribute('aria-live', 'polite');
-      err.textContent = 'Token inválido. Cole o token recebido por e-mail (hex, mínimo 6 caracteres).';
-      wrapper.insertAdjacentElement('afterend', err);
-    }
-    return err;
-  }
+            // cria/garante elemento de mensagem de erro logo após o input-group
+            function ensureErrorElement() {
+                let wrapper = tokenInput.closest('.input-group') || tokenInput.parentElement;
+                let err = wrapper.parentElement.querySelector('.mn-token-error');
+                if (!err) {
+                    err = document.createElement('div');
+                    err.className = 'mn-token-error';
+                    err.setAttribute('aria-live', 'polite');
+                    err.textContent = 'Token inválido. Cole o token recebido por e-mail (hex, mínimo 6 caracteres).';
+                    wrapper.insertAdjacentElement('afterend', err);
+                }
+                return err;
+            }
 
-  // valida token: hex entre 6 e 256 chars (mesma regra do servidor)
-  function isValidToken(value) {
-    if (!value) return false;
-    return /^[0-9a-fA-F]{6,256}$/.test(value.trim());
-  }
+            // valida token: hex entre 6 e 256 chars (mesma regra do servidor)
+            function isValidToken(value) {
+                if (!value) return false;
+                return /^[0-9a-fA-F]{6,256}$/.test(value.trim());
+            }
 
-  // atualiza estado visual
-  function setValidityState(isValid) {
-    const inputGroup = tokenInput.closest('.input-group');
-    const err = ensureErrorElement();
-    if (isValid) {
-      if (inputGroup) inputGroup.classList.remove('invalid', 'shake');
-      tokenInput.classList.remove('input-invalid');
-      err.classList.remove('active');
-      tokenInput.setAttribute('aria-invalid', 'false');
-    } else {
-      if (inputGroup) inputGroup.classList.add('invalid');
-      tokenInput.classList.add('input-invalid');
-      err.classList.add('active');
-      tokenInput.setAttribute('aria-invalid', 'true');
-    }
-  }
+            // atualiza estado visual
+            function setValidityState(isValid) {
+                const inputGroup = tokenInput.closest('.input-group');
+                const err = ensureErrorElement();
+                if (isValid) {
+                    if (inputGroup) inputGroup.classList.remove('invalid', 'shake');
+                    tokenInput.classList.remove('input-invalid');
+                    err.classList.remove('active');
+                    tokenInput.setAttribute('aria-invalid', 'false');
+                } else {
+                    if (inputGroup) inputGroup.classList.add('invalid');
+                    tokenInput.classList.add('input-invalid');
+                    err.classList.add('active');
+                    tokenInput.setAttribute('aria-invalid', 'true');
+                }
+            }
 
-  // valida em tempo real (input)
-  tokenInput.addEventListener('input', function() {
-    const v = tokenInput.value;
-    // se vazio, não mostrar erro imediato (mostra só no blur/submit)
-    if (v.trim() === '') {
-      setValidityState(true);
-      return;
-    }
-    setValidityState(isValidToken(v));
-  });
+            // valida em tempo real (input)
+            tokenInput.addEventListener('input', function() {
+                const v = tokenInput.value;
+                // se vazio, não mostrar erro imediato (mostra só no blur/submit)
+                if (v.trim() === '') {
+                    setValidityState(true);
+                    return;
+                }
+                setValidityState(isValidToken(v));
+            });
 
-  // ao sair do campo
-  tokenInput.addEventListener('blur', function() {
-    setValidityState(isValidToken(tokenInput.value));
-  });
+            // ao sair do campo
+            tokenInput.addEventListener('blur', function() {
+                setValidityState(isValidToken(tokenInput.value));
+            });
 
-  // intercepta submit e previne envio quando inválido
-  form.addEventListener('submit', function(ev) {
-    const ok = isValidToken(tokenInput.value);
-    if (!ok) {
-      ev.preventDefault();
-      ev.stopPropagation();
+            // intercepta submit e previne envio quando inválido
+            form.addEventListener('submit', function(ev) {
+                const ok = isValidToken(tokenInput.value);
+                if (!ok) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
 
-      // anima shake
-      const inputGroup = tokenInput.closest('.input-group');
-      if (inputGroup) {
-        inputGroup.classList.add('shake');
-        setTimeout(() => inputGroup.classList.remove('shake'), 420);
-      }
+                    // anima shake
+                    const inputGroup = tokenInput.closest('.input-group');
+                    if (inputGroup) {
+                        inputGroup.classList.add('shake');
+                        setTimeout(() => inputGroup.classList.remove('shake'), 420);
+                    }
 
-      setValidityState(false);
-      tokenInput.focus();
-      return false;
-    }
-    // se válido, permite submit normalmente
-    return true;
-  });
+                    setValidityState(false);
+                    tokenInput.focus();
+                    return false;
+                }
+                // se válido, permite submit normalmente
+                return true;
+            });
 
-  // se o usuário colou um link com ?t=, extrai automaticamente (já tinha algo semelhante; reforçamos)
-  (function fillFromQSorValue() {
-    // se já existir token em querystring, preenche
-    const urlParams = new URLSearchParams(window.location.search);
-    const tParam = urlParams.get('t') || urlParams.get('token');
-    if (tParam && !tokenInput.value.trim()) {
-      tokenInput.value = tParam;
-      setValidityState(isValidToken(tokenInput.value));
-      return;
-    }
-    // se o campo contém uma URL (colada), tenta extrair t=
-    const val = tokenInput.value.trim();
-    if (val) {
-      const match = val.match(/[?&]t=([0-9a-fA-F]+)/);
-      if (match && match[1]) {
-        tokenInput.value = match[1];
-        setValidityState(isValidToken(tokenInput.value));
-      } else {
-        // tenta converter URL completa
-        try {
-          const u = new URL(val);
-          const tp = u.searchParams.get('t') || u.searchParams.get('token');
-          if (tp) tokenInput.value = tp;
-        } catch(e) { /* não é URL */ }
-      }
-    }
-  })();
+            // se o usuário colou um link com ?t=, extrai automaticamente (já tinha algo semelhante; reforçamos)
+            (function fillFromQSorValue() {
+                // se já existir token em querystring, preenche
+                const urlParams = new URLSearchParams(window.location.search);
+                const tParam = urlParams.get('t') || urlParams.get('token');
+                if (tParam && !tokenInput.value.trim()) {
+                    tokenInput.value = tParam;
+                    setValidityState(isValidToken(tokenInput.value));
+                    return;
+                }
+                // se o campo contém uma URL (colada), tenta extrair t=
+                const val = tokenInput.value.trim();
+                if (val) {
+                    const match = val.match(/[?&]t=([0-9a-fA-F]+)/);
+                    if (match && match[1]) {
+                        tokenInput.value = match[1];
+                        setValidityState(isValidToken(tokenInput.value));
+                    } else {
+                        // tenta converter URL completa
+                        try {
+                            const u = new URL(val);
+                            const tp = u.searchParams.get('t') || u.searchParams.get('token');
+                            if (tp) tokenInput.value = tp;
+                        } catch (e) {
+                            /* não é URL */ }
+                    }
+                }
+            })();
 
-})();
-</script>
+        })();
+    </script>
 
 </body>
 
