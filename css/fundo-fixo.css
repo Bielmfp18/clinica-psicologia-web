@@ -1,9 +1,9 @@
  <style>.fundofixo {
-   background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
-   background-size: cover;
-   background-attachment: fixed;
-   background-position: center;
- }
+  background-color: #eef3f6 !important; /*Fundo Cinza*/
+  min-height: 100vh;
+  background-position: center;
+  background-size: cover;
+}
 
  main.container {
    background-color: white;

@@ -175,9 +175,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
     <style>
         body.fundofixo {
-            background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
+            background-color: #eef3f6 !important;
+            /*Fundo Cinza*/
             background-size: cover;
             padding-top: 115px;
+            padding-bottom: 25px;
             z-index: 1;
         }
 
@@ -233,9 +235,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <a href="paciente.php" class="btn btn-voltar position-absolute start-0 top-50 translate-middle-y">
                     <i class="bi bi-arrow-left text-white"></i>
                 </a>
-                <h2 class="text-white fw-bold p-2 rounded text-center" style="background-color: #DBA632;">
+                <h2 class="text-white fw-bold p-2 rounded text-center page-title" style="background-color: #DBA632;">
                     Atualizar Paciente
                 </h2>
+
             </div>
 
             <div class="card p-4">

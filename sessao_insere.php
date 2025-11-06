@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="shortcut icon" href="image/MTM-Photoroom.png" type="image/x-icon">
   <style>
     body.fundofixo {
-      background: url('image/MENTE_RENOVADA.png') no-repeat center center fixed;
+      background-color: #eef3f6 !important; /*Fundo Cinza*/
       background-size: cover;
       padding-top: 50px;
       z-index: 1;

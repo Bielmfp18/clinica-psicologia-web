@@ -249,7 +249,7 @@ $numrow = $lista->rowCount();
         </button>
       </form>
       <a href="sessao_insere.php" class="btn btn-primary btn-anim">
-        NOVA SESSÃO <i class="bi bi-plus"></i>
+        ADICIONAR <i class="bi bi-plus"></i>
       </a>
     </div>
   </div>
